@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#14161a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/icons/favicon-16.png" type="image/png" sizes="16x16">
+<title>Mega Quiz BS</title>
+<style>
+  :root{
+    --bg:#f7f6f1; --surface:#ffffff; --surface-2:#f0eee6;
+    --ink:#15181d; --ink-soft:#565c66; --ink-faint:#8a8f99;
+    --accent:#b7790a; --accent-soft:#fbe9c6;
+    --danger:#a3271e; --danger-soft:#f7e1de;
+    --ok:#1f6d4c; --ok-soft:#dcece3;
+    --line:#e2ded2;
+    --shadow: 0 1px 2px rgba(20,17,10,0.06), 0 12px 30px -14px rgba(20,17,10,0.16);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+      --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+      --accent:#f0b42d; --accent-soft:#3a2c0c;
+      --danger:#e5726a; --danger-soft:#3a1c19;
+      --ok:#5fc298; --ok-soft:#153327;
+      --line:#2b2f37;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 30px -14px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+    --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+    --accent:#f0b42d; --accent-soft:#3a2c0c;
+    --danger:#e5726a; --danger-soft:#3a1c19;
+    --ok:#5fc298; --ok-soft:#153327;
+    --line:#2b2f37;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 30px -14px rgba(0,0,0,0.6);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  *{ box-sizing:border-box; }
+  html, body{ margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--ink); font-family:'Source Serif 4', Georgia, serif; line-height:1.55; padding-inline:18px; padding-block:28px 60px; }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, Consolas, monospace; }
+  .page{ max-width:640px; margin-inline:auto; }
+  .masthead{ margin-bottom:22px; }
+  .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1.title{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:clamp(2.2rem, 8vw, 3.2rem); line-height:0.92; margin:4px 0 6px; text-wrap:balance; }
+  .subtitle{ color:var(--ink-soft); font-size:1rem; max-width:52ch; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:24px; box-shadow:var(--shadow); }
+  @media (max-width:480px){ .card{ padding:18px; } }
+  .stat-row{ display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 20px; }
+  .stat{ flex:1; min-width:120px; background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .stat .num{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:1.8rem; color:var(--accent); line-height:1; }
+  .stat .lab{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); }
+  .best-score{ font-family:'IBM Plex Mono', monospace; font-size:0.85rem; color:var(--ink-soft); background:var(--accent-soft); border-radius:8px; padding:10px 14px; margin-bottom:18px; }
+  button.primary{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:0.95rem; letter-spacing:0.02em; background:var(--ink); color:var(--bg); border:none; border-radius:9px; padding:14px 22px; cursor:pointer; width:100%; transition:transform .12s ease, opacity .12s ease; }
+  button.primary:hover{ opacity:0.88; }
+  button.primary:active{ transform:scale(0.98); }
+  button.primary:disabled{ opacity:0.4; cursor:not-allowed; }
+  button.primary:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  button.ghost{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; letter-spacing:0.02em; background:transparent; color:var(--ink-soft); border:1px solid var(--line); border-radius:9px; padding:10px 16px; cursor:pointer; }
+  button.ghost:hover{ border-color:var(--ink-soft); color:var(--ink); }
+  button.ghost:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  button.exam{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:0.95rem; letter-spacing:0.02em; background:var(--surface); color:var(--ink); border:2px solid var(--ink); border-radius:9px; padding:13px 22px; cursor:pointer; width:100%; }
+  button.exam:hover{ background:var(--accent-soft); border-color:var(--accent); }
+  button.exam:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  .progress-wrap{ margin-bottom:18px; }
+  .progress-meta{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--ink-faint); letter-spacing:0.04em; }
+  .progress-track{ height:6px; background:var(--surface-2); border-radius:999px; overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--accent); border-radius:999px; transition:width .3s ease; }
+  .cat-tag{ display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); background:var(--accent-soft); padding:3px 9px; border-radius:999px; margin-bottom:10px; font-weight:600; }
+  .q-type{ color:var(--ink-faint); font-weight:400; text-transform:none; letter-spacing:0; margin-left:6px; }
+  h2.question{ font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:1.5rem; line-height:1.15; margin:0 0 16px; text-wrap:balance; }
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; list-style:none; padding:0; }
+  .option{ display:flex; align-items:flex-start; gap:12px; border:1.5px solid var(--line); border-radius:10px; padding:12px 14px; cursor:pointer; background:var(--surface); transition:border-color .12s ease, background .12s ease; }
+  .option:hover{ border-color:var(--accent); }
+  .option input{ margin-top:3px; accent-color:var(--accent); width:17px; height:17px; flex:none; }
+  .option .letter{ font-family:'IBM Plex Mono', monospace; font-weight:600; color:var(--ink-faint); flex:none; width:1.1em; }
+  .option .txt{ flex:1; }
+  .option.is-selected{ border-color:var(--accent); background:var(--accent-soft); }
+  .option.is-selected .letter{ color:var(--accent); }
+  .option.is-correct{ border-color:var(--ok); background:var(--ok-soft); }
+  .option.is-wrong{ border-color:var(--danger); background:var(--danger-soft); }
+  .option:has(input:focus-visible){ outline:3px solid var(--accent); outline-offset:2px; }
+  .feedback{ border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:0.94rem; border-left:4px solid var(--line); }
+  .feedback.correct{ background:var(--ok-soft); border-left-color:var(--ok); }
+  .feedback.wrong{ background:var(--danger-soft); border-left-color:var(--danger); }
+  .feedback .head{ font-family:'IBM Plex Mono', monospace; font-size:0.78rem; letter-spacing:0.05em; text-transform:uppercase; font-weight:700; display:block; margin-bottom:6px; }
+  .feedback.correct .head{ color:var(--ok); }
+  .feedback.wrong .head{ color:var(--danger); }
+  .feedback p{ margin:0; }
+  .score-ring{ width:168px; height:168px; border-radius:50%; margin:6px auto 18px; position:relative; display:flex; align-items:center; justify-content:center; }
+  .score-ring::before{ content:""; position:absolute; inset:0; border-radius:50%; background: conic-gradient(var(--accent) calc(var(--pct,0) * 1%), var(--surface-2) 0); }
+  .score-ring::after{ content:""; position:absolute; inset:10px; border-radius:50%; background:var(--surface); }
+  .score-ring .val{ position:relative; z-index:1; text-align:center; font-family:'Big Shoulders Display', sans-serif; }
+  .score-ring .val .pct{ font-size:2.6rem; font-weight:800; line-height:1; }
+  .score-ring .val .frac{ font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--ink-soft); }
+  .verdict{ text-align:center; font-size:1.05rem; margin-bottom:6px; }
+  .verdict-sub{ text-align:center; color:var(--ink-soft); font-size:0.9rem; margin-bottom:20px; }
+  .cat-breakdown{ display:flex; flex-direction:column; gap:8px; margin-bottom:22px; }
+  .cat-row{ display:flex; align-items:center; gap:10px; }
+  .cat-row .name{ width:132px; flex:none; font-size:0.85rem; color:var(--ink-soft); }
+  .cat-row .bar{ flex:1; height:8px; background:var(--surface-2); border-radius:999px; overflow:hidden; }
+  .cat-row .bar > span{ display:block; height:100%; background:var(--ok); border-radius:999px; }
+  .cat-row .frac{ font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--ink-faint); width:38px; text-align:right; flex:none; }
+  .review{ margin-top:24px; }
+  .review h3{ font-family:'Big Shoulders Display', sans-serif; font-size:1.2rem; margin:0 0 12px; }
+  .review-item{ border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:10px; background:var(--surface-2); }
+  .review-item .q{ font-weight:600; margin-bottom:6px; }
+  .review-item .a{ font-size:0.9rem; color:var(--ink-soft); margin:2px 0; }
+  .review-item .a strong{ color:var(--ink); }
+  .action-row{ display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+  .action-row button{ flex:1; min-width:150px; }
+  footer.foot{ margin-top:32px; padding-top:16px; border-top:1px solid var(--line); color:var(--ink-faint); font-size:0.78rem; font-family:'IBM Plex Mono', monospace; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer.foot a{ color:inherit; }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <img src="../img/quiz-banner.png" alt="" width="900" height="380" style="display:block; width:100%; max-width:380px; margin:0 auto 10px; height:auto;">
+  <header class="masthead">
+    <span class="eyebrow">Entraînement — 75 questions</span>
+    <h1 class="title">Mega Quiz BS</h1>
+    <p class="subtitle">Toutes les notions du programme BS passées au crible. Réponds seul(e), sans regarder la fiche.</p>
+  </header>
+
+  <section id="screen-start" class="card">
+    <div class="stat-row">
+      <div class="stat"><div class="num">75</div><div class="lab">Questions</div></div>
+      <div class="stat"><div class="num">10</div><div class="lab">Thèmes</div></div>
+      <div class="stat"><div class="num" id="stat-review">0</div><div class="lab">À revoir</div></div>
+    </div>
+    <div id="best-score-box" class="best-score" hidden></div>
+    <p style="color:var(--ink-soft); font-size:0.92rem; margin-bottom:18px;">Les questions ratées reviennent <strong>en priorité</strong> au prochain essai, les autres suivent dans un ordre aléatoire — jamais deux fois le même enchaînement.</p>
+    <button class="primary" id="btn-start">Test complet (75 questions)</button>
+    <button class="primary" id="btn-start-errors" hidden style="width:100%; margin-top:10px;">Réviser uniquement mes erreurs</button>
+    <button class="ghost" id="btn-open-themes" style="width:100%; margin-top:10px;">Réviser un thème précis</button>
+    <button class="exam" id="btn-start-exam" style="margin-top:16px;">Mode Examen — 20 questions, 20 min, sans correction</button>
+    <p class="mono" id="exam-best-box" hidden style="font-size:0.78rem; color:var(--ink-faint); margin-top:8px;"></p>
+    <button class="ghost" id="btn-reset-progress" style="width:100%; margin-top:10px;">Réinitialiser ma progression</button>
+  </section>
+
+  <section id="screen-themes" class="card" hidden>
+    <p class="subtitle" style="margin-bottom:16px;">Choisis un thème&nbsp;: les questions viendront uniquement de cette catégorie.</p>
+    <ul class="options" id="theme-list"></ul>
+    <button class="ghost" id="btn-themes-back" style="width:100%; margin-top:14px;">Retour</button>
+  </section>
+
+  <section id="screen-quiz" class="card" hidden>
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="progress-label" class="mono">Question 1 / 47</span>
+        <span id="progress-score" class="mono">Score : 0</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <span class="cat-tag" id="q-category">Thème</span>
+    <h2 class="question" id="q-prompt">…</h2>
+    <ul class="options" id="q-options"></ul>
+    <div id="q-feedback"></div>
+    <button class="primary" id="btn-action" disabled>Valider ma réponse</button>
+  </section>
+
+  <section id="screen-result" class="card" hidden>
+    <div class="mono" id="exam-verdict-box" hidden style="text-align:center; font-weight:700; font-size:1.05rem; padding:12px; border-radius:10px; margin-bottom:16px; letter-spacing:0.02em;"></div>
+    <div class="score-ring" id="score-ring">
+      <div class="val"><div class="pct" id="result-pct">0%</div><div class="frac" id="result-frac">0 / 47</div></div>
+    </div>
+    <p class="verdict" id="result-verdict">—</p>
+    <p class="verdict-sub" id="result-sub">—</p>
+    <p class="verdict-sub" id="result-weak" style="font-weight:600;"></p>
+    <p class="verdict-sub mono" id="result-time" style="font-size:0.78rem;">—</p>
+    <div class="cat-breakdown" id="cat-breakdown"></div>
+    <div class="action-row">
+      <button class="primary" id="btn-restart">Recommencer tout</button>
+      <button class="primary" id="btn-review-weak" hidden>Réviser ces thèmes</button>
+      <button class="ghost" id="btn-toggle-review">Revoir mes erreurs</button>
+      <button class="ghost" id="btn-home">Menu principal</button>
+    </div>
+    <div class="review" id="review-section" hidden>
+      <h3>À retravailler</h3>
+      <div id="review-list"></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span><a href="../index.html">Menu</a> · <a href="fiche.html">Fiche</a> · <a href="memo.html">Mémo</a></span>
+    <span id="attempt-counter">Tentative n°1</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var EXAM_SIZE = 20;
+  var EXAM_TIME_MS = 20 * 60 * 1000;
+  var EXAM_PASS_PCT = 70;
+
+  var CATS = {
+    role: "Rôle & périmètre",
+    operations: "Opérations autorisées",
+    procedure: "Avant d'intervenir (VAT)",
+    tension: "Domaines de tension",
+    risques: "Risques électriques",
+    epi: "EPI / Outillage",
+    documents: "Documents",
+    accident: "Conduite à tenir",
+    general: "Général",
+    situation: "Mises en situation"
+  };
+
+  var BANK = [
+    { cat:"role", type:"single", prompt:"Que signifie BS ?",
+      options:["Basse tension, intervention élémentaire","Basse tension, surveillance","Bâtiment, sécurité","Basse tension, spécialiste"],
+      correct:[0], explain:"BS désigne l'habilitation « Basse tension, intervention élémentaire », pour des opérations BT précises et limitées." },
+    { cat:"role", type:"single", prompt:"Qui peut être habilité BS ?",
+      options:["Uniquement un électricien qualifié","Un salarié non-électricien formé spécifiquement à des opérations précises et limitées","Uniquement un chargé de travaux","N'importe quel salarié sans formation"],
+      correct:[1], explain:"Comme le B0, le BS est souvent un non-électricien à l'origine, mais formé et habilité pour exécuter un nombre limité d'opérations élémentaires bien définies." },
+    { cat:"role", type:"single", prompt:"Un titulaire BS peut-il réaliser du dépannage (recherche de panne) ?",
+      options:["Oui, c'est son rôle principal","Non, le dépannage est réservé au BR (chargé d'intervention générale)","Oui, si la panne est simple","Oui, uniquement en présence d'un collègue"],
+      correct:[1], explain:"Le BS exécute des opérations élémentaires précises, jamais de recherche de panne ou de dépannage : c'est le rôle du BR." },
+    { cat:"role", type:"single", prompt:"Un titulaire BS peut-il travailler sous tension ?",
+      options:["Oui, systématiquement","Non, il travaille toujours hors tension","Oui, uniquement en BT","Oui, avec des gants isolants"],
+      correct:[1], explain:"Le BS n'intervient jamais sous tension : il met hors tension le circuit concerné avant chaque intervention." },
+    { cat:"role", type:"single", prompt:"Le BS peut-il pénétrer dans la zone de voisinage d'une installation ?",
+      options:["Oui, librement, comme un électricien","Non, sauf sur l'organe précis sur lequel il intervient, après l'avoir mis hors tension","Oui, uniquement en HT","Non, jamais, même sur son propre point d'intervention"],
+      correct:[1], explain:"Comme le B0, le BS reste en dehors de la zone de voisinage, sauf sur l'organe précis de son intervention, préalablement mis hors tension et vérifié." },
+    { cat:"role", type:"single", prompt:"Le titre d'habilitation BS est-il transférable à un collègue effectuant la même tâche ?",
+      options:["Oui, si le collègue a le même poste","Non, il est nominatif et personnel","Oui, temporairement","Oui, avec l'accord de l'employeur"],
+      correct:[1], explain:"Comme toute habilitation, le titre BS est nominatif et personnel : il ne se transmet jamais à un autre salarié." },
+    { cat:"role", type:"single", prompt:"Un BS peut-il former un collègue non habilité à réaliser les mêmes opérations que lui ?",
+      options:["Oui, s'il a de l'expérience","Non, seul l'employeur (via un organisme de formation) peut habiliter un salarié","Oui, avec l'accord oral du responsable","Oui, après un an d'ancienneté"],
+      correct:[1], explain:"L'habilitation résulte d'une décision de l'employeur après formation : un BS ne peut pas habiliter lui-même un collègue." },
+    { cat:"role", type:"single", prompt:"Le BS doit-il redemander une habilitation à chaque nouvelle intervention ?",
+      options:["Oui, à chaque fois","Non, son habilitation couvre l'ensemble des opérations élémentaires prévues tant qu'elle reste valide","Oui, une fois par semaine","Non, l'habilitation n'a aucune limite de validité"],
+      correct:[1], explain:"L'habilitation BS couvre, tant qu'elle est valide, l'ensemble des opérations élémentaires définies lors de sa délivrance." },
+
+    { cat:"operations", type:"single", prompt:"Parmi ces opérations, laquelle un BS est-il autorisé à réaliser ?",
+      options:["Remplacer un fusible BT à l'identique","Modifier le câblage d'une armoire électrique","Réparer un moteur électrique","Installer un nouveau tableau électrique"],
+      correct:[0], explain:"Le remplacement à l'identique de fusibles BT fait partie des opérations élémentaires autorisées pour un BS." },
+    { cat:"operations", type:"single", prompt:"Le BS peut-il remplacer une lampe ou un accessoire d'appareil d'éclairage ?",
+      options:["Oui, cela fait partie de ses opérations autorisées","Non, jamais","Oui, uniquement en extérieur","Non, réservé aux électriciens B1"],
+      correct:[0], explain:"Le remplacement de lampes et d'accessoires d'éclairage fait partie des interventions élémentaires typiques du BS." },
+    { cat:"operations", type:"single", prompt:"Le BS peut-il remplacer ou raccorder une prise de courant ou un interrupteur ?",
+      options:["Oui, cela fait partie de ses opérations autorisées","Non, jamais","Oui, uniquement s'il est électricien","Non, uniquement le BR peut le faire"],
+      correct:[0], explain:"Le remplacement/raccordement de prises de courant et d'interrupteurs est une opération élémentaire typique confiée au BS." },
+    { cat:"operations", type:"single", prompt:"Le BS peut-il réarmer une protection (disjoncteur, relais thermique) ayant disjoncté ?",
+      options:["Oui, cela fait partie de ses opérations autorisées","Non, jamais","Oui, uniquement s'il est électricien B1","Non, il doit appeler un électricien systématiquement"],
+      correct:[0], explain:"Le réarmement de protections fait partie des opérations élémentaires autorisées pour le BS." },
+    { cat:"operations", type:"single", prompt:"Le BS peut-il modifier une installation électrique existante (ajouter un circuit, déplacer un tableau) ?",
+      options:["Oui, si c'est simple","Non, il ne réalise que des opérations élémentaires précises et limitées, jamais de modification","Oui, avec l'accord oral d'un collègue","Oui, uniquement en BT"],
+      correct:[1], explain:"Le BS ne modifie jamais une installation : il se limite aux opérations élémentaires prévues (remplacement, raccordement simple, réarmement)." },
+    { cat:"operations", type:"single", prompt:"Sur quel type de circuit le BS est-il autorisé à intervenir ?",
+      options:["N'importe quel circuit, sans limite","Uniquement des circuits protégés par un dispositif de protection contre les surintensités de calibre au plus égal à 32 A","Uniquement des circuits triphasés","Uniquement des circuits sans aucune protection"],
+      correct:[1], explain:"Le BS intervient uniquement sur des circuits terminaux protégés par un fusible ou un disjoncteur de calibre ≤ 32 A." },
+    { cat:"operations", type:"single", prompt:"Le BS peut-il intervenir sur un circuit non protégé par un dispositif de protection contre les surintensités ?",
+      options:["Oui, sans restriction","Non, ses interventions sont limitées aux circuits protégés (calibre ≤ 32 A)","Oui, uniquement en local sec","Oui, si le circuit est récent"],
+      correct:[1], explain:"L'habilitation BS est strictement limitée aux circuits protégés contre les surintensités, de calibre au plus égal à 32 A." },
+    { cat:"operations", type:"single", prompt:"Le BS peut-il remplacer un disjoncteur différentiel défectueux par un modèle différent de l'original ?",
+      options:["Oui, n'importe quel modèle compatible","Non, un remplacement se fait toujours à l'identique","Oui, si le nouveau modèle est plus puissant","Oui, sans limite de calibre"],
+      correct:[1], explain:"Le BS ne réalise que des remplacements à l'identique ; changer de modèle relève d'une modification d'installation, hors de son périmètre." },
+    { cat:"operations", type:"single", prompt:"Le BS peut-il ajouter une nouvelle prise de courant sur un circuit existant qui n'était pas prévu pour cela ?",
+      options:["Oui, si le circuit le supporte","Non, cela constitue une modification d'installation, hors du périmètre du BS","Oui, avec l'accord verbal d'un collègue","Oui, uniquement en habitation individuelle"],
+      correct:[1], explain:"Ajouter un point d'utilisation non prévu est une modification d'installation, que le BS n'est pas habilité à réaliser." },
+    { cat:"operations", type:"single", prompt:"Un fusible saute à plusieurs reprises au même endroit lors des interventions du BS. Peut-il continuer à le remplacer sans en parler à personne ?",
+      options:["Oui, tant qu'il a des fusibles de rechange","Non, il doit signaler cette répétition, qui peut révéler un défaut plus grave","Oui, c'est son rôle habituel","Non, il doit arrêter toute activité définitivement"],
+      correct:[1], explain:"Un déclenchement répété signale probablement un défaut sous-jacent : le BS doit en rendre compte plutôt que de remplacer indéfiniment le fusible." },
+
+    { cat:"procedure", type:"single", prompt:"Avant d'intervenir, que doit faire un BS sur le circuit concerné ?",
+      options:["Rien de particulier, il intervient directement","Le mettre hors tension et vérifier l'absence de tension (VAT)","Prévenir uniquement son responsable","Attendre l'autorisation écrite de l'inspection du travail"],
+      correct:[1], explain:"Avant toute intervention, le BS doit mettre hors tension le circuit concerné et vérifier l'absence de tension (VAT)." },
+    { cat:"procedure", type:"single", prompt:"Que signifie VAT ?",
+      options:["Vérification d'Absence de Tension","Validation d'Autorisation de Travail","Vérification Annuelle Technique","Visite Annuelle de Travaux"],
+      correct:[0], explain:"VAT = Vérification d'Absence de Tension, une étape obligatoire avant toute intervention sur un circuit mis hors tension." },
+    { cat:"procedure", type:"single", prompt:"Une fois son intervention terminée, que doit faire le BS ?",
+      options:["Laisser le circuit hors tension pour plus de sécurité","Remettre le circuit sous tension et vérifier le bon fonctionnement","Attendre qu'un électricien remette sous tension","Rien, ce n'est pas son rôle"],
+      correct:[1], explain:"Après son intervention, le BS remet lui-même le circuit sous tension et vérifie que tout fonctionne normalement." },
+    { cat:"procedure", type:"single", prompt:"Le BS peut-il intervenir sur un circuit qu'il n'a pas lui-même mis hors tension et vérifié ?",
+      options:["Oui, si un collègue lui assure que c'est fait","Non, il doit le mettre hors tension et vérifier l'absence de tension lui-même","Oui, s'il porte des gants isolants","Oui, systématiquement"],
+      correct:[1], explain:"Le BS est responsable de sa propre mise hors tension et de sa propre vérification d'absence de tension avant d'intervenir." },
+    { cat:"procedure", type:"single", prompt:"Le BS doit-il rendre compte de son intervention une fois terminée ?",
+      options:["Non, ce n'est jamais nécessaire","Oui, il doit rendre compte de son intervention à l'issue de celle-ci","Non, sauf en cas d'incident","Oui, uniquement une fois par an"],
+      correct:[1], explain:"Comme tout titulaire d'habilitation, le BS doit rendre compte de son intervention à l'issue de celle-ci." },
+    { cat:"procedure", type:"single", prompt:"Si le BS ne dispose pas d'un dispositif de VAT adapté et fonctionnel, peut-il tout de même intervenir ?",
+      options:["Oui, il peut vérifier au toucher avec précaution","Non, il doit se procurer un dispositif de VAT adapté avant toute intervention","Oui, s'il est pressé par le temps","Oui, en utilisant un appareil de mesure quelconque"],
+      correct:[1], explain:"Sans dispositif de VAT adapté et fonctionnel, le BS ne peut pas vérifier l'absence de tension et ne doit donc pas intervenir." },
+    { cat:"procedure", type:"single", prompt:"Le BS doit-il vérifier le bon fonctionnement de son dispositif de VAT avant de l'utiliser ?",
+      options:["Non, ce n'est pas nécessaire","Oui, sur une source qu'il sait sous tension, avant et après la vérification","Oui, mais seulement une fois par mois","Non, seul un électricien doit le faire"],
+      correct:[1], explain:"Un VAT doit être testé sur une source connue sous tension avant (et si possible après) la vérification, pour s'assurer qu'il fonctionne réellement." },
+
+    { cat:"tension", type:"single", prompt:"Le BS peut-il intervenir sur des installations en haute tension (HTA/HTB) ?",
+      options:["Oui, sans restriction","Non, le BS est une habilitation strictement basse tension","Oui, uniquement en HTA","Oui, avec un accompagnement"],
+      correct:[1], explain:"BS = Basse Tension. Le BS n'intervient jamais sur des installations en domaine haute tension." },
+    { cat:"tension", type:"single", prompt:"La tension du secteur domestique (230 V) appartient à quel domaine ?",
+      options:["TBT","BT","HTA","HTB"],
+      correct:[1], explain:"Le domaine BT couvre 50 V < U ≤ 1000 V, incluant le 230/400 V du réseau domestique et industriel courant." },
+    { cat:"tension", type:"single", prompt:"Quelle est la limite supérieure du domaine BT (basse tension) ?",
+      options:["500 V","1000 V","1500 V","50 kV"],
+      correct:[1], explain:"Le domaine BT va de 50 V à 1000 V en courant alternatif. La norme NF C18-510 actuelle ne subdivise pas la BT en BTA/BTB, contrairement à l'ancienne norme." },
+    { cat:"tension", type:"single", prompt:"Sur quel type de matériel le BS travaille-t-il le plus souvent ?",
+      options:["Des postes de transformation HTA/BT","Des circuits terminaux BT (éclairage, prises, petits appareillages)","Des lignes aériennes HTB","Des groupes électrogènes industriels de forte puissance"],
+      correct:[1], explain:"Le BS intervient sur des circuits terminaux basse tension simples, protégés par un dispositif de calibre ≤ 32 A." },
+    { cat:"tension", type:"single", prompt:"Un circuit protégé par un disjoncteur de calibre 40 A est-il dans le périmètre d'intervention du BS ?",
+      options:["Oui, sans problème","Non, la limite autorisée pour le BS est un calibre de protection au plus égal à 32 A","Oui, si le disjoncteur est récent","Oui, uniquement en habitation"],
+      correct:[1], explain:"Au-delà de 32 A, le circuit sort du périmètre autorisé du BS." },
+    { cat:"tension", type:"single", prompt:"L'habilitation BS est-elle limitée uniquement par le calibre (32 A), ou aussi par une tension maximale ?",
+      options:["Uniquement par le calibre, aucune limite de tension", "Aussi par une tension maximale de 400 V", "Aussi par une tension maximale de 230 V", "Aucune limite précise n'existe"],
+      correct:[1], explain:"Le BS est limité à la fois par le calibre (32 A maximum) et par la tension (400 V maximum en courant alternatif) : les deux conditions doivent être respectées." },
+
+    { cat:"risques", type:"single", prompt:"Quelle est la différence entre électrisation et électrocution ?",
+      options:["Aucune, ce sont des synonymes","L'électrocution est une électrisation qui entraîne la mort","L'électrisation ne concerne que la haute tension","L'électrocution ne provoque jamais de brûlure"],
+      correct:[1], explain:"L'électrisation désigne le passage du courant dans le corps ; l'électrocution est une électrisation mortelle." },
+    { cat:"risques", type:"single", prompt:"À partir de quelle intensité environ le courant peut-il provoquer une tétanisation musculaire (impossibilité de lâcher) ?",
+      options:["Quelques dixièmes de mA","Environ 10 mA","Environ 1000 mA (1 A)","Il n'existe aucun seuil connu"],
+      correct:[1], explain:"Autour de 10 mA, une contraction musculaire involontaire peut empêcher de lâcher le conducteur." },
+    { cat:"risques", type:"single", prompt:"Au-delà de quelle intensité approximative le risque de fibrillation cardiaque augmente-t-il fortement ?",
+      options:["Environ 1 mA","Environ 10 mA","Autour de 30 mA et plus, selon la durée de contact","Il n'existe pas de seuil identifié"],
+      correct:[2], explain:"Au-delà d'une trentaine de mA, selon la durée de contact, le risque de fibrillation cardiaque devient significatif." },
+    { cat:"risques", type:"single", prompt:"Quel type d'extincteur utiliser sur un feu d'origine électrique ?",
+      options:["De l'eau","Un extincteur à CO2 (dioxyde de carbone)","De la mousse","N'importe lequel, peu importe"],
+      correct:[1], explain:"L'eau et la mousse conduisent l'électricité. Le CO2 (ou la poudre) est adapté car il n'est pas conducteur." },
+    { cat:"risques", type:"single", prompt:"Pourquoi travailler en milieu humide augmente-t-il le risque électrique ?",
+      options:["L'eau isole le corps du courant","L'eau est conductrice et diminue la résistance du corps","Cela n'a aucun effet particulier","Cela ne concerne que la haute tension"],
+      correct:[1], explain:"L'humidité abaisse la résistance électrique du corps humain, ce qui augmente l'intensité du courant qui le traverse." },
+    { cat:"risques", type:"single", prompt:"Que signale le pictogramme représentant un éclair noir sur fond triangulaire jaune ?",
+      options:["Un risque d'incendie","Un risque électrique","Un risque chimique","Une sortie de secours"],
+      correct:[1], explain:"C'est le pictogramme normalisé du danger électrique." },
+    { cat:"risques", type:"single", prompt:"Une installation mise hors tension présente-t-elle toujours un risque nul ?",
+      options:["Oui, aucun risque une fois le courant coupé","Non, certains éléments (condensateurs, batteries) peuvent rester chargés après la coupure","Oui, sauf en très haute tension","Non, uniquement sur les installations très anciennes"],
+      correct:[1], explain:"Certains composants stockent de l'énergie et peuvent rester dangereux même après la mise hors tension — d'où l'importance de la VAT." },
+    { cat:"risques", type:"single", prompt:"Que risque-t-on en intervenant avec des mains humides sur une installation électrique ?",
+      options:["Rien de particulier","Une résistance du corps diminuée et donc un risque de courant plus élevé","Une meilleure isolation naturelle","Un risque uniquement esthétique"],
+      correct:[1], explain:"L'humidité abaisse la résistance du corps, ce qui augmente l'intensité du courant en cas de contact." },
+    { cat:"risques", type:"single", prompt:"Un appareil électroménager dégage une odeur de brûlé pendant une intervention du BS. Doit-il continuer son intervention ?",
+      options:["Oui, en finissant rapidement","Non, il doit arrêter, débrancher si possible sans risque, et signaler l'anomalie","Oui, en ouvrant une fenêtre","Non, mais seulement si de la fumée est visible aussi"],
+      correct:[1], explain:"Une odeur de brûlé est un signal d'alerte à ne jamais ignorer : il faut arrêter l'intervention et signaler l'anomalie." },
+    { cat:"risques", type:"single", prompt:"Pourquoi le risque électrique persiste-t-il parfois même après le déclenchement d'un différentiel ?",
+      options:["Le différentiel ne sert à rien","Le déclenchement indique un défaut mais ne dispense jamais de la VAT avant intervention","Le différentiel remet automatiquement sous tension après 1 minute","Cela ne concerne que les installations HT"],
+      correct:[1], explain:"Un différentiel déclenché signale un défaut d'isolement, mais la vérification d'absence de tension reste indispensable avant toute intervention." },
+
+    { cat:"epi", type:"single", prompt:"Le BS doit-il porter des EPI adaptés au risque électrique ?",
+      options:["Non, comme le B0, aucun EPI électrique n'est nécessaire","Oui : outillage isolé et EPI adaptés, car il manipule directement des connexions électriques","Non, il travaille toujours à distance","Oui, uniquement des gants en cuir"],
+      correct:[1], explain:"Contrairement au B0, le BS manipule directement des éléments électriques : il doit utiliser un outillage isolé et les EPI adaptés." },
+    { cat:"epi", type:"single", prompt:"Pourquoi le BS utilise-t-il un outillage isolé (tournevis, pince isolés) ?",
+      options:["Pour des raisons de confort uniquement","Pour se protéger en cas de contact accidentel avec une pièce restée sous tension","Ce n'est pas obligatoire, c'est une option","Uniquement pour les interventions en extérieur"],
+      correct:[1], explain:"Même après VAT, un outillage isolé reste une protection supplémentaire en cas d'erreur ou de contact accidentel." },
+    { cat:"epi", type:"single", prompt:"Le BS doit-il retirer bijoux et objets métalliques avant d'intervenir ?",
+      options:["Non, ce n'est pas nécessaire","Oui, comme pour toute opération présentant un risque électrique","Seulement en cas de pluie","Non, uniquement les électriciens B1/B2"],
+      correct:[1], explain:"Les objets métalliques conduisent le courant et doivent être retirés avant toute opération présentant un risque électrique." },
+    { cat:"epi", type:"single", prompt:"Un balisage/écran de protection posé par un électricien : le BS doit-il le respecter ?",
+      options:["Non, cela ne le concerne pas","Oui, il doit toujours le respecter et ne jamais le déplacer","Oui, sauf s'il est pressé","Non, uniquement les B0 doivent le respecter"],
+      correct:[1], explain:"Comme tout intervenant, le BS doit respecter les balisages et écrans de protection mis en place." },
+    { cat:"epi", type:"single", prompt:"Le BS doit-il utiliser un tapis ou une nappe isolante lors de certaines interventions ?",
+      options:["Jamais, ce n'est pas prévu pour le BS","Oui, selon l'analyse de risque et le contexte de l'intervention","Uniquement en extérieur","Uniquement s'il pleut"],
+      correct:[1], explain:"Selon les conditions et l'analyse de risque, un tapis ou une nappe isolante peut faire partie des EPI/EPC utilisés par le BS." },
+
+    { cat:"documents", type:"single", prompt:"Le titre d'habilitation BS est-il un diplôme ?",
+      options:["Oui, un diplôme d'État","Non, c'est une reconnaissance par l'employeur de la capacité du salarié à réaliser des opérations précises en sécurité","Oui, délivré par un organisme de formation","Non, ce n'est qu'une attestation de présence en formation"],
+      correct:[1], explain:"Ce n'est pas un diplôme : c'est la reconnaissance par l'employeur que le salarié peut réaliser certaines opérations en sécurité." },
+    { cat:"documents", type:"single", prompt:"Qui délivre le titre d'habilitation BS ?",
+      options:["L'organisme de formation","L'employeur","L'inspection du travail","Le fabricant du matériel électrique"],
+      correct:[1], explain:"C'est toujours l'employeur qui délivre le titre d'habilitation, après la formation." },
+    { cat:"documents", type:"single", prompt:"La validité de l'habilitation BS est-elle illimitée dans le temps ?",
+      options:["Oui, une fois délivrée elle est acquise à vie","Non, un recyclage périodique est recommandé (environ tous les 3 ans, ou avant si changement de poste)","Oui, sauf accident","Non, elle doit être renouvelée chaque mois"],
+      correct:[1], explain:"Un recyclage périodique (environ tous les 3 ans) est recommandé, ainsi qu'en cas de changement de poste ou de matériel." },
+    { cat:"documents", type:"single", prompt:"Un salarié BS peut-il refuser une opération qu'il juge dangereuse ?",
+      options:["Non, il doit obéir aux ordres","Oui, il peut toujours refuser une opération qu'il juge dangereuse pour sa sécurité","Oui, mais uniquement avec l'accord de son responsable","Non, sauf en cas d'urgence"],
+      correct:[1], explain:"Comme tout titulaire d'habilitation, le BS peut refuser une opération qu'il estime dangereuse." },
+    { cat:"documents", type:"single", prompt:"L'employeur peut-il retirer l'habilitation BS d'un salarié ?",
+      options:["Non, jamais","Oui, à tout moment, s'il estime que les conditions ne sont plus réunies","Oui, uniquement en fin d'année","Non, seule l'inspection du travail le peut"],
+      correct:[1], explain:"L'employeur peut retirer l'habilitation à tout moment, comme pour toute autre habilitation." },
+    { cat:"documents", type:"single", prompt:"Le compte-rendu d'intervention du BS doit-il mentionner les anomalies constatées ?",
+      options:["Non, ce n'est pas utile","Oui, toute anomalie constatée doit être signalée dans le compte-rendu","Non, sauf en cas d'accident","Oui, uniquement si un collègue le demande"],
+      correct:[1], explain:"Signaler les anomalies permet d'assurer le suivi de l'installation et d'éviter qu'un défaut ne soit ignoré." },
+
+    { cat:"accident", type:"single", prompt:"Quelle est la bonne succession d'actions face à un accident d'origine électrique ?",
+      options:["Alerter → Protéger → Examiner → Secourir","Protéger → Examiner → Alerter → Secourir","Secourir → Protéger → Alerter → Examiner","Examiner → Secourir → Protéger → Alerter"],
+      correct:[1], explain:"On protège d'abord, on examine l'état de la victime, on alerte les secours, puis on secourt si on est formé." },
+    { cat:"accident", type:"single", prompt:"Une victime est encore en contact avec un conducteur sous tension. Que faites-vous en priorité ?",
+      options:["Vous la tirez à mains nues, rapidement","Vous coupez le courant si possible ; sinon, vous l'éloignez avec un objet isolant, sans jamais la toucher directement","Vous appelez les secours et attendez sans agir","Vous pratiquez immédiatement le bouche-à-bouche"],
+      correct:[1], explain:"Ne jamais toucher directement une victime encore sous tension." },
+    { cat:"accident", type:"single", prompt:"Quel numéro d'urgence fonctionne dans tous les pays de l'Union européenne ?",
+      options:["Le 15","Le 18","Le 112","Le 17"],
+      correct:[2], explain:"Le 112 est le numéro d'urgence unique européen." },
+    { cat:"accident", type:"single", prompt:"Vous sentez une odeur de brûlé ou voyez de la fumée provenant d'une installation électrique. Que faites-vous ?",
+      options:["Vous continuez votre travail, ce n'est probablement rien","Vous vous éloignez, alertez immédiatement et ne tentez pas d'intervenir vous-même","Vous ouvrez l'armoire électrique pour vérifier","Vous versez de l'eau dessus par précaution"],
+      correct:[1], explain:"Une odeur de brûlé ou de la fumée signale un risque grave : il faut s'éloigner, alerter, et ne jamais intervenir soi-même ni utiliser d'eau." },
+    { cat:"accident", type:"single", prompt:"Lors d'une intervention BS, un collègue non habilité s'approche dangereusement du poste de travail. Que faites-vous ?",
+      options:["Rien, il est adulte et responsable","Vous l'arrêtez et l'éloignez immédiatement de la zone à risque","Vous continuez votre intervention en l'ignorant","Vous lui demandez de vous aider"],
+      correct:[1], explain:"Toute personne non habilitée doit être immédiatement écartée d'une zone présentant un risque électrique." },
+
+    { cat:"general", type:"single", prompt:"Quelle est la principale différence entre BS et BR ?",
+      options:["Aucune différence","BS réalise des opérations élémentaires précises ; BR (chargé d'intervention générale) peut aussi dépanner et intervenir plus largement","BS travaille en HT, BR en BT","BS peut consigner, BR jamais"],
+      correct:[1], explain:"Le BR a un périmètre plus large que le BS, incluant le dépannage ; le BS se limite à des opérations élémentaires précises." },
+    { cat:"general", type:"single", prompt:"Quelle est la principale différence entre BS et B0 ?",
+      options:["Aucune, ce sont les mêmes habilitations","Le B0 n'exécute aucune opération électrique ; le BS peut réaliser des opérations électriques élémentaires précises","Le BS travaille en HT, le B0 en BT","Le B0 peut dépanner, pas le BS"],
+      correct:[1], explain:"Le B0 reste totalement en dehors des opérations électriques ; le BS est formé pour en exécuter certaines, bien définies." },
+    { cat:"general", type:"single", prompt:"Un titulaire BS peut-il aussi être habilité B0 en parallèle ?",
+      options:["Non, c'est incompatible","Oui, les habilitations peuvent se cumuler selon les besoins du poste","Non, il faut choisir l'une ou l'autre","Oui, mais seulement après 5 ans d'ancienneté"],
+      correct:[1], explain:"Les habilitations ne sont pas exclusives : un salarié peut cumuler plusieurs habilitations adaptées aux tâches qu'il doit réaliser." },
+    { cat:"general", type:"single", prompt:"Le BS peut-il travailler seul ?",
+      options:["Non, toujours accompagné d'un électricien","Oui, pour les opérations élémentaires prévues par son habilitation","Non, jamais","Oui, uniquement la nuit"],
+      correct:[1], explain:"Le BS est formé pour réaliser seul les opérations élémentaires prévues, dans les limites définies (circuits ≤32A, hors tension, etc.)." },
+    { cat:"general", type:"single", prompt:"Que signifie la lettre « B » dans BS ?",
+      options:["Le domaine basse tension","Le domaine haute tension","Le bâtiment","La formation de base"],
+      correct:[0], explain:"Comme dans B0, B1, B2, la lettre B indique le domaine basse tension (et très basse tension)." },
+    { cat:"general", type:"single", prompt:"Un titulaire BS peut-il aussi être habilité H0 ?",
+      options:["Non, c'est incompatible","Oui, les habilitations BT et HT peuvent se cumuler selon les environnements de travail","Non, il faut choisir un seul domaine","Oui, mais uniquement après 10 ans d'expérience"],
+      correct:[1], explain:"Rien n'empêche de cumuler des habilitations adaptées à différents environnements (BT et HT) selon les besoins du poste." },
+
+    { cat:"situation", type:"single", prompt:"On vous demande de remplacer une prise de courant cassée par un modèle à ampérage supérieur « pour qu'elle tienne mieux la charge ». Que faites-vous ?",
+      options:["Vous installez le modèle plus puissant demandé","Vous refusez et remplacez uniquement à l'identique : changer de calibre sort de votre périmètre BS","Vous demandez l'avis d'un collègue BS avant de décider","Vous installez le modèle demandé si le client insiste"],
+      correct:[1], explain:"Le BS ne réalise que des remplacements à l'identique ; changer de calibre est une modification hors de son périmètre." },
+    { cat:"situation", type:"single", prompt:"Avant de remplacer un fusible, vous testez votre VAT sur une prise que vous savez sous tension : l'appareil n'indique rien. Que faites-vous ?",
+      options:["Vous continuez, ce n'est probablement rien de grave","Vous considérez votre VAT non fiable, vous ne l'utilisez pas et vous vous en procurez un autre avant d'intervenir","Vous tapotez l'appareil et réessayez rapidement","Vous utilisez un tournevis testeur à la place"],
+      correct:[1], explain:"Un VAT qui échoue son propre test de fonctionnement ne doit jamais être utilisé : il faut le remplacer avant toute intervention." },
+    { cat:"situation", type:"single", prompt:"Vous découvrez que le disjoncteur du circuit sur lequel vous devez intervenir a un calibre de 40 A. Que faites-vous ?",
+      options:["Vous intervenez normalement, ce n'est qu'un peu plus que d'habitude","Vous n'intervenez pas : ce circuit dépasse la limite de 32 A autorisée pour le BS, vous en informez votre responsable","Vous intervenez avec plus de précautions","Vous demandez à un collègue BS de vous accompagner"],
+      correct:[1], explain:"Le calibre de 32 A est une limite stricte du périmètre BS, jamais une simple recommandation à ajuster selon le contexte." },
+    { cat:"situation", type:"single", prompt:"Sur un tableau électrique, plusieurs circuits ne sont pas étiquetés et vous ne savez pas lequel correspond à celui que vous devez couper. Que faites-vous ?",
+      options:["Vous coupez le disjoncteur général par sécurité, sans demander à personne","Vous identifiez avec certitude le bon circuit avant toute action, sans couper au hasard","Vous devinez en testant les disjoncteurs un par un","Vous demandez au client de vous dire lequel c'est et vous le croyez sans vérifier"],
+      correct:[1], explain:"Une identification incertaine du circuit doit toujours être levée avant d'agir : jamais de coupure ou d'intervention au hasard." },
+    { cat:"situation", type:"single", prompt:"Une prise que vous venez de remplacer chauffe anormalement quelques minutes après la remise sous tension. Que faites-vous ?",
+      options:["Vous laissez, c'est normal au début d'utilisation","Vous coupez immédiatement l'alimentation du circuit et signalez l'anomalie, sans réutiliser la prise","Vous refroidissez la prise avec un chiffon humide","Vous continuez votre tournée et reviendrez vérifier plus tard"],
+      correct:[1], explain:"Une chauffe anormale signale un défaut de contact ou de montage : il faut couper immédiatement et signaler, jamais continuer à utiliser la prise." },
+    { cat:"situation", type:"single", prompt:"Vous réarmez un disjoncteur qui a sauté chez un particulier, et il saute de nouveau immédiatement. Que faites-vous ?",
+      options:["Vous réarmez plusieurs fois jusqu'à ce que ça tienne","Vous arrêtez de réarmer et signalez qu'un défaut probable nécessite l'intervention d'un électricien","Vous augmentez le calibre du disjoncteur","Vous maintenez le disjoncteur en position haute de force"],
+      correct:[1], explain:"Un déclenchement immédiat et répété signale un défaut réel : insister en réarmant est dangereux, il faut signaler et faire intervenir un électricien." },
+    { cat:"situation", type:"single", prompt:"Pendant une intervention, vous sentez une odeur de brûlé provenant d'une pièce voisine que vous ne pouvez pas voir directement. Que faites-vous ?",
+      options:["Vous continuez votre tâche, l'odeur ne vient pas de votre zone","Vous interrompez votre intervention, allez vérifier prudemment et alertez si nécessaire, sans intervenir vous-même sur l'origine électrique","Vous ouvrez toutes les fenêtres et continuez votre travail","Vous ignorez l'odeur si vous êtes pressé"],
+      correct:[1], explain:"Toute odeur suspecte impose d'interrompre son intervention pour évaluer la situation et alerter, même si l'origine semble éloignée." },
+    { cat:"situation", type:"single", prompt:"Un collègue non habilité vous demande de lui montrer « rapidement » comment remplacer un fusible pour qu'il puisse le faire seul la prochaine fois. Que répondez-vous ?",
+      options:["Vous lui montrez, ça peut dépanner en cas d'urgence","Vous refusez : seul l'employeur peut habiliter quelqu'un, une démonstration ne transfère jamais votre habilitation","Vous lui montrez si c'est un ami proche","Vous lui donnez juste les grandes lignes à l'oral"],
+      correct:[1], explain:"L'habilitation est personnelle et ne se transmet jamais par une simple démonstration entre collègues." },
+
+    { cat:"operations", type:"single", prompt:"Quelle est la section maximale de conducteur sur laquelle un BS peut intervenir (circuit terminal) ?",
+      options:["2,5 mm² cuivre uniquement","6 mm² en cuivre (10 mm² en aluminium)","16 mm² en cuivre","Aucune limite de section n'est fixée"],
+      correct:[1], explain:"L'habilitation BS est limitée aux circuits terminaux de section au plus égale à 6 mm² en cuivre (10 mm² en aluminium)." },
+    { cat:"operations", type:"single", prompt:"Quel est le calibre maximal du dispositif de protection pour une intervention BS en courant continu ?",
+      options:["32 A, comme en courant alternatif","16 A","63 A","Aucune limite en courant continu"],
+      correct:[1], explain:"En courant alternatif, la limite est 32 A ; en courant continu, elle est plus basse : 16 A maximum." },
+    { cat:"documents", type:"single", prompt:"En plus du recyclage périodique, à quelle fréquence minimale l'habilitation BS doit-elle être réexaminée par l'employeur ?",
+      options:["Jamais après la première délivrance","Au moins une fois par an, et à chaque changement notable de situation","Tous les 10 ans","Uniquement à la demande du salarié"],
+      correct:[1], explain:"Comme toute habilitation, le BS doit être examiné par l'employeur au moins une fois par an, en plus du recyclage périodique recommandé tous les 3 ans." },
+    { cat:"tension", type:"single", prompt:"L'habilitation BS est limitée à 400 V en courant alternatif. Quelle est la limite équivalente en courant continu ?",
+      options:["400 V, comme en alternatif","600 V","230 V","Aucune limite n'est fixée en courant continu"],
+      correct:[1], explain:"La limite de tension du BS est de 400 V en courant alternatif et de 600 V en courant continu." }
+  ];
+
+  var els = {
+    start: document.getElementById('screen-start'),
+    themes: document.getElementById('screen-themes'),
+    themeList: document.getElementById('theme-list'),
+    btnOpenThemes: document.getElementById('btn-open-themes'),
+    btnThemesBack: document.getElementById('btn-themes-back'),
+    quiz: document.getElementById('screen-quiz'),
+    result: document.getElementById('screen-result'),
+    btnStart: document.getElementById('btn-start'),
+    btnStartErrors: document.getElementById('btn-start-errors'),
+    btnStartExam: document.getElementById('btn-start-exam'),
+    examBestBox: document.getElementById('exam-best-box'),
+    examVerdictBox: document.getElementById('exam-verdict-box'),
+    bestBox: document.getElementById('best-score-box'),
+    progressLabel: document.getElementById('progress-label'),
+    progressScore: document.getElementById('progress-score'),
+    progressFill: document.getElementById('progress-fill'),
+    qCategory: document.getElementById('q-category'),
+    qPrompt: document.getElementById('q-prompt'),
+    qOptions: document.getElementById('q-options'),
+    qFeedback: document.getElementById('q-feedback'),
+    btnAction: document.getElementById('btn-action'),
+    scoreRing: document.getElementById('score-ring'),
+    resultPct: document.getElementById('result-pct'),
+    resultFrac: document.getElementById('result-frac'),
+    resultVerdict: document.getElementById('result-verdict'),
+    resultTime: document.getElementById('result-time'),
+    catBreakdown: document.getElementById('cat-breakdown'),
+    btnRestart: document.getElementById('btn-restart'),
+    btnHome: document.getElementById('btn-home'),
+    btnToggleReview: document.getElementById('btn-toggle-review'),
+    reviewSection: document.getElementById('review-section'),
+    reviewList: document.getElementById('review-list'),
+    attemptCounter: document.getElementById('attempt-counter'),
+    statReview: document.getElementById('stat-review'),
+    btnResetProgress: document.getElementById('btn-reset-progress'),
+    resultSub: document.getElementById('result-sub'),
+    resultWeak: document.getElementById('result-weak'),
+    btnReviewWeak: document.getElementById('btn-review-weak')
+  };
+
+  var state = { order:[], index:0, score:0, answered:false, selected:[], results:[], startTime:0, examMode:false, timerId:null, deadline:0 };
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function loadStorage(key){
+    try{ return JSON.parse(localStorage.getItem(key) || 'null'); }catch(e){ return null; }
+  }
+  function saveStorage(key, val){
+    try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+  }
+  function loadProgress(){ return loadStorage('bsquiz-progress') || {}; }
+  function saveProgress(p){ saveStorage('bsquiz-progress', p); }
+  function getPersistedWrongKeys(){
+    var progress = loadProgress();
+    return Object.keys(progress).filter(function(k){ return progress[k] === true; });
+  }
+  function reviewCount(){ return getPersistedWrongKeys().length; }
+
+  function showBestScore(){
+    var best = loadStorage('bsquiz-best');
+    var attempts = loadStorage('bsquiz-attempts') || 0;
+    els.attemptCounter.textContent = 'Tentative n°' + (attempts + 1);
+    if (best){
+      els.bestBox.hidden = false;
+      els.bestBox.textContent = 'Meilleur score : ' + best.pct + '% (' + best.frac + ') sur ' + attempts + ' tentative(s)';
+    }
+    var n = reviewCount();
+    els.statReview.textContent = n;
+    if (n > 0){
+      els.btnStartErrors.hidden = false;
+      els.btnStartErrors.textContent = 'Réviser uniquement mes ' + n + ' erreur' + (n > 1 ? 's' : '') + ' en cours';
+    } else {
+      els.btnStartErrors.hidden = true;
+    }
+
+    var examBest = loadStorage('bsquiz-exam-best');
+    var examAttempts = loadStorage('bsquiz-exam-attempts') || 0;
+    if (examBest){
+      els.examBestBox.hidden = false;
+      els.examBestBox.textContent = 'Mode Examen — meilleur résultat : ' + examBest.pct + '% (' + (examBest.passed ? 'réussi' : 'échoué') + '), ' + examAttempts + ' tentative(s)';
+    } else {
+      els.examBestBox.hidden = true;
+    }
+  }
+
+  function buildQuestionOrder(filterCats){
+    var progress = loadProgress();
+    var pool = BANK.filter(function(q){
+      return !filterCats || !filterCats.length || filterCats.indexOf(q.cat) !== -1;
+    });
+    var priority = pool.filter(function(q){ return progress[q.prompt] === true; });
+    var rest = pool.filter(function(q){ return progress[q.prompt] !== true; });
+    var ordered = shuffle(priority).concat(shuffle(rest));
+    return ordered.map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function buildOrderFromKeys(keys){
+    var pool = BANK.filter(function(q){ return keys.indexOf(q.prompt) !== -1; });
+    return shuffle(pool).map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function buildExamOrder(){
+    var pool = shuffle(BANK).slice(0, Math.min(EXAM_SIZE, BANK.length));
+    return pool.map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function stopExamTimer(){
+    if (state.timerId){ clearInterval(state.timerId); state.timerId = null; }
+    els.progressScore.style.color = '';
+    els.progressScore.style.fontWeight = '';
+  }
+
+  function updateExamTimer(){
+    var remaining = state.deadline - Date.now();
+    if (remaining <= 0){
+      stopExamTimer();
+      finishQuiz();
+      return;
+    }
+    var totalSec = Math.ceil(remaining / 1000);
+    var m = Math.floor(totalSec / 60);
+    var s = totalSec % 60;
+    els.progressScore.textContent = 'Temps : ' + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function startExamTimer(){
+    state.deadline = Date.now() + EXAM_TIME_MS;
+    els.progressScore.style.color = 'var(--danger)';
+    els.progressScore.style.fontWeight = '700';
+    updateExamTimer();
+    state.timerId = setInterval(updateExamTimer, 1000);
+  }
+
+  function startQuiz(opts){
+    opts = opts || {};
+    state.examMode = !!opts.exam;
+    if (state.examMode){
+      state.order = buildExamOrder();
+    } else if (opts.keys && opts.keys.length){
+      state.order = buildOrderFromKeys(opts.keys);
+    } else {
+      state.order = buildQuestionOrder(opts.cats || null);
+    }
+    state.filterCats = state.examMode ? null : (opts.cats || null);
+    state.index = 0;
+    state.score = 0;
+    state.results = [];
+    state.startTime = Date.now();
+    els.start.hidden = true;
+    els.themes.hidden = true;
+    els.result.hidden = true;
+    els.quiz.hidden = false;
+    stopExamTimer();
+    if (state.examMode) startExamTimer();
+    renderQuestion();
+  }
+
+  function categoryCounts(){
+    var counts = {};
+    Object.keys(CATS).forEach(function(k){ counts[k] = 0; });
+    BANK.forEach(function(q){ counts[q.cat]++; });
+    return counts;
+  }
+
+  function renderThemeList(){
+    var counts = categoryCounts();
+    els.themeList.innerHTML = Object.keys(CATS).map(function(k){
+      return '<li class="option" data-cat="' + k + '" style="justify-content:space-between; align-items:center;">' +
+        '<span class="txt">' + CATS[k] + '</span>' +
+        '<span class="mono" style="color:var(--ink-faint); font-size:0.8rem;">' + counts[k] + ' question' + (counts[k] > 1 ? 's' : '') + '</span></li>';
+    }).join('');
+    els.themeList.querySelectorAll('li').forEach(function(li){
+      li.addEventListener('click', function(){
+        startQuiz({ cats: [li.getAttribute('data-cat')] });
+      });
+    });
+  }
+
+  function currentQuestion(){
+    var entry = state.order[state.index];
+    var q = BANK.filter(function(b){ return b.prompt === entry.key; })[0];
+    return { q: q, key: entry.key, optOrder: entry.optOrder };
+  }
+
+  function renderQuestion(){
+    state.answered = false;
+    state.selected = [];
+    var cur = currentQuestion();
+    var q = cur.q;
+
+    els.progressLabel.textContent = 'Question ' + (state.index + 1) + ' / ' + state.order.length;
+    if (!state.examMode) els.progressScore.textContent = 'Score : ' + state.score;
+    els.progressFill.style.width = (state.index / state.order.length * 100) + '%';
+
+    els.qCategory.innerHTML = CATS[q.cat] + '<span class="q-type">· ' + (q.type === 'multi' ? 'plusieurs réponses possibles' : 'une seule réponse') + '</span>';
+    els.qPrompt.textContent = q.prompt;
+    els.qFeedback.innerHTML = '';
+    els.qOptions.innerHTML = '';
+
+    cur.optOrder.forEach(function(origIdx, pos){
+      var li = document.createElement('li');
+      li.className = 'option';
+      var letter = String.fromCharCode(65 + pos);
+      var inputType = q.type === 'multi' ? 'checkbox' : 'radio';
+      var inputId = 'opt-' + pos;
+      li.innerHTML = '<input type="' + inputType + '" name="answer" id="' + inputId + '" value="' + origIdx + '">' +
+                      '<span class="letter">' + letter + '</span>' +
+                      '<label class="txt" for="' + inputId + '">' + q.options[origIdx] + '</label>';
+      var input = li.querySelector('input');
+      li.addEventListener('click', function(e){
+        if (state.answered) return;
+        if (e.target === input || e.target.tagName === 'LABEL') return;
+        input.click();
+      });
+      input.addEventListener('change', onSelectionChange);
+      els.qOptions.appendChild(li);
+    });
+
+    els.btnAction.textContent = state.examMode ? 'Valider et continuer' : 'Valider ma réponse';
+    els.btnAction.disabled = true;
+    els.btnAction.onclick = validateAnswer;
+  }
+
+  function onSelectionChange(){
+    var inputs = els.qOptions.querySelectorAll('input');
+    var sel = [];
+    inputs.forEach(function(inp){
+      inp.closest('.option').classList.toggle('is-selected', inp.checked);
+      if (inp.checked) sel.push(parseInt(inp.value, 10));
+    });
+    state.selected = sel;
+    els.btnAction.disabled = sel.length === 0;
+  }
+
+  function arraysEqualAsSets(a, b){
+    if (a.length !== b.length) return false;
+    var as = a.slice().sort();
+    var bs = b.slice().sort();
+    return as.every(function(v, i){ return v === bs[i]; });
+  }
+
+  function validateAnswer(){
+    if (state.answered){ nextStep(); return; }
+    state.answered = true;
+    var cur = currentQuestion();
+    var q = cur.q;
+    var isCorrect = arraysEqualAsSets(state.selected, q.correct);
+    if (isCorrect) state.score++;
+
+    if (!state.examMode){
+      var progress = loadProgress();
+      progress[cur.key] = !isCorrect;
+      saveProgress(progress);
+    }
+
+    state.results.push({
+      prompt: q.prompt, cat: q.cat, isCorrect: isCorrect,
+      given: state.selected.map(function(i){ return q.options[i]; }),
+      correct: q.correct.map(function(i){ return q.options[i]; }),
+      explain: q.explain
+    });
+
+    if (state.examMode){
+      nextStep();
+      return;
+    }
+
+    var inputs = els.qOptions.querySelectorAll('input');
+    inputs.forEach(function(inp){
+      var idx = parseInt(inp.value, 10);
+      var opt = inp.closest('.option');
+      inp.disabled = true;
+      if (q.correct.indexOf(idx) !== -1) opt.classList.add('is-correct');
+      else if (inp.checked) opt.classList.add('is-wrong');
+    });
+
+    els.qFeedback.innerHTML =
+      '<div class="feedback ' + (isCorrect ? 'correct' : 'wrong') + '">' +
+      '<span class="head">' + (isCorrect ? 'Bonne réponse' : 'Réponse incorrecte') + '</span>' +
+      '<p>' + q.explain + '</p></div>';
+
+    els.progressScore.textContent = 'Score : ' + state.score;
+    els.btnAction.textContent = (state.index === state.order.length - 1) ? 'Voir mes résultats' : 'Question suivante';
+  }
+
+  function nextStep(){
+    state.index++;
+    if (state.index >= state.order.length){ finishQuiz(); return; }
+    renderQuestion();
+  }
+
+  function finishQuiz(){
+    stopExamTimer();
+    els.quiz.hidden = true;
+    els.result.hidden = false;
+    els.progressFill.style.width = '100%';
+
+    var total = state.order.length;
+    var pct = Math.round(state.score / total * 100);
+    els.scoreRing.style.setProperty('--pct', pct);
+    els.resultPct.textContent = pct + '%';
+    els.resultFrac.textContent = state.score + ' / ' + total;
+
+    if (state.examMode){
+      var passed = pct >= EXAM_PASS_PCT;
+      els.examVerdictBox.hidden = false;
+      els.examVerdictBox.textContent = passed ?
+        'RÉUSSI — seuil de réussite atteint (≥ ' + EXAM_PASS_PCT + '%)' :
+        'ÉCHOUÉ — seuil de réussite non atteint (< ' + EXAM_PASS_PCT + '%)';
+      els.examVerdictBox.style.background = passed ? 'var(--ok-soft)' : 'var(--danger-soft)';
+      els.examVerdictBox.style.color = passed ? 'var(--ok)' : 'var(--danger)';
+    } else {
+      els.examVerdictBox.hidden = true;
+    }
+
+    var verdict, sub;
+    if (pct === 100){ verdict = 'Score parfait !'; sub = "Toutes les notions sont acquises — direction l'examen."; }
+    else if (pct >= 85){ verdict = 'Excellent niveau.'; sub = 'Encore quelques détails à consolider.'; }
+    else if (pct >= 60){ verdict = 'Bonne base.'; sub = "Un peu d'entraînement ciblé et c'est bon."; }
+    else { verdict = 'À retravailler.'; sub = 'Relis la fiche de révision, puis reviens sur ces thèmes.'; }
+    els.resultVerdict.textContent = verdict;
+    els.resultSub.textContent = sub;
+    els.resultTime.textContent = 'Temps : ' + formatTime(Date.now() - state.startTime);
+
+    var byCat = {};
+    Object.keys(CATS).forEach(function(k){ byCat[k] = { correct:0, total:0 }; });
+    state.results.forEach(function(r){
+      byCat[r.cat].total++;
+      if (r.isCorrect) byCat[r.cat].correct++;
+    });
+    els.catBreakdown.innerHTML = Object.keys(CATS).filter(function(k){ return byCat[k].total > 0; }).map(function(k){
+      var c = byCat[k];
+      var p = c.total ? Math.round(c.correct / c.total * 100) : 0;
+      return '<div class="cat-row"><span class="name">' + CATS[k] + '</span>' +
+        '<span class="bar"><span style="width:' + p + '%; background:' + (p >= 70 ? 'var(--ok)' : p >= 40 ? 'var(--accent)' : 'var(--danger)') + '"></span></span>' +
+        '<span class="frac mono">' + c.correct + '/' + c.total + '</span></div>';
+    }).join('');
+
+    var weakCats = Object.keys(CATS).filter(function(k){ return byCat[k].total > 0 && byCat[k].correct < byCat[k].total; });
+    weakCats.sort(function(a, b){
+      return (byCat[a].correct / byCat[a].total) - (byCat[b].correct / byCat[b].total);
+    });
+    var weakNames = weakCats.map(function(k){ return CATS[k]; });
+    var persistedWrong = getPersistedWrongKeys();
+
+    els.resultWeak.textContent = weakNames.length ? ('À revoir en priorité : ' + weakNames.join(', ') + '.') : (state.filterCats ? 'Thème maîtrisé !' : 'Tous les thèmes sont maîtrisés !');
+    if (persistedWrong.length){
+      els.btnReviewWeak.hidden = false;
+      els.btnReviewWeak.textContent = 'Réviser mes ' + persistedWrong.length + ' erreur' + (persistedWrong.length > 1 ? 's' : '') + ' en cours';
+    } else {
+      els.btnReviewWeak.hidden = true;
+    }
+
+    var wrong = state.results.filter(function(r){ return !r.isCorrect; });
+    els.reviewList.innerHTML = wrong.length ? wrong.map(function(r){
+      return '<div class="review-item"><div class="q">' + r.prompt + '</div>' +
+        '<div class="a">Ta réponse : <strong>' + (r.given.join(', ') || '—') + '</strong></div>' +
+        '<div class="a">Bonne réponse : <strong>' + r.correct.join(', ') + '</strong></div>' +
+        '<div class="a">' + r.explain + '</div></div>';
+    }).join('') : '<p style="color:var(--ink-soft);">Aucune erreur — rien à revoir !</p>';
+
+    if (state.examMode){
+      var examAttempts = (loadStorage('bsquiz-exam-attempts') || 0) + 1;
+      saveStorage('bsquiz-exam-attempts', examAttempts);
+      var examBest = loadStorage('bsquiz-exam-best');
+      if (!examBest || pct > examBest.pct){
+        saveStorage('bsquiz-exam-best', { pct: pct, passed: pct >= EXAM_PASS_PCT });
+      }
+    } else {
+      var attempts = (loadStorage('bsquiz-attempts') || 0) + 1;
+      saveStorage('bsquiz-attempts', attempts);
+      var best = loadStorage('bsquiz-best');
+      if (!best || pct > best.pct){
+        saveStorage('bsquiz-best', { pct: pct, frac: state.score + '/' + total });
+      }
+    }
+  }
+
+  function formatTime(ms){
+    var s = Math.round(ms / 1000);
+    var m = Math.floor(s / 60);
+    var r = s % 60;
+    return m + ' min ' + (r < 10 ? '0' : '') + r + ' s';
+  }
+
+  els.btnStart.addEventListener('click', function(){ startQuiz(); });
+  els.btnStartExam.addEventListener('click', function(){ startQuiz({ exam:true }); });
+  els.btnStartErrors.addEventListener('click', function(){ startQuiz({ keys: getPersistedWrongKeys() }); });
+  els.btnReviewWeak.addEventListener('click', function(){ startQuiz({ keys: getPersistedWrongKeys() }); });
+  els.btnOpenThemes.addEventListener('click', function(){
+    renderThemeList();
+    els.start.hidden = true;
+    els.themes.hidden = false;
+  });
+  els.btnThemesBack.addEventListener('click', function(){
+    els.themes.hidden = true;
+    els.start.hidden = false;
+  });
+  function goHome(){
+    els.reviewSection.hidden = true;
+    els.btnToggleReview.textContent = 'Revoir mes erreurs';
+    showBestScore();
+    els.quiz.hidden = true;
+    els.themes.hidden = true;
+    els.result.hidden = true;
+    els.start.hidden = false;
+  }
+  els.btnRestart.addEventListener('click', goHome);
+  els.btnHome.addEventListener('click', goHome);
+  els.btnToggleReview.addEventListener('click', function(){
+    els.reviewSection.hidden = !els.reviewSection.hidden;
+    els.btnToggleReview.textContent = els.reviewSection.hidden ? 'Revoir mes erreurs' : 'Masquer mes erreurs';
+  });
+  els.btnResetProgress.addEventListener('click', function(){
+    try{ localStorage.removeItem('bsquiz-progress'); }catch(e){}
+    showBestScore();
+  });
+
+  showBestScore();
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>

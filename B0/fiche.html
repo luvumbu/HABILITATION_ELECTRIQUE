@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#14161a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/icons/favicon-16.png" type="image/png" sizes="16x16">
+<title>Habilitation B0</title>
+<style>
+  :root{
+    --bg:#f7f6f1;
+    --surface:#ffffff;
+    --surface-2:#f0eee6;
+    --ink:#15181d;
+    --ink-soft:#565c66;
+    --ink-faint:#8a8f99;
+    --accent:#b7790a;
+    --accent-soft:#fbe9c6;
+    --danger:#a3271e;
+    --danger-soft:#f7e1de;
+    --ok:#1f6d4c;
+    --ok-soft:#dcece3;
+    --line:#e2ded2;
+    --shadow: 0 1px 2px rgba(20,17,10,0.06), 0 8px 24px -12px rgba(20,17,10,0.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161a;
+      --surface:#1b1e24;
+      --surface-2:#20242b;
+      --ink:#ecebe6;
+      --ink-soft:#a7adb8;
+      --ink-faint:#6e7480;
+      --accent:#f0b42d;
+      --accent-soft:#3a2c0c;
+      --danger:#e5726a;
+      --danger-soft:#3a1c19;
+      --ok:#5fc298;
+      --ok-soft:#153327;
+      --line:#2b2f37;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a;
+    --surface:#1b1e24;
+    --surface-2:#20242b;
+    --ink:#ecebe6;
+    --ink-soft:#a7adb8;
+    --ink-faint:#6e7480;
+    --accent:#f0b42d;
+    --accent-soft:#3a2c0c;
+    --danger:#e5726a;
+    --danger-soft:#3a1c19;
+    --ok:#5fc298;
+    --ok-soft:#153327;
+    --line:#2b2f37;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  *{box-sizing:border-box;}
+  html, body{ margin:0; padding:0; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Source Serif 4', Georgia, 'Times New Roman', serif;
+    line-height:1.6;
+    padding-inline:20px;
+    padding-block:32px 80px;
+  }
+  ::selection{ background:var(--accent-soft); }
+
+  .page{
+    max-width:760px;
+    margin-inline:auto;
+  }
+
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, Consolas, monospace; }
+
+  a{ color:var(--accent); }
+
+  /* ---------- Masthead ---------- */
+  .masthead{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    padding-block:0 28px;
+    border-bottom:3px solid var(--ink);
+    margin-bottom:28px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+  }
+  h1.title{
+    font-family:'Big Shoulders Display', 'Arial Narrow', sans-serif;
+    font-weight:800;
+    font-size:clamp(2.6rem, 9vw, 4.2rem);
+    line-height:0.92;
+    letter-spacing:0.005em;
+    margin:0;
+    text-wrap:balance;
+  }
+  .subtitle{
+    color:var(--ink-soft);
+    font-size:1.05rem;
+    max-width:48ch;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:6px;
+  }
+  .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.03em;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    background:var(--surface);
+  }
+
+  /* ---------- TOC ---------- */
+  nav.toc{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 20px;
+    margin-bottom:40px;
+    box-shadow:var(--shadow);
+  }
+  nav.toc h2{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin:0 0 10px;
+    font-weight:600;
+  }
+  nav.toc ol{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px 20px;
+  }
+  @media (max-width:520px){
+    nav.toc ol{ grid-template-columns:1fr; }
+  }
+  nav.toc a{
+    display:flex;
+    gap:8px;
+    align-items:baseline;
+    color:var(--ink);
+    text-decoration:none;
+    font-size:0.92rem;
+    padding-block:2px;
+    border-bottom:1px solid transparent;
+  }
+  nav.toc a:hover{ border-bottom-color:var(--accent); }
+  nav.toc a .n{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--accent);
+    font-size:0.8rem;
+    flex:none;
+  }
+
+  /* ---------- Sections ---------- */
+  section.block{
+    padding-block:34px;
+    border-bottom:1px solid var(--line);
+    scroll-margin-top:20px;
+  }
+  section.block:last-of-type{ border-bottom:none; }
+
+  .block-head{
+    display:flex;
+    align-items:baseline;
+    gap:16px;
+    margin-bottom:14px;
+  }
+  .block-num{
+    font-family:'Big Shoulders Display', sans-serif;
+    font-weight:800;
+    font-size:2.6rem;
+    color:var(--accent);
+    line-height:1;
+    flex:none;
+  }
+  h2.block-title{
+    font-family:'Big Shoulders Display', sans-serif;
+    font-weight:700;
+    font-size:1.7rem;
+    letter-spacing:0.01em;
+    margin:0;
+    text-wrap:balance;
+  }
+
+  section.block p{ margin:0 0 12px; max-width:66ch; }
+  section.block ul{ margin:0 0 12px; padding-left:1.3em; }
+  section.block li{ margin-bottom:6px; max-width:64ch; }
+  section.block li::marker{ color:var(--accent); }
+
+  strong{ color:var(--ink); }
+
+  /* ---------- Callouts ---------- */
+  .callout{
+    border-radius:8px;
+    padding:14px 16px;
+    margin:14px 0;
+    border-left:4px solid var(--line);
+    background:var(--surface-2);
+    font-size:0.96rem;
+  }
+  .callout p{ margin:0; }
+  .callout p + p{ margin-top:8px; }
+  .callout .k{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    font-weight:600;
+    display:block;
+    margin-bottom:4px;
+  }
+  .callout--ok{ border-left-color:var(--ok); background:var(--ok-soft); }
+  .callout--ok .k{ color:var(--ok); }
+  .callout--no{ border-left-color:var(--danger); background:var(--danger-soft); }
+  .callout--no .k{ color:var(--danger); }
+  .callout--info{ border-left-color:var(--accent); background:var(--accent-soft); }
+  .callout--info .k{ color:var(--accent); }
+
+  /* ---------- Tables ---------- */
+  .table-wrap{ overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:8px; }
+  table{ width:100%; border-collapse:collapse; font-size:0.92rem; min-width:420px; }
+  thead th{
+    text-align:left;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    background:var(--surface-2);
+    padding:10px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  tbody td{
+    padding:10px 14px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  tbody tr:last-child td{ border-bottom:none; }
+  td .mono, th .mono{ font-variant-numeric: tabular-nums; }
+  .code{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:600;
+    color:var(--accent);
+    background:var(--accent-soft);
+    padding:1px 6px;
+    border-radius:4px;
+    font-size:0.88em;
+  }
+
+  /* ---------- Steps (accident) ---------- */
+  ol.steps{
+    list-style:none;
+    margin:14px 0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  ol.steps li{
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 16px;
+  }
+  ol.steps .idx{
+    font-family:'Big Shoulders Display', sans-serif;
+    font-weight:800;
+    font-size:1.6rem;
+    color:var(--accent);
+    line-height:1;
+    flex:none;
+    min-width:1.4rem;
+  }
+
+  /* ---------- Resource links ---------- */
+  .resource-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin:14px 0;
+  }
+  @media (max-width:520px){ .resource-grid{ grid-template-columns:1fr; } }
+  .resource-card{
+    display:block;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 18px;
+    text-decoration:none;
+    background:var(--surface);
+    transition:border-color .12s ease;
+  }
+  .resource-card:hover{ border-color:var(--accent); }
+  .resource-card .rk{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--accent); font-weight:600; display:block; margin-bottom:6px;
+  }
+  .resource-card .rt{
+    font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:1.2rem; color:var(--ink);
+  }
+
+  footer.foot{
+    margin-top:40px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+    color:var(--ink-faint);
+    font-size:0.82rem;
+    font-family:'IBM Plex Mono', monospace;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  footer.foot a{ color:var(--ink-faint); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="masthead">
+    <span class="eyebrow">Fiche de révision — Norme NF C18-510</span>
+    <h1 class="title">Habilitation B0</h1>
+    <p class="subtitle">Programme complet pour le personnel non-électricien travaillant en environnement électrique. Objectif&nbsp;: préparation à l'examen.</p>
+    <div class="meta-row">
+      <span class="tag">Non-électricien</span>
+      <span class="tag">BT / TBT</span>
+      <span class="tag">9 sections</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Sommaire">
+    <h2>Sommaire</h2>
+    <ol>
+      <li><a href="#s1"><span class="n">01</span> Rôle et périmètre</a></li>
+      <li><a href="#s2"><span class="n">02</span> Vocabulaire clé</a></li>
+      <li><a href="#s3"><span class="n">03</span> Domaines de tension</a></li>
+      <li><a href="#s4"><span class="n">04</span> Zones et distances</a></li>
+      <li><a href="#s5"><span class="n">05</span> Risques électriques</a></li>
+      <li><a href="#s6"><span class="n">06</span> Équipements de protection</a></li>
+      <li><a href="#s7"><span class="n">07</span> Documents</a></li>
+      <li><a href="#s8"><span class="n">08</span> Conduite en cas d'accident</a></li>
+      <li><a href="#s9"><span class="n">09</span> Pièges à l'examen</a></li>
+    </ol>
+  </nav>
+
+  <section class="block" id="s1">
+    <div class="block-head">
+      <span class="block-num">01</span>
+      <h2 class="block-title">Rôle et périmètre du B0</h2>
+    </div>
+    <p><strong>Qui est concerné&nbsp;:</strong> le personnel non-électricien devant accéder à des locaux électriques ou travailler à proximité d'installations électriques dans le cadre de tâches non électriques — chefs de chantier tous corps d'état, peintres, agents d'entretien, gardiens, personnel de manutention, etc.</p>
+
+    <div class="callout callout--ok">
+      <span class="k">Le B0 a le droit de</span>
+      <p>Exécuter des opérations d'ordre <strong>non électrique</strong> (nettoyage, peinture, maçonnerie, manutention…) dans un environnement à risque électrique · accéder à des locaux réservés aux électriciens · diriger un chantier de non-électriciens en tant que <strong>chargé de chantier</strong> · signaler toute anomalie ou tout danger constaté (fil dénudé, prise cassée…) sans jamais y toucher.</p>
+    </div>
+
+    <div class="callout callout--no">
+      <span class="k">Le B0 n'a jamais le droit de</span>
+      <p>Réaliser une opération d'ordre électrique, même « simple » (changer un fusible → rôle du <span class="code">BS</span>) · franchir la <span class="code">DMA</span> (0,30 m) sans être électricien habilité · ouvrir une armoire électrique ou retirer un obstacle/écran de protection.</p>
+    </div>
+
+    <div class="callout callout--info">
+      <span class="k">Pas de « B0V »</span>
+      <p>Contrairement au H0 qui a une variante <span class="code">H0V</span> pour le voisinage renforcé HT, le B0 n'a <strong>aucune</strong> variante « V » : le voisinage est interdit pour les travaux d'ordre non électrique en basse tension. Seul <span class="code">B0</span> existe — ne pas confondre avec « B0V », qui n'est pas un symbole valide.</p>
+    </div>
+  </section>
+
+  <section class="block" id="s2">
+    <div class="block-head">
+      <span class="block-num">02</span>
+      <h2 class="block-title">Vocabulaire à maîtriser par cœur</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Terme</th><th>Définition</th></tr></thead>
+        <tbody>
+          <tr><td>Ouvrage / installation électrique</td><td>Ensemble des matériels électriques d'un site</td></tr>
+          <tr><td>Personne avertie</td><td>Sensibilisée aux risques électriques, pas forcément électricienne</td></tr>
+          <tr><td>Personne qualifiée</td><td>Possède des compétences techniques électriques</td></tr>
+          <tr><td>Chargé d'exploitation électrique</td><td>Responsable de l'installation, délivre les autorisations</td></tr>
+          <tr><td>Chargé de consignation</td><td>Réalise la consignation d'un ouvrage</td></tr>
+          <tr><td>Chargé de travaux</td><td>Dirige des travaux électriques</td></tr>
+          <tr><td><strong>Chargé de chantier</strong></td><td>Rôle typique du B0&nbsp;: dirige une équipe de non-électriciens</td></tr>
+          <tr><td>Local réservé aux électriciens</td><td>Accès limité aux personnes habilitées, en raison du risque électrique qu'il présente</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block" id="s3">
+    <div class="block-head">
+      <span class="block-num">03</span>
+      <h2 class="block-title">Domaines de tension</h2>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Domaine</th><th>Plage (courant alternatif)</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">TBT</td><td class="mono">U ≤ 50 V</td></tr>
+          <tr><td class="mono">BT</td><td class="mono">50 V &lt; U ≤ 1000 V <span style="font-family:'Source Serif 4',serif; color:var(--ink-soft);">— le 230/400 V domestique (pas de sous-domaine BTA/BTB dans la norme actuelle)</span></td></tr>
+          <tr><td class="mono">HTA</td><td class="mono">1 kV &lt; U ≤ 50 kV</td></tr>
+          <tr><td class="mono">HTB</td><td class="mono">U &gt; 50 kV</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block" id="s4">
+    <div class="block-head">
+      <span class="block-num">04</span>
+      <h2 class="block-title">Zones et distances de sécurité</h2>
+    </div>
+    <ul>
+      <li><strong>DMA</strong> (Distance Minimale d'Approche) = <span class="code mono">0,30 m</span> en BT&nbsp;: le B0 ne doit jamais franchir cette limite vers une pièce nue sous tension.</li>
+      <li><strong>Zone de voisinage renforcé (BT)</strong>&nbsp;: au-delà de la DMA — totalement interdite au B0, réservée aux électriciens habilités (B1V, B2V, BC, BR, BS…), sans aucune exception ni variante « B0V ».</li>
+      <li><strong>DLI</strong> (Distance Limite d'Investigation) = <span class="code mono">50 m</span> d'une pièce nue sous tension en champ libre&nbsp;: au-delà, aucune habilitation n'est nécessaire.</li>
+    </ul>
+    <p style="color:var(--ink-soft); font-size:0.9rem;">Pour la HT, les distances sont plus grandes et variables selon le niveau de tension — moins central pour l'examen B0.</p>
+  </section>
+
+  <section class="block" id="s5">
+    <div class="block-head">
+      <span class="block-num">05</span>
+      <h2 class="block-title">Risques électriques</h2>
+    </div>
+    <ul>
+      <li><strong>Électrisation</strong>&nbsp;: passage du courant dans le corps · <strong>électrocution</strong>&nbsp;: électrisation mortelle</li>
+      <li>Effets&nbsp;: tétanisation (impossibilité de lâcher), brûlures internes et externes, fibrillation cardiaque, arrêt respiratoire</li>
+      <li>Facteurs de gravité&nbsp;: intensité, trajet du courant dans le corps, durée de contact, résistance du corps</li>
+      <li>Risques indirects&nbsp;: <strong>arc électrique</strong> (brûlures, projections, effet de souffle), incendie, explosion</li>
+      <li><strong>Humidité</strong>&nbsp;: l'eau est conductrice et diminue la résistance du corps — un milieu humide (pluie, sol mouillé) aggrave le risque</li>
+    </ul>
+    <div class="callout callout--no">
+      <span class="k">Feu d'origine électrique</span>
+      <p>Ne jamais utiliser d'<strong>eau</strong> ni de <strong>mousse</strong> (conductrices) — utiliser un extincteur <span class="code">CO2</span> ou à poudre. Pictogramme du risque&nbsp;: éclair noir sur fond triangulaire jaune.</p>
+    </div>
+  </section>
+
+  <section class="block" id="s6">
+    <div class="block-head">
+      <span class="block-num">06</span>
+      <h2 class="block-title">Équipements de protection</h2>
+    </div>
+    <ul>
+      <li><strong>EPI</strong>&nbsp;: casque, lunettes, chaussures de sécurité isolantes, vêtements adaptés (éviter le synthétique près d'un risque d'arc)</li>
+      <li><strong>EPC</strong> (collectifs)&nbsp;: balisage, nappes isolantes, écrans de protection — mis en place par les électriciens, le B0 doit les respecter sans les déplacer</li>
+    </ul>
+    <div class="callout callout--info">
+      <span class="k">Gants isolants</span>
+      <p>Ce ne sont <strong>pas</strong> un EPI du B0&nbsp;: il n'exécute aucune opération électrique, donc aucun contact prévu avec des pièces sous tension.</p>
+    </div>
+  </section>
+
+  <section class="block" id="s7">
+    <div class="block-head">
+      <span class="block-num">07</span>
+      <h2 class="block-title">Documents à connaître</h2>
+    </div>
+    <ul>
+      <li><strong>Titre d'habilitation</strong>&nbsp;: nominatif, non transférable, signé par l'employeur et le titulaire, durée limitée (recyclage recommandé tous les 3 ans, ou avant si changement de poste)</li>
+      <li><strong>Autorisation de travail / attestation de consignation</strong>&nbsp;: délivrée par le chargé de consignation si des travaux électriques ont lieu à proximité</li>
+      <li><strong>Plan de prévention</strong>&nbsp;: si intervention d'une entreprise extérieure</li>
+    </ul>
+  </section>
+
+  <section class="block" id="s8">
+    <div class="block-head">
+      <span class="block-num">08</span>
+      <h2 class="block-title">Conduite à tenir en cas d'accident électrique</h2>
+    </div>
+    <ol class="steps">
+      <li><span class="idx">1</span><span><strong>Protéger</strong> — couper le courant si possible sans se mettre en danger&nbsp;; sinon, dégager la victime avec un objet isolant (jamais de contact direct)</span></li>
+      <li><span class="idx">2</span><span><strong>Examiner</strong> l'état de la victime</span></li>
+      <li><span class="idx">3</span><span><strong>Alerter</strong> les secours (15 / 18 / 112 ou numéro interne)</span></li>
+      <li><span class="idx">4</span><span><strong>Secourir</strong> si formé (PLS, RCP…)</span></li>
+    </ol>
+  </section>
+
+  <section class="block" id="s9">
+    <div class="block-head">
+      <span class="block-num">09</span>
+      <h2 class="block-title">Pièges classiques à l'examen</h2>
+    </div>
+    <ul>
+      <li>Croire qu'il existe un « B0V » comme il existe un H0V — <strong>faux, ça n'existe pas</strong>, le B0 reste toujours hors de la zone de voisinage renforcé</li>
+      <li>Croire que le B0 peut faire une opération électrique « mineure » — <strong>faux, toujours interdit</strong></li>
+      <li>Le titre d'habilitation n'est <strong>pas un diplôme</strong>, c'est une reconnaissance de l'employeur</li>
+      <li>Le titulaire a le droit de <strong>refuser</strong> une tâche s'il juge sa sécurité compromise</li>
+    </ul>
+  </section>
+
+  <section class="block" style="border-bottom:none;">
+    <div class="block-head">
+      <h2 class="block-title" style="font-size:1.2rem; color:var(--ink-faint);">S'entraîner</h2>
+    </div>
+    <div class="resource-grid">
+      <a class="resource-card" href="quiz.html">
+        <span class="rk">Quiz</span>
+        <span class="rt">Mega Quiz B0 →</span>
+      </a>
+      <a class="resource-card" href="memo.html">
+        <span class="rk">Révision express</span>
+        <span class="rt">Fiches Mémo →</span>
+      </a>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Habilitation B0 — NF C18-510</span>
+    <span><a href="../index.html">← Retour au menu principal</a></span>
+  </footer>
+
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>

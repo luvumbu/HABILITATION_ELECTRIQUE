@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#14161a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/icons/favicon-16.png" type="image/png" sizes="16x16">
+<title>Mega Quiz B0</title>
+<style>
+  :root{
+    --bg:#f7f6f1;
+    --surface:#ffffff;
+    --surface-2:#f0eee6;
+    --ink:#15181d;
+    --ink-soft:#565c66;
+    --ink-faint:#8a8f99;
+    --accent:#b7790a;
+    --accent-soft:#fbe9c6;
+    --danger:#a3271e;
+    --danger-soft:#f7e1de;
+    --ok:#1f6d4c;
+    --ok-soft:#dcece3;
+    --line:#e2ded2;
+    --shadow: 0 1px 2px rgba(20,17,10,0.06), 0 12px 30px -14px rgba(20,17,10,0.16);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+      --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+      --accent:#f0b42d; --accent-soft:#3a2c0c;
+      --danger:#e5726a; --danger-soft:#3a1c19;
+      --ok:#5fc298; --ok-soft:#153327;
+      --line:#2b2f37;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 30px -14px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+    --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+    --accent:#f0b42d; --accent-soft:#3a2c0c;
+    --danger:#e5726a; --danger-soft:#3a1c19;
+    --ok:#5fc298; --ok-soft:#153327;
+    --line:#2b2f37;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 30px -14px rgba(0,0,0,0.6);
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  *{ box-sizing:border-box; }
+  html, body{ margin:0; padding:0; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Source Serif 4', Georgia, serif;
+    line-height:1.55;
+    padding-inline:18px;
+    padding-block:28px 60px;
+  }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, Consolas, monospace; }
+  .page{ max-width:640px; margin-inline:auto; }
+
+  /* header */
+  .masthead{ margin-bottom:22px; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--accent); font-weight:600;
+  }
+  h1.title{
+    font-family:'Big Shoulders Display', sans-serif; font-weight:800;
+    font-size:clamp(2.2rem, 8vw, 3.2rem); line-height:0.92; margin:4px 0 6px; text-wrap:balance;
+  }
+  .subtitle{ color:var(--ink-soft); font-size:1rem; max-width:52ch; }
+
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:24px; box-shadow:var(--shadow);
+  }
+  @media (max-width:480px){ .card{ padding:18px; } }
+
+  /* ---- start screen ---- */
+  .stat-row{ display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 20px; }
+  .stat{
+    flex:1; min-width:120px; background:var(--surface-2); border:1px solid var(--line);
+    border-radius:10px; padding:12px 14px;
+  }
+  .stat .num{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:1.8rem; color:var(--accent); line-height:1; }
+  .stat .lab{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); }
+
+  .best-score{
+    font-family:'IBM Plex Mono', monospace; font-size:0.85rem; color:var(--ink-soft);
+    background:var(--accent-soft); border-radius:8px; padding:10px 14px; margin-bottom:18px;
+  }
+
+  button.primary{
+    font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:0.95rem; letter-spacing:0.02em;
+    background:var(--ink); color:var(--bg); border:none; border-radius:9px;
+    padding:14px 22px; cursor:pointer; width:100%;
+    transition:transform .12s ease, opacity .12s ease;
+  }
+  button.primary:hover{ opacity:0.88; }
+  button.primary:active{ transform:scale(0.98); }
+  button.primary:disabled{ opacity:0.4; cursor:not-allowed; }
+  button.primary:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+
+  button.ghost{
+    font-family:'IBM Plex Mono', monospace; font-size:0.82rem; letter-spacing:0.02em;
+    background:transparent; color:var(--ink-soft); border:1px solid var(--line); border-radius:9px;
+    padding:10px 16px; cursor:pointer;
+  }
+  button.ghost:hover{ border-color:var(--ink-soft); color:var(--ink); }
+  button.ghost:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+
+  button.exam{
+    font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:0.95rem; letter-spacing:0.02em;
+    background:var(--surface); color:var(--ink); border:2px solid var(--ink); border-radius:9px;
+    padding:13px 22px; cursor:pointer; width:100%;
+  }
+  button.exam:hover{ background:var(--accent-soft); border-color:var(--accent); }
+  button.exam:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+
+  /* ---- quiz screen ---- */
+  .progress-wrap{ margin-bottom:18px; }
+  .progress-meta{
+    display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--ink-faint); letter-spacing:0.04em;
+  }
+  .progress-track{ height:6px; background:var(--surface-2); border-radius:999px; overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--accent); border-radius:999px; transition:width .3s ease; }
+
+  .cat-tag{
+    display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--accent); background:var(--accent-soft);
+    padding:3px 9px; border-radius:999px; margin-bottom:10px; font-weight:600;
+  }
+  .q-type{ color:var(--ink-faint); font-weight:400; text-transform:none; letter-spacing:0; margin-left:6px; }
+
+  h2.question{
+    font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:1.5rem;
+    line-height:1.15; margin:0 0 16px; text-wrap:balance;
+  }
+
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; list-style:none; padding:0; }
+  .option{
+    display:flex; align-items:flex-start; gap:12px; border:1.5px solid var(--line); border-radius:10px;
+    padding:12px 14px; cursor:pointer; background:var(--surface); transition:border-color .12s ease, background .12s ease;
+  }
+  .option:hover{ border-color:var(--accent); }
+  .option input{ margin-top:3px; accent-color:var(--accent); width:17px; height:17px; flex:none; }
+  .option .letter{
+    font-family:'IBM Plex Mono', monospace; font-weight:600; color:var(--ink-faint); flex:none; width:1.1em;
+  }
+  .option .txt{ flex:1; }
+  .option.is-selected{ border-color:var(--accent); background:var(--accent-soft); }
+  .option.is-selected .letter{ color:var(--accent); }
+  .option.is-correct{ border-color:var(--ok); background:var(--ok-soft); }
+  .option.is-wrong{ border-color:var(--danger); background:var(--danger-soft); }
+  .option:has(input:focus-visible){ outline:3px solid var(--accent); outline-offset:2px; }
+
+  .feedback{
+    border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:0.94rem; border-left:4px solid var(--line);
+  }
+  .feedback.correct{ background:var(--ok-soft); border-left-color:var(--ok); }
+  .feedback.wrong{ background:var(--danger-soft); border-left-color:var(--danger); }
+  .feedback .head{
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; letter-spacing:0.05em; text-transform:uppercase;
+    font-weight:700; display:block; margin-bottom:6px;
+  }
+  .feedback.correct .head{ color:var(--ok); }
+  .feedback.wrong .head{ color:var(--danger); }
+  .feedback p{ margin:0; }
+
+  /* ---- result screen ---- */
+  .score-ring{
+    width:168px; height:168px; border-radius:50%; margin:6px auto 18px; position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .score-ring::before{
+    content:""; position:absolute; inset:0; border-radius:50%;
+    background: conic-gradient(var(--accent) calc(var(--pct,0) * 1%), var(--surface-2) 0);
+  }
+  .score-ring::after{
+    content:""; position:absolute; inset:10px; border-radius:50%; background:var(--surface);
+  }
+  .score-ring .val{
+    position:relative; z-index:1; text-align:center; font-family:'Big Shoulders Display', sans-serif;
+  }
+  .score-ring .val .pct{ font-size:2.6rem; font-weight:800; line-height:1; }
+  .score-ring .val .frac{ font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--ink-soft); }
+
+  .verdict{ text-align:center; font-size:1.05rem; margin-bottom:6px; }
+  .verdict-sub{ text-align:center; color:var(--ink-soft); font-size:0.9rem; margin-bottom:20px; }
+
+  .cat-breakdown{ display:flex; flex-direction:column; gap:8px; margin-bottom:22px; }
+  .cat-row{ display:flex; align-items:center; gap:10px; }
+  .cat-row .name{ width:132px; flex:none; font-size:0.85rem; color:var(--ink-soft); }
+  .cat-row .bar{ flex:1; height:8px; background:var(--surface-2); border-radius:999px; overflow:hidden; }
+  .cat-row .bar > span{ display:block; height:100%; background:var(--ok); border-radius:999px; }
+  .cat-row .frac{ font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--ink-faint); width:38px; text-align:right; flex:none; }
+
+  .review{ margin-top:24px; }
+  .review h3{
+    font-family:'Big Shoulders Display', sans-serif; font-size:1.2rem; margin:0 0 12px;
+  }
+  .review-item{
+    border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:10px; background:var(--surface-2);
+  }
+  .review-item .q{ font-weight:600; margin-bottom:6px; }
+  .review-item .a{ font-size:0.9rem; color:var(--ink-soft); margin:2px 0; }
+  .review-item .a strong{ color:var(--ink); }
+
+  .action-row{ display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+  .action-row button{ flex:1; min-width:150px; }
+
+  footer.foot{
+    margin-top:32px; padding-top:16px; border-top:1px solid var(--line); color:var(--ink-faint);
+    font-size:0.78rem; font-family:'IBM Plex Mono', monospace; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <img src="../img/quiz-banner.png" alt="" width="900" height="380" style="display:block; width:100%; max-width:380px; margin:0 auto 10px; height:auto;">
+  <header class="masthead">
+    <span class="eyebrow">Entraînement — 108 questions</span>
+    <h1 class="title">Mega Quiz B0</h1>
+    <p class="subtitle">Toutes les notions du programme B0 passées au crible. Réponds seul(e), sans regarder la fiche — c'est comme ça qu'on repère ce qui n'est pas encore acquis.</p>
+  </header>
+
+  <section id="screen-start" class="card">
+    <div class="stat-row">
+      <div class="stat"><div class="num">108</div><div class="lab">Questions</div></div>
+      <div class="stat"><div class="num">10</div><div class="lab">Thèmes</div></div>
+      <div class="stat"><div class="num" id="stat-review">0</div><div class="lab">À revoir</div></div>
+    </div>
+    <div id="best-score-box" class="best-score" hidden></div>
+    <p style="color:var(--ink-soft); font-size:0.92rem; margin-bottom:6px;">Certaines questions ont <strong>plusieurs bonnes réponses</strong> — c'est précisé à chaque fois.</p>
+    <p style="color:var(--ink-soft); font-size:0.92rem; margin-bottom:18px;">Les questions ratées reviennent <strong>en priorité</strong> au prochain essai, les autres suivent dans un ordre aléatoire — jamais deux fois le même enchaînement.</p>
+    <button class="primary" id="btn-start">Test complet (108 questions)</button>
+    <button class="primary" id="btn-start-errors" hidden style="width:100%; margin-top:10px;">Réviser uniquement mes erreurs</button>
+    <button class="ghost" id="btn-open-themes" style="width:100%; margin-top:10px;">Réviser un thème précis</button>
+    <button class="exam" id="btn-start-exam" style="margin-top:16px;">Mode Examen — 20 questions, 20 min, sans correction</button>
+    <p class="mono" id="exam-best-box" hidden style="font-size:0.78rem; color:var(--ink-faint); margin-top:8px;"></p>
+    <button class="ghost" id="btn-reset-progress" style="width:100%; margin-top:10px;">Réinitialiser ma progression</button>
+  </section>
+
+  <section id="screen-themes" class="card" hidden>
+    <p class="subtitle" style="margin-bottom:16px;">Choisis un thème&nbsp;: les questions viendront uniquement de cette catégorie.</p>
+    <ul class="options" id="theme-list"></ul>
+    <button class="ghost" id="btn-themes-back" style="width:100%; margin-top:14px;">Retour</button>
+  </section>
+
+  <section id="screen-quiz" class="card" hidden>
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="progress-label" class="mono">Question 1 / 35</span>
+        <span id="progress-score" class="mono">Score : 0</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <span class="cat-tag" id="q-category">Thème</span>
+    <h2 class="question" id="q-prompt">…</h2>
+    <ul class="options" id="q-options"></ul>
+
+    <div id="q-feedback"></div>
+
+    <button class="primary" id="btn-action" disabled>Valider ma réponse</button>
+  </section>
+
+  <section id="screen-result" class="card" hidden>
+    <div class="mono" id="exam-verdict-box" hidden style="text-align:center; font-weight:700; font-size:1.05rem; padding:12px; border-radius:10px; margin-bottom:16px; letter-spacing:0.02em;"></div>
+    <div class="score-ring" id="score-ring">
+      <div class="val">
+        <div class="pct" id="result-pct">0%</div>
+        <div class="frac" id="result-frac">0 / 35</div>
+      </div>
+    </div>
+    <p class="verdict" id="result-verdict">—</p>
+    <p class="verdict-sub" id="result-sub">—</p>
+    <p class="verdict-sub" id="result-weak" style="font-weight:600;"></p>
+    <p class="verdict-sub mono" id="result-time" style="font-size:0.78rem;">—</p>
+
+    <div class="cat-breakdown" id="cat-breakdown"></div>
+
+    <div class="action-row">
+      <button class="primary" id="btn-restart">Recommencer tout</button>
+      <button class="primary" id="btn-review-weak" hidden>Réviser ces thèmes</button>
+      <button class="ghost" id="btn-toggle-review">Revoir mes erreurs</button>
+      <button class="ghost" id="btn-home">Menu principal</button>
+    </div>
+
+    <div class="review" id="review-section" hidden>
+      <h3>À retravailler</h3>
+      <div id="review-list"></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span><a href="../index.html" style="color:inherit;">← Menu</a> · <a href="fiche.html" style="color:inherit;">Fiche</a> · <a href="memo.html" style="color:inherit;">Mémo</a></span>
+    <span id="attempt-counter">Tentative n°1</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var EXAM_SIZE = 20;
+  var EXAM_TIME_MS = 20 * 60 * 1000;
+  var EXAM_PASS_PCT = 70;
+
+  var CATS = {
+    role: "Rôle & périmètre",
+    vocab: "Vocabulaire",
+    tension: "Domaines de tension",
+    distances: "Zones & distances",
+    risques: "Risques électriques",
+    epi: "EPI / EPC",
+    documents: "Documents",
+    accident: "Conduite à tenir",
+    general: "Général",
+    situation: "Mises en situation"
+  };
+
+  var BANK = [
+    { cat:"role", type:"single", prompt:"Que signifie l'indice « 0 » dans l'habilitation B0 ?",
+      options:["Le titulaire n'a aucune formation électrique et n'exécute que des opérations non électriques","Le titulaire est exempté de recyclage","Aucun risque électrique n'existe sur le site","Le titulaire peut consigner une installation"],
+      correct:[0], explain:"L'indice 0 désigne un non-électricien : il évolue dans un environnement électrique mais n'exécute jamais d'opération d'ordre électrique." },
+    { cat:"role", type:"single", prompt:"Un B0 peut-il remplacer un fusible ou une ampoule sur une installation électrique ?",
+      options:["Oui, c'est une opération simple","Non, c'est une opération d'ordre électrique, interdite au B0","Oui, s'il porte des gants isolants","Oui, uniquement en très basse tension"],
+      correct:[1], explain:"Toute opération d'ordre électrique, même perçue comme simple, est interdite au B0. C'est le rôle du BS (intervention élémentaire)." },
+    { cat:"role", type:"single", prompt:"Quel rôle un B0 peut-il assumer sur un chantier ?",
+      options:["Chargé de consignation","Chargé de travaux électriques","Chargé de chantier","Chargé d'intervention"],
+      correct:[2], explain:"Le B0 peut être « chargé de chantier » : il dirige une équipe de non-électriciens pour des tâches non électriques." },
+    { cat:"role", type:"single", prompt:"Existe-t-il un symbole « B0V », par analogie avec le H0V qui existe en haute tension ?",
+      options:["Oui, B0V permet d'évoluer dans la zone de voisinage simple","Non, le symbole « V » (voisinage) n'existe pas pour le B0 : il est interdit pour les travaux d'ordre non électrique en BT","Oui, mais uniquement pour les chargés de chantier","Oui, B0V est l'équivalent exact du H0V"],
+      correct:[1], explain:"Contrairement au H0 qui a une variante H0V, le B0 n'a pas de variante « V » : le voisinage est interdit pour les travaux d'ordre non électrique en basse tension. Seul le B0 existe." },
+    { cat:"role", type:"single", prompt:"Un B0 peut-il, sous quelque forme que ce soit, pénétrer dans une zone de voisinage (simple ou renforcé) en BT ?",
+      options:["Oui, avec les instructions adaptées","Non, jamais : aucune variante « voisinage » n'existe pour le B0 en basse tension","Oui, s'il est accompagné d'un électricien","Oui, uniquement dans la zone simple"],
+      correct:[1], explain:"Le B0 reste toujours en dehors de toute zone de voisinage en BT, sans exception ni variante possible — contrairement au non-électricien en HT qui peut être H0V." },
+    { cat:"role", type:"single", prompt:"Qui délivre le titre d'habilitation à un salarié ?",
+      options:["L'organisme de formation","L'employeur","Le chargé d'exploitation","L'inspection du travail"],
+      correct:[1], explain:"Le titre d'habilitation est délivré et signé par l'employeur : c'est lui qui reconnaît la capacité du salarié à travailler en sécurité." },
+    { cat:"role", type:"single", prompt:"Un B0 constate un fil dénudé sur une installation électrique pendant son chantier. Que doit-il faire ?",
+      options:["Le réparer rapidement lui-même, c'est simple","Continuer son travail sans rien dire","Signaler immédiatement l'anomalie à son responsable ou à un électricien habilité","Couper lui-même le disjoncteur général"],
+      correct:[2], explain:"Le B0 n'intervient jamais sur l'installation : il doit signaler toute anomalie constatée, sans y toucher." },
+    { cat:"role", type:"single", prompt:"Le port de gants isolants est-il obligatoire pour un B0 ?",
+      options:["Oui, systématiquement, comme pour tout électricien","Non : le B0 n'exécute aucune opération électrique, ses EPI sont ceux liés à sa tâche non électrique (casque, chaussures de sécurité…)"],
+      correct:[1], explain:"Les gants isolants sont un EPI électrique réservé aux opérations sur ou près des pièces sous tension — hors du périmètre du B0." },
+    { cat:"role", type:"single", prompt:"Le B0 doit-il respecter le balisage et le périmètre mis en place par l'électricien avant de commencer son chantier ?",
+      options:["Non, il peut le déplacer si besoin pour travailler plus facilement","Oui, il doit respecter les limites matérialisées et ne jamais les franchir","Cela dépend de son expérience","Le balisage ne concerne que les électriciens, pas le B0"],
+      correct:[1], explain:"Le balisage délimite une zone de sécurité : le B0 doit toujours le respecter et ne jamais le déplacer ni le franchir." },
+    { cat:"role", type:"single", prompt:"Un B0 peut-il consigner lui-même une installation avant de commencer son intervention ?",
+      options:["Oui, s'il a suivi la formation B0","Non, seul un chargé de consignation habilité peut le faire","Oui, en cas d'urgence uniquement","Oui, avec l'accord oral d'un collègue"],
+      correct:[1], explain:"La consignation est une opération d'ordre électrique réservée aux personnes habilitées pour cela (chargé de consignation) — jamais au B0." },
+    { cat:"role", type:"single", prompt:"Le port des EPI (casque, chaussures de sécurité) dispense-t-il un B0 de respecter les distances de sécurité (DMA, zone de voisinage) ?",
+      options:["Oui, les EPI suffisent à protéger du risque électrique","Non, les distances de sécurité doivent toujours être respectées, quels que soient les EPI portés","Oui, à condition de porter aussi des gants isolants","Non, sauf si le chantier est urgent"],
+      correct:[1], explain:"Les EPI du B0 protègent contre les risques liés à sa tâche non électrique, mais ne suppriment en rien le risque électrique : les distances de sécurité restent obligatoires." },
+    { cat:"role", type:"single", prompt:"Un B0 peut-il travailler dans un local classé à risque d'explosion (ATEX) sans consignes particulières ?",
+      options:["Oui, comme n'importe quel local","Non, des consignes de sécurité spécifiques s'appliquent dans ces locaux","Oui, s'il porte un casque","Non, ces locaux sont toujours interdits à quiconque"],
+      correct:[1], explain:"Les locaux à risque d'explosion (ATEX) imposent des règles de sécurité spécifiques que le B0 doit connaître et respecter." },
+    { cat:"role", type:"single", prompt:"Un B0 doit peindre un mur situé à proximité d'une armoire électrique ouverte. Que doit-il faire avant de commencer ?",
+      options:["Commencer directement, ce n'est pas son problème","S'assurer de rester hors de la zone de voisinage ou demander qu'un électricien sécurise l'armoire au préalable","Fermer lui-même l'armoire","Demander à un collègue B0 de vérifier l'absence de tension"],
+      correct:[1], explain:"Face à une armoire ouverte, le B0 doit soit rester hors de la zone de voisinage, soit faire intervenir un électricien pour sécuriser la zone avant de travailler." },
+
+    { cat:"vocab", type:"single", prompt:"Une « personne avertie » est :",
+      options:["Un électricien qualifié","Une personne sensibilisée aux risques électriques, sans être forcément électricienne","Le responsable sécurité de l'entreprise","Une personne habilitée BR"],
+      correct:[1], explain:"« Avertie » signifie sensibilisée aux dangers de l'électricité, ce qui n'implique pas une compétence technique électrique." },
+    { cat:"vocab", type:"single", prompt:"Qui est le « chargé d'exploitation électrique » ?",
+      options:["La personne qui répare les pannes","Le responsable de l'installation électrique, qui délivre les autorisations d'accès et de travail","L'électricien qui consigne physiquement l'ouvrage","Le formateur habilitation"],
+      correct:[1], explain:"Le chargé d'exploitation électrique a la responsabilité de l'installation et encadre les autorisations données aux intervenants." },
+    { cat:"vocab", type:"single", prompt:"Le « chargé de consignation » est chargé de :",
+      options:["Diriger les travaux non électriques du chantier","Réaliser la consignation d'un ouvrage électrique","Surveiller un B0 en permanence","Former les nouveaux habilités"],
+      correct:[1], explain:"Le chargé de consignation exécute les opérations de consignation (identification, séparation, condamnation, vérification d'absence de tension)." },
+    { cat:"vocab", type:"single", prompt:"Quel terme désigne l'ensemble des matériels électriques d'un site ?",
+      options:["Zone de voisinage","Ouvrage électrique","Domaine BT","Attestation de consignation"],
+      correct:[1], explain:"L'« ouvrage » (ou installation électrique) regroupe l'ensemble des matériels électriques d'un site." },
+    { cat:"vocab", type:"single", prompt:"Qu'est-ce qu'un « local réservé aux électriciens » ?",
+      options:["Un local accessible à tout le personnel sans restriction","Un local dont l'accès est limité aux personnes habilitées, en raison du risque électrique qu'il présente","Le bureau du chargé d'exploitation","Un local sans aucun risque particulier"],
+      correct:[1], explain:"Ces locaux (armoires électriques, sous-stations…) présentent un risque électrique et leur accès est réservé aux personnes habilitées pour ce risque." },
+    { cat:"vocab", type:"single", prompt:"Que signifie le terme « opération » au sens de la norme électrique ?",
+      options:["Toute action réalisée sur ou à proximité d'une installation électrique : travaux, essais, dépannage, ou opération d'ordre non électrique","Uniquement les interventions de dépannage","Uniquement la consignation d'un ouvrage","Un acte médical d'urgence"],
+      correct:[0], explain:"« Opération » est un terme générique qui couvre toute action, électrique ou non, réalisée sur ou près d'un ouvrage électrique." },
+    { cat:"vocab", type:"single", prompt:"Que signifie la lettre « B » dans un code d'habilitation (B0, B1, B2…) ?",
+      options:["Le domaine basse tension (et très basse tension)","Le domaine haute tension","Le bâtiment concerné","Le niveau de formation"],
+      correct:[0], explain:"La lettre B désigne les opérations réalisées dans le domaine BT/TBT ; la lettre H désigne le domaine HT." },
+    { cat:"vocab", type:"single", prompt:"Que signifie la lettre « H » dans un code d'habilitation (H0, H1, H2…) ?",
+      options:["Le domaine haute tension","Le domaine basse tension","Les horaires de travail","Un niveau de hiérarchie"],
+      correct:[0], explain:"La lettre H désigne les opérations réalisées dans le domaine HTA/HTB, par opposition à la lettre B pour le domaine BT/TBT." },
+    { cat:"vocab", type:"single", prompt:"Que désigne la norme NF C18-510 ?",
+      options:["Le référentiel qui encadre la prévention du risque électrique et les habilitations du personnel","Une norme de construction des bâtiments","Un règlement sur les tarifs de l'électricité","Une certification pour les fabricants d'appareils électriques"],
+      correct:[0], explain:"La NF C18-510 est la norme française de référence pour la prévention du risque électrique et la délivrance des habilitations." },
+    { cat:"vocab", type:"single", prompt:"Que signifie l'indice IP (ex: IP44) inscrit sur un appareil électrique ?",
+      options:["Le degré de protection contre les corps solides et les liquides","La puissance maximale de l'appareil","La date de fabrication","Le fabricant de l'appareil"],
+      correct:[0], explain:"L'indice de protection (IP) indique le niveau de protection d'un appareil contre la pénétration de corps solides et de liquides." },
+    { cat:"vocab", type:"single", prompt:"Quel est le rôle de la prise de terre dans une installation électrique ?",
+      options:["Décoration esthétique","Évacuer les courants de défaut pour protéger les personnes","Augmenter la puissance disponible","Réduire la facture d'électricité"],
+      correct:[1], explain:"La prise de terre permet d'évacuer un courant de défaut vers le sol, réduisant le risque d'électrisation en cas de défaut d'isolement." },
+
+    { cat:"tension", type:"single", prompt:"La tension du secteur domestique français (230 V) appartient à quel domaine de tension ?",
+      options:["TBT","BT","HTA","HTB"],
+      correct:[1], explain:"Le domaine BT couvre 50 V < U ≤ 1000 V en courant alternatif, ce qui inclut le 230/400 V du réseau domestique et industriel courant." },
+    { cat:"tension", type:"single", prompt:"Quelle est la limite supérieure du domaine TBT ?",
+      options:["25 V","50 V","100 V","500 V"],
+      correct:[1], explain:"Le domaine TBT (très basse tension) s'arrête à 50 V en courant alternatif." },
+    { cat:"tension", type:"single", prompt:"Une installation à 20 000 V appartient au domaine :",
+      options:["BT","HTA","HTB","TBT"],
+      correct:[1], explain:"Le domaine HTA couvre 1 kV < U ≤ 50 kV, ce qui inclut les 20 000 V." },
+    { cat:"tension", type:"single", prompt:"Le domaine BT (basse tension) correspond à quelle plage de tension en courant alternatif ?",
+      options:["0 à 50 V","50 à 500 V","50 à 1000 V","500 à 1000 V"],
+      correct:[2], explain:"La norme NF C18-510 actuelle définit un domaine BT unique de 50 V à 1000 V en courant alternatif (jusqu'à 1500 V en continu lisse) — il ne se subdivise pas en BTA/BTB, une distinction de l'ancienne norme aujourd'hui abandonnée." },
+    { cat:"tension", type:"single", prompt:"Le courant continu (comme celui d'une batterie de véhicule) présente-t-il un risque électrique ?",
+      options:["Non, seul le courant alternatif est dangereux","Oui, le courant continu peut aussi provoquer une électrisation, notamment sur des batteries de forte capacité","Non, il est toujours sans danger en dessous de 50 V","Oui, mais uniquement en haute tension"],
+      correct:[1], explain:"Le courant continu présente aussi un risque électrique réel, en particulier sur les batteries de forte capacité (véhicules, engins, groupes de secours)." },
+    { cat:"tension", type:"single", prompt:"Le courant continu et le courant alternatif présentent-ils exactement le même niveau de danger à valeur égale ?",
+      options:["Oui, strictement identique dans tous les cas","Leurs effets diffèrent mais les deux peuvent être mortels : aucun n'est à négliger","Non, seul le courant alternatif est dangereux","Non, seul le courant continu est dangereux"],
+      correct:[1], explain:"Continu et alternatif ont des effets physiologiques différents, mais les deux présentent un danger réel pour l'être humain." },
+
+    { cat:"distances", type:"single", prompt:"Quelle est la valeur de la DMA (distance minimale d'approche) en basse tension ?",
+      options:["0,15 m","0,30 m","0,50 m","1 m"],
+      correct:[1], explain:"La DMA en BT est fixée à 0,30 m autour d'une pièce nue sous tension : en dessous de cette distance, seules les habilitations avec attribut voisinage renforcé (V) peuvent s'approcher." },
+    { cat:"distances", type:"single", prompt:"À quoi sert la DMA ?",
+      options:["À fixer la distance la plus proche d'une pièce nue sous tension que seules certaines habilitations peuvent franchir","À fixer la durée de consignation","À limiter la hauteur d'une nacelle","À régler le temps de coupure d'un disjoncteur"],
+      correct:[0], explain:"La DMA délimite la zone la plus proche d'une pièce sous tension, accessible uniquement aux habilités disposant de l'attribut voisinage renforcé (V) ou équivalent." },
+    { cat:"distances", type:"single", prompt:"Un B0 (sans V) doit s'approcher à moins de 30 cm d'une pièce nue sous tension BT pour effectuer sa tâche. Que doit-il faire ?",
+      options:["Y aller avec précaution, en évitant tout contact","Ne jamais le faire : ce n'est pas dans son périmètre d'habilitation","Demander l'autorisation orale d'un collègue électricien","Mettre des gants isolants et continuer"],
+      correct:[1], explain:"Franchir la zone de voisinage n'est jamais autorisé pour un B0 : la tâche doit être confiée à un électricien habilité (il n'existe pas de variante « B0V » qui permettrait au B0 de le faire lui-même)." },
+    { cat:"distances", type:"single", prompt:"La zone de voisinage renforcé est accessible à :",
+      options:["Tout B0 ayant reçu les instructions de sécurité","Uniquement aux électriciens habilités avec l'indice adapté (ex. V renforcé, BR)","Tout personnel portant un casque isolant","Personne, dans aucune circonstance"],
+      correct:[1], explain:"La zone de voisinage renforcé est réservée aux électriciens formés et habilités pour ce niveau de risque — jamais au B0, qui n'a aucune variante « voisinage » possible en BT." },
+    { cat:"distances", type:"single", prompt:"Vous devez utiliser une nacelle ou un échafaudage à proximité de lignes électriques aériennes. Que devez-vous respecter ?",
+      options:["Aucune règle particulière, seule la hauteur maximale de l'engin compte","Les distances de sécurité par rapport aux lignes, même sans contact direct","Il suffit de porter un casque","Cela ne concerne que les électriciens habilités H"],
+      correct:[1], explain:"Un simple rapprochement excessif d'une ligne aérienne peut créer un risque électrique (amorçage), même sans contact direct : les distances de sécurité doivent toujours être respectées." },
+    { cat:"distances", type:"single", prompt:"Le trajet du courant dans le corps (par exemple main-main) influence-t-il la gravité d'une électrisation ?",
+      options:["Non, seule l'intensité compte","Oui, un trajet traversant le cœur ou le système nerveux est particulièrement dangereux","Non, le trajet n'a aucune importance","Oui, mais uniquement en haute tension"],
+      correct:[1], explain:"Un trajet du courant qui traverse la zone cardiaque (ex : main-main, main-pied opposé) est particulièrement dangereux." },
+    { cat:"distances", type:"single", prompt:"Un B0 travaille dans un couloir où une pièce nue sous tension est visible à 20 cm derrière une grille. Peut-il s'approcher pour nettoyer la grille ?",
+      options:["Oui, la grille protège suffisamment","Non, il est en dessous de la DMA (0,30 m) : il doit rester à distance ou faire intervenir un électricien","Oui, s'il ne touche pas la grille","Oui, avec des gants en tissu"],
+      correct:[1], explain:"En dessous de la DMA (0,30 m en BT), seul un habilité avec l'attribut voisinage renforcé peut s'approcher : le B0 ne doit jamais franchir cette limite seul." },
+
+    { cat:"risques", type:"single", prompt:"Quelle est la différence entre électrisation et électrocution ?",
+      options:["Aucune, ce sont des synonymes","L'électrocution est une électrisation qui entraîne la mort","L'électrisation ne concerne que la haute tension","L'électrocution ne provoque jamais de brûlure"],
+      correct:[1], explain:"L'électrisation désigne le passage du courant dans le corps ; l'électrocution est une électrisation mortelle." },
+    { cat:"risques", type:"single", prompt:"Parmi ces effets, lequel n'est PAS un effet direct reconnu du passage du courant dans le corps ?",
+      options:["Tétanisation musculaire","Fibrillation cardiaque","Brûlures internes","Surdité définitive immédiate"],
+      correct:[3], explain:"Les effets classiques enseignés sont la tétanisation, les brûlures et la fibrillation cardiaque/arrêt respiratoire — pas la surdité." },
+    { cat:"risques", type:"multi", prompt:"Parmi les facteurs suivants, lesquels influencent la gravité d'une électrisation ? (plusieurs réponses possibles)",
+      options:["L'intensité du courant","Le trajet du courant dans le corps","La couleur du câble concerné","La durée de contact"],
+      correct:[0,1,3], explain:"Intensité, trajet dans le corps et durée de contact (avec la résistance du corps) déterminent la gravité — la couleur du câble n'a aucun effet physiologique." },
+    { cat:"risques", type:"single", prompt:"Un arc électrique peut provoquer :",
+      options:["Uniquement des brûlures légères","Des brûlures, des projections de particules et un effet de souffle","Aucun risque si on porte des lunettes","Un risque uniquement en haute tension"],
+      correct:[1], explain:"L'arc électrique est un phénomène violent pouvant causer brûlures, projections de matière en fusion et effet de souffle, quel que soit le domaine de tension." },
+    { cat:"risques", type:"single", prompt:"Quel type d'extincteur utiliser sur un feu d'origine électrique ?",
+      options:["De l'eau","Un extincteur à CO2 (dioxyde de carbone)","De la mousse","N'importe lequel, peu importe"],
+      correct:[1], explain:"L'eau et la mousse conduisent l'électricité et sont dangereuses sur un feu électrique. Le CO2 (ou la poudre) est adapté car il n'est pas conducteur." },
+    { cat:"risques", type:"single", prompt:"Que signale le pictogramme représentant un éclair noir sur fond triangulaire jaune ?",
+      options:["Un risque d'incendie","Un risque électrique","Un risque chimique","Une sortie de secours"],
+      correct:[1], explain:"C'est le pictogramme normalisé du danger électrique, apposé sur les locaux et équipements à risque." },
+    { cat:"risques", type:"single", prompt:"Pourquoi travailler en milieu humide (pluie, sol mouillé) augmente-t-il le risque électrique ?",
+      options:["L'eau isole le corps du courant","L'eau est conductrice et diminue la résistance du corps, ce qui facilite le passage du courant","Cela n'a aucun effet particulier","Cela ne concerne que les installations haute tension"],
+      correct:[1], explain:"L'humidité abaisse la résistance électrique du corps humain, ce qui augmente l'intensité du courant qui le traverse en cas de contact." },
+    { cat:"risques", type:"single", prompt:"Que risque-t-on à porter une bague, un bracelet ou une chaîne métallique en travaillant à proximité d'une installation électrique ?",
+      options:["Aucun risque particulier","Le métal est conducteur et peut aggraver une électrisation en cas de contact accidentel","C'est interdit uniquement en haute tension","Cela protège contre les chocs électriques"],
+      correct:[1], explain:"Les bijoux métalliques conduisent le courant et doivent être retirés avant tout travail en environnement électrique." },
+    { cat:"risques", type:"single", prompt:"Pourquoi une échelle utilisée près d'une installation électrique doit-elle être isolante (bois, fibre de verre) plutôt que métallique ?",
+      options:["Pour des raisons esthétiques uniquement","Parce que le métal est conducteur et augmente le risque électrique","Parce qu'une échelle isolante est plus légère","Il n'y a aucune raison technique"],
+      correct:[1], explain:"Une échelle métallique conduit le courant : elle est interdite à proximité d'un risque électrique, contrairement à une échelle isolante." },
+    { cat:"risques", type:"single", prompt:"Une installation mise hors tension présente-t-elle toujours un risque nul ?",
+      options:["Oui, aucun risque une fois le courant coupé","Non, certains éléments (condensateurs, batteries) peuvent rester chargés après la coupure","Oui, sauf en très haute tension","Non, uniquement sur les installations très anciennes"],
+      correct:[1], explain:"Certains composants stockent de l'énergie (condensateurs, batteries de secours) et peuvent rester dangereux même après la mise hors tension." },
+    { cat:"risques", type:"single", prompt:"À partir de quelle intensité environ le courant peut-il provoquer une tétanisation musculaire (impossibilité de lâcher) ?",
+      options:["Quelques dixièmes de mA","Environ 10 mA","Environ 1000 mA (1 A)","Il n'existe aucun seuil connu"],
+      correct:[1], explain:"Autour de 10 mA, une contraction musculaire involontaire peut empêcher de lâcher le conducteur : c'est le seuil de « non-lâcher » couramment enseigné." },
+    { cat:"risques", type:"single", prompt:"Au-delà de quelle intensité approximative le risque de fibrillation cardiaque (danger vital) augmente-t-il fortement ?",
+      options:["Environ 1 mA","Environ 10 mA","Autour de 30 mA et plus, selon la durée de contact","Il n'existe pas de seuil identifié"],
+      correct:[2], explain:"Au-delà d'une trentaine de mA, selon la durée de contact, le risque de fibrillation cardiaque devient significatif — c'est un repère classique en prévention du risque électrique." },
+    { cat:"risques", type:"single", prompt:"Vous découvrez un câble électrique tombé au sol à l'extérieur. Que devez-vous faire ?",
+      options:["Vous approcher pour vérifier s'il est sous tension","Ne jamais vous approcher, baliser la zone à distance et alerter","Le déplacer avec un bâton en bois","Le toucher rapidement avec le dos de la main pour tester"],
+      correct:[1], explain:"Un câble au sol peut être sous tension sans que rien ne le montre : il faut rester à distance, empêcher quiconque de s'approcher, et alerter immédiatement sans y toucher." },
+    { cat:"risques", type:"single", prompt:"À quoi sert un disjoncteur différentiel 30 mA ?",
+      options:["À protéger les appareils contre les surtensions","À couper automatiquement le courant en cas de fuite dangereuse pour protéger les personnes","À limiter la consommation électrique du logement","À recharger les batteries de secours"],
+      correct:[1], explain:"Le différentiel 30 mA coupe l'alimentation dès qu'il détecte une fuite de courant dangereuse pour une personne, avant que le seuil de fibrillation ne soit atteint." },
+    { cat:"risques", type:"single", prompt:"Le corps humain conduit-il mieux le courant lorsque la peau est sèche ou mouillée ?",
+      options:["Sèche, la résistance est plus faible","Mouillée, car l'humidité diminue la résistance de la peau","Cela ne change rien","Sèche, dans tous les cas"],
+      correct:[1], explain:"Une peau mouillée offre une résistance électrique bien plus faible qu'une peau sèche, ce qui facilite le passage du courant." },
+    { cat:"risques", type:"single", prompt:"Un appareil électrique dégage une légère odeur de plastique chauffé sans fumée visible. Que doit faire un B0 ?",
+      options:["Continuer à l'utiliser, ce n'est pas grave","Cesser de l'utiliser, le débrancher si possible sans risque, et signaler l'anomalie","Ouvrir l'appareil pour vérifier","Vaporiser de l'eau dessus par précaution"],
+      correct:[1], explain:"Une odeur de chauffe anormale est un signal d'alerte : il faut cesser l'utilisation et signaler l'anomalie, sans intervenir soi-même sur l'appareil." },
+    { cat:"risques", type:"single", prompt:"Un B0 peut-il utiliser une multiprise en la surchargeant avec plusieurs appareils de forte puissance ?",
+      options:["Oui, sans limite","Non, cela peut provoquer une surchauffe et un risque d'incendie","Oui, si la multiprise est neuve","Oui, uniquement en hiver"],
+      correct:[1], explain:"Surcharger une prise multiple au-delà de sa capacité peut provoquer une surchauffe des conducteurs et déclencher un incendie." },
+    { cat:"risques", type:"single", prompt:"Le corps humain peut-il subir un choc électrique sans qu'il y ait de brûlure visible ?",
+      options:["Non, il y a toujours une brûlure visible","Oui, les effets internes (cardiaques, musculaires) peuvent survenir sans marque visible sur la peau","Non, c'est impossible","Oui, mais uniquement en très haute tension"],
+      correct:[1], explain:"Les effets d'une électrisation peuvent être uniquement internes (cœur, muscles) sans laisser de trace visible sur la peau, d'où l'importance d'un avis médical." },
+
+    { cat:"epi", type:"single", prompt:"Que signifie le sigle EPI ?",
+      options:["Équipement de Protection Individuelle","Équipement de Prévention Interne","Élément de Protection Isolante","Écran de Protection Intégré"],
+      correct:[0], explain:"EPI = Équipement de Protection Individuelle (casque, lunettes, chaussures de sécurité, vêtements adaptés…)." },
+    { cat:"epi", type:"single", prompt:"Que signifie le sigle EPC ?",
+      options:["Équipement de Protection Collective","Élément de Position du Chantier","Équipement de Prévention Chantier","Écran de Protection Consignation"],
+      correct:[0], explain:"EPC = Équipement de Protection Collective : balisage, nappes isolantes, écrans de protection." },
+    { cat:"epi", type:"single", prompt:"Un B0 peut-il déplacer un écran de protection (EPC) installé par un électricien pour faciliter son travail ?",
+      options:["Oui, s'il le remet en place après","Non, il doit le respecter sans le déplacer","Oui, avec l'accord oral d'un collègue","Oui, pendant quelques minutes seulement"],
+      correct:[1], explain:"Les EPC sont installés par les électriciens pour délimiter une zone sûre ; le B0 ne doit jamais les déplacer, même temporairement." },
+    { cat:"epi", type:"single", prompt:"Pourquoi éviter les vêtements synthétiques à proximité d'un risque d'arc électrique ?",
+      options:["Ils sont inconfortables à porter","Ils peuvent fondre et coller à la peau en cas de brûlure","Ils conduisent l'électricité","C'est interdit par le code vestimentaire, sans lien avec le risque électrique"],
+      correct:[1], explain:"En cas d'arc électrique, une matière synthétique peut fondre sur la peau et aggraver gravement la brûlure." },
+    { cat:"epi", type:"single", prompt:"Que doit-on retirer avant de travailler à proximité d'une installation électrique ?",
+      options:["Les bijoux et objets métalliques (bagues, bracelets, chaînes)","Les chaussures de sécurité","Le casque","Rien de particulier"],
+      correct:[0], explain:"Les objets métalliques portés sur soi conduisent le courant et doivent être retirés avant toute approche d'un risque électrique." },
+    { cat:"epi", type:"single", prompt:"Que doit vérifier un B0 sur ses chaussures de sécurité avant de travailler en environnement électrique ?",
+      options:["Rien de particulier, toute chaussure convient","Qu'elles sont en bon état et adaptées, sans dégradation visible","Que la couleur est réglementaire","Que la pointure est exacte au millimètre"],
+      correct:[1], explain:"Des chaussures de sécurité endommagées ou inadaptées perdent une partie de leur rôle protecteur." },
+    { cat:"epi", type:"single", prompt:"Le port d'un casque est-il utile pour un B0 même sans risque de chute d'objet lié à l'électricité ?",
+      options:["Oui, selon l'évaluation des risques du site (chutes d'objets, chocs), pas uniquement le risque électrique","Non, uniquement en cas de risque électrique direct","Non, jamais nécessaire pour un B0","Oui, uniquement le vendredi"],
+      correct:[0], explain:"Le port du casque dépend de l'évaluation des risques du site dans son ensemble, pas uniquement du risque électrique." },
+
+    { cat:"documents", type:"single", prompt:"Le titre d'habilitation est :",
+      options:["Un diplôme d'État","Une reconnaissance par l'employeur de la capacité du salarié à travailler en sécurité","Valable à vie une fois délivré","Transférable à un collègue occupant le même poste"],
+      correct:[1], explain:"Ce n'est pas un diplôme : c'est un document nominatif par lequel l'employeur reconnaît que le salarié est apte à réaliser certaines tâches en sécurité." },
+    { cat:"documents", type:"single", prompt:"Qui délivre l'attestation de consignation ?",
+      options:["Le chargé de consignation","Le B0 concerné par les travaux","L'inspection du travail","L'organisme de formation"],
+      correct:[0], explain:"L'attestation de consignation est établie et remise par le chargé de consignation avant le début des travaux." },
+    { cat:"documents", type:"single", prompt:"Le titre d'habilitation est-il valable indéfiniment une fois délivré ?",
+      options:["Oui, il n'a pas de limite de validité","Non, sa validité est limitée dans le temps et un recyclage est recommandé (environ tous les 3 ans, ou avant en cas de changement de poste)"],
+      correct:[1], explain:"L'habilitation doit être réexaminée périodiquement, et systématiquement en cas de changement de poste, de fonction ou d'évolution des risques." },
+    { cat:"documents", type:"single", prompt:"Le registre de sécurité (ou carnet de prescriptions) d'une entreprise contient notamment :",
+      options:["Les consignes de sécurité et procédures à respecter sur le site","La liste des congés du personnel","Le plan comptable de l'entreprise","Les menus de la cantine"],
+      correct:[0], explain:"Ce document regroupe les consignes et procédures de sécurité applicables sur le site, à connaître et respecter." },
+    { cat:"documents", type:"single", prompt:"Qui peut retirer l'habilitation électrique d'un salarié, et à quel moment ?",
+      options:["Seulement l'inspection du travail, une fois par an","L'employeur, à tout moment, s'il estime que les conditions ne sont plus réunies","Personne, l'habilitation est acquise à vie","Le salarié lui-même uniquement"],
+      correct:[1], explain:"L'employeur peut retirer l'habilitation à tout moment s'il constate que le salarié ne remplit plus les conditions nécessaires pour travailler en sécurité." },
+    { cat:"documents", type:"single", prompt:"Le titulaire d'une habilitation doit-il pouvoir présenter son titre d'habilitation sur demande pendant son travail ?",
+      options:["Non, ce n'est jamais nécessaire","Oui, il doit pouvoir le présenter à tout moment sur demande","Seulement lors de la visite médicale","Seulement le premier jour de la formation"],
+      correct:[1], explain:"Le titre d'habilitation doit être disponible et présentable à tout moment, notamment en cas de contrôle." },
+    { cat:"documents", type:"single", prompt:"Le carnet de prescriptions (recueil de consignes de sécurité) de l'entreprise doit-il être connu du B0 ?",
+      options:["Non, cela ne le concerne pas","Oui, il doit en connaître les consignes applicables à son activité","Non, réservé aux électriciens uniquement","Oui, uniquement s'il est chef d'équipe"],
+      correct:[1], explain:"Le B0 doit connaître les consignes de sécurité applicables à son activité, consignées dans les documents de l'entreprise." },
+    { cat:"documents", type:"single", prompt:"Si un B0 change de site avec un environnement électrique différent, son habilitation reste-t-elle automatiquement valable sans réévaluation ?",
+      options:["Oui, toujours, sans condition","L'employeur doit réévaluer la situation et peut exiger un recyclage ou une nouvelle habilitation adaptée","Non, elle est automatiquement annulée","Oui, mais seulement pendant 6 mois"],
+      correct:[1], explain:"Un changement de poste ou d'environnement impose une réévaluation par l'employeur, pouvant conduire à un recyclage." },
+
+    { cat:"accident", type:"single", prompt:"Quelle est la bonne succession d'actions face à un accident d'origine électrique ?",
+      options:["Alerter → Protéger → Examiner → Secourir","Protéger → Examiner → Alerter → Secourir","Secourir → Protéger → Alerter → Examiner","Examiner → Secourir → Protéger → Alerter"],
+      correct:[1], explain:"On protège d'abord (soi-même et la victime), on examine son état, on alerte les secours, puis on secourt si on est formé." },
+    { cat:"accident", type:"single", prompt:"Une victime est encore en contact avec un conducteur sous tension. Que faites-vous en priorité ?",
+      options:["Vous la tirez à mains nues, rapidement","Vous coupez le courant si possible ; sinon, vous l'éloignez avec un objet isolant, sans jamais la toucher directement","Vous appelez les secours et attendez sans agir","Vous pratiquez immédiatement le bouche-à-bouche"],
+      correct:[1], explain:"Ne jamais toucher directement une victime encore sous tension : couper le courant, ou l'écarter avec un objet isolant, est le seul geste sûr." },
+    { cat:"accident", type:"single", prompt:"Quel numéro d'urgence fonctionne dans tous les pays de l'Union européenne ?",
+      options:["Le 15","Le 18","Le 112","Le 17"],
+      correct:[2], explain:"Le 112 est le numéro d'urgence unique européen, joignable gratuitement dans tous les États membres." },
+    { cat:"accident", type:"single", prompt:"Une personne victime d'un choc électrique mais qui semble « aller bien » doit-elle tout de même consulter un médecin ?",
+      options:["Non, ce n'est pas nécessaire si elle se sent bien","Oui, un avis médical est recommandé même sans symptôme visible, car certains effets (cardiaques notamment) peuvent être différés","Seulement si elle a des brûlures visibles","Non, sauf en cas de perte de connaissance"],
+      correct:[1], explain:"Les effets d'une électrisation, en particulier cardiaques, peuvent apparaître après coup : un avis médical est toujours recommandé." },
+    { cat:"accident", type:"single", prompt:"Vous sentez une odeur de brûlé ou voyez de la fumée provenant d'une installation électrique. Que faites-vous ?",
+      options:["Vous continuez votre travail, ce n'est probablement rien","Vous vous éloignez, alertez immédiatement et ne tentez pas d'intervenir vous-même","Vous ouvrez l'armoire électrique pour vérifier","Vous versez de l'eau dessus par précaution"],
+      correct:[1], explain:"Une odeur de brûlé ou de la fumée signale un risque d'incendie ou de défaut électrique grave : il faut s'éloigner, alerter, et ne jamais intervenir soi-même ni utiliser d'eau." },
+    { cat:"accident", type:"single", prompt:"Lorsqu'on alerte les secours pour un accident électrique, quelles informations est-il important de donner ?",
+      options:["Rien de particulier, ils devinent","Le lieu précis, la nature électrique de l'accident, l'état de la victime et le nombre de personnes concernées","Uniquement son propre nom","Uniquement l'heure de l'accident"],
+      correct:[1], explain:"Une alerte précise et complète permet aux secours d'intervenir plus rapidement et efficacement, avec le matériel adapté." },
+    { cat:"accident", type:"single", prompt:"Après avoir alerté les secours pour une victime d'électrisation consciente, que faites-vous en l'attendant ?",
+      options:["Vous la laissez seule et partez travailler","Vous restez avec elle, la rassurez et surveillez son état jusqu'à l'arrivée des secours","Vous la faites marcher pour la « réveiller »","Vous lui donnez à boire immédiatement"],
+      correct:[1], explain:"Il faut rester auprès de la victime, la rassurer, surveiller l'évolution de son état, sans lui donner à boire ni la faire bouger inutilement." },
+
+    { cat:"general", type:"single", prompt:"Un salarié B0 estime qu'une tâche demandée compromet sa sécurité. Que peut-il faire ?",
+      options:["Refuser d'exécuter la tâche","L'exécuter obligatoirement, car c'est un ordre hiérarchique","Démissionner sur-le-champ","Rien, il n'a aucun droit de regard"],
+      correct:[0], explain:"Tout titulaire d'une habilitation peut refuser une opération qu'il juge dangereuse pour sa sécurité ou celle d'autrui." },
+    { cat:"general", type:"single", prompt:"Le rôle « BS » (intervention élémentaire) permet notamment :",
+      options:["De remplacer un fusible, une prise ou un interrupteur","De consigner une installation haute tension","De diriger un chantier de non-électriciens","De réaliser des mesurages sous tension"],
+      correct:[0], explain:"Le BS est réservé à des opérations électriques élémentaires bien définies — ce que le B0 ne peut jamais faire." },
+    { cat:"general", type:"single", prompt:"L'habilitation électrique est :",
+      options:["Générale, elle couvre toute l'entreprise dès qu'un salarié l'obtient","Nominative et non transférable à un autre salarié","Valable pour tous les niveaux de tension automatiquement","Optionnelle si le salarié a de l'expérience"],
+      correct:[1], explain:"Chaque habilitation est personnelle, adaptée à un salarié précis, pour des tâches et un périmètre précis — elle ne se transmet jamais." },
+    { cat:"general", type:"single", prompt:"Quelle est la différence entre « formation » et « habilitation » ?",
+      options:["Ce sont des synonymes","La formation apporte les connaissances ; l'habilitation est la reconnaissance par l'employeur que le salarié peut les mettre en pratique en sécurité","L'habilitation remplace totalement la formation","La formation est délivrée par l'employeur, l'habilitation par un organisme externe"],
+      correct:[1], explain:"La formation transmet le savoir ; l'habilitation est l'acte par lequel l'employeur reconnaît que le salarié formé peut agir en sécurité dans son périmètre défini." },
+    { cat:"general", type:"single", prompt:"Quelle est la principale différence entre B1 et B2 ?",
+      options:["B1 est exécutant électricien, B2 est chargé de travaux et peut diriger une équipe","B1 travaille en HT, B2 en BT","B1 consigne, B2 ne consigne jamais","Il n'y a aucune différence"],
+      correct:[0], explain:"L'indice 1 correspond à un exécutant (il exécute des ordres), l'indice 2 à un chargé de travaux, qui peut diriger une équipe d'exécutants." },
+    { cat:"general", type:"single", prompt:"Qui peut réaliser une vérification d'absence de tension (VAT) ?",
+      options:["N'importe quel membre de l'équipe","Un électricien habilité pour cette opération — jamais un B0","Le chargé de chantier B0, s'il est prudent","N'importe qui muni de gants isolants"],
+      correct:[1], explain:"La VAT est une opération d'ordre électrique réservée aux personnes habilitées et compétentes pour cette tâche précise — hors du périmètre du B0." },
+    { cat:"general", type:"single", prompt:"Le champ d'application de la norme NF C18-510 concerne-t-il uniquement les électriciens ?",
+      options:["Oui, uniquement les électriciens qualifiés","Non, elle concerne tout le personnel intervenant dans un environnement électrique, électricien ou non","Oui, uniquement les ingénieurs","Non, uniquement le personnel de direction"],
+      correct:[1], explain:"La norme encadre la prévention du risque électrique pour tout intervenant, qu'il soit électricien ou non (B0 inclus)." },
+    { cat:"general", type:"single", prompt:"Un B0 peut-il être sanctionné s'il enfreint volontairement les règles de sécurité électrique malgré sa formation ?",
+      options:["Non, jamais, il est protégé par son habilitation","Oui, comme pour tout manquement grave aux règles de sécurité au travail","Non, uniquement un avertissement oral est possible","Oui, mais uniquement s'il y a eu accident"],
+      correct:[1], explain:"Le non-respect volontaire des règles de sécurité peut engager la responsabilité du salarié, comme pour toute faute grave en matière de sécurité au travail." },
+
+    { cat:"situation", type:"single", prompt:"Vous devez poser une étagère murale dans un local technique. En perçant, le foret de la perceuse se coince dans quelque chose de dur derrière la cloison et vous soupçonnez un câble électrique. Que faites-vous ?",
+      options:["Vous tirez fort sur la perceuse pour la dégager","Vous arrêtez immédiatement sans toucher au foret ni forcer, et vous alertez sans essayer de couper vous-même l'installation","Vous continuez de percer un peu plus loin en évitant l'endroit","Vous coupez le câble suspecté avec une pince"],
+      correct:[1], explain:"Un câble endommagé peut rester sous tension : il ne faut ni tirer, ni forcer, ni le couper soi-même. On arrête et on alerte une personne habilitée." },
+    { cat:"situation", type:"single", prompt:"Vous devez nettoyer un local technique. La porte d'une armoire électrique est restée ouverte, avec des pièces nues visibles à l'intérieur. Que faites-vous avant de commencer ?",
+      options:["Vous nettoyez normalement en évitant l'armoire","Vous ne commencez pas et signalez la situation : vous ne devez pas travailler à proximité de pièces nues sous tension sans consignes","Vous fermez vous-même la porte de l'armoire puis vous travaillez","Vous débranchez vous-même l'armoire par précaution"],
+      correct:[1], explain:"Une armoire ouverte avec des pièces nues visibles relève de la zone de voisinage : le B0 ne doit ni s'en approcher, ni la manipuler, ni la refermer lui-même — il signale et attend des consignes." },
+    { cat:"situation", type:"single", prompt:"Un chantier prévoit de monter un échafaudage à quelques mètres d'une ligne électrique aérienne. Qui doit valider la distance de sécurité avant le montage ?",
+      options:["Chaque B0 à sa propre estimation","Le donneur d'ordre ou la personne compétente qui définit les distances et consignes avant le début des travaux","N'importe quel collègue présent","Personne, ce n'est pas nécessaire pour une ligne basse tension"],
+      correct:[1], explain:"La distance de sécurité près d'une ligne électrique est fixée en amont par une personne compétente, jamais estimée sur place par un B0." },
+    { cat:"situation", type:"single", prompt:"Vous voyez un collègue non habilité s'apprêter à ouvrir une armoire électrique par curiosité. Que faites-vous ?",
+      options:["Vous le laissez faire, ce n'est pas votre responsabilité","Vous l'arrêtez immédiatement et lui rappelez qu'il n'est pas habilité à ouvrir cette armoire","Vous le filmez pour en parler plus tard","Vous préviendrez seulement en fin de journée"],
+      correct:[1], explain:"Toute personne, habilitée ou non, doit intervenir immédiatement pour empêcher un geste dangereux d'un collègue non habilité." },
+    { cat:"situation", type:"single", prompt:"Un balisage (bande rouge et blanche) a été posé par un électricien devant une baie technique. Pouvez-vous le déplacer légèrement pour passer plus facilement avec votre matériel de nettoyage, en le remettant ensuite en place ?",
+      options:["Oui, si vous le remettez ensuite exactement pareil","Non, un balisage ne doit jamais être déplacé par une personne non habilitée, même temporairement","Oui, sans problème","Oui, à condition de prévenir un collègue"],
+      correct:[1], explain:"Un balisage délimite une zone de danger définie par un habilité : il ne se déplace jamais, même brièvement, par une personne non habilitée." },
+    { cat:"situation", type:"single", prompt:"Vous devez intervenir dans un local qui vient d'être inondé par une fuite d'eau ; des prises électriques se trouvent sur le mur, à environ 20 cm au-dessus du niveau de l'eau. Pouvez-vous continuer votre tâche non-électrique dans ce local ?",
+      options:["Oui, tant que vous ne touchez pas l'eau","Non : il faut évacuer la zone et faire couper l'alimentation électrique du local par une personne habilitée avant d'y retourner","Oui, avec des bottes en caoutchouc","Oui, si vous restez loin des prises"],
+      correct:[1], explain:"Eau et électricité forment une combinaison dangereuse même sans contact direct avec une prise : il faut évacuer et faire couper le courant avant de reprendre le travail." },
+    { cat:"situation", type:"single", prompt:"Vous devez déplacer une échelle métallique dans un atelier. Le trajet le plus court passe sous une ligne électrique aérienne visible au plafond. Que faites-vous ?",
+      options:["Vous passez rapidement, l'échelle repliée","Vous choisissez un autre trajet, en évitant tout passage sous ou à proximité de la ligne avec un objet conducteur comme une échelle métallique","Vous demandez à un collègue de la porter à l'horizontale au-dessus de sa tête","Vous gardez simplement l'échelle basse en passant"],
+      correct:[1], explain:"Un objet métallique long (échelle) porté à proximité d'une ligne électrique peut provoquer un amorçage : il faut toujours choisir un trajet qui l'évite complètement." },
+    { cat:"situation", type:"single", prompt:"Un chargé de travaux (B2) vous demande, en tant que B0, de « juste vérifier rapidement » si un fil semble bien connecté dans une armoire ouverte, pour gagner du temps. Que répondez-vous ?",
+      options:["Vous acceptez car c'est rapide et simple","Vous refusez : cela reste une opération d'ordre électrique, interdite à un B0 même simple et même demandée par un B2","Vous le faites sans le dire à personne","Vous acceptez si vous portez des gants"],
+      correct:[1], explain:"Le périmètre d'un B0 ne se négocie jamais, même face à une demande d'un habilité supérieur : aucune opération d'ordre électrique, aussi simple soit-elle." },
+
+    { cat:"role", type:"single", prompt:"Un B0, même habilité H0V pour un autre chantier, peut-il réaliser une opération de nettoyage directement sur des pièces conductrices sous tension ?",
+      options:["Oui, s'il porte des gants isolants","Non : le nettoyage sous tension (attribut « N ») est réservé aux électriciens habilités, jamais à un B0 ou un H0","Oui, uniquement en très basse tension","Oui, s'il est accompagné d'un surveillant"],
+      correct:[1], explain:"L'attribut « N » (nettoyage sous tension) ne peut être accordé qu'à des électriciens qualifiés. Un B0 ou un H0, même H0V, ne l'obtient jamais." },
+    { cat:"risques", type:"single", prompt:"Pourquoi un B0 ne peut-il pas ouvrir une armoire électrique fermée, même sans outil apparent ?",
+      options:["Parce que la porte est toujours verrouillée à clé","Parce que l'enveloppe offre un degré de protection (IP2X ou IPXXB en basse tension) contre les contacts directs, que seule une personne habilitée peut lever","Parce que c'est écrit sur une pancarte","Parce que le règlement intérieur l'interdit uniquement"],
+      correct:[1], explain:"Les armoires et coffrets électriques sont conçus avec un degré de protection IP2X/IPXXB (IP3X/IPXXC en HT) : cette barrière ne doit être levée que par une personne habilitée, jamais par un B0." },
+    { cat:"accident", type:"single", prompt:"Un début d'incendie d'origine électrique se déclare en basse tension (<1000 V). Quelle distance minimale respecter entre l'extincteur et les flammes ?",
+      options:["0,5 mètre minimum","5 centimètres suffisent","Aucune distance particulière n'est requise","3 mètres minimum, comme en HT"],
+      correct:[0], explain:"En basse tension, une distance minimale de 0,5 m doit être maintenue entre l'extincteur et le foyer, en utilisant un produit adapté au risque électrique (CO2, poudre, eau pulvérisée)." },
+    { cat:"accident", type:"single", prompt:"Vous découvrez un câble électrique tombé au sol et vous ne connaissez pas son niveau de tension. Quelle distance de sécurité respecter ?",
+      options:["1 mètre suffit dans tous les cas","Aucune distance n'est nécessaire si le câble ne bouge pas","Au moins 5 mètres, en cas de doute sur la tension","Vous pouvez vous approcher à condition de ne pas le toucher"],
+      correct:[2], explain:"En cas de doute sur la tension d'un conducteur tombé au sol, la distance de sécurité minimale est de 5 mètres (3 m si la tension est certainement inférieure à 50 000 V)." },
+    { cat:"accident", type:"single", prompt:"Un engin de chantier accroche une ligne électrique aérienne. Le conducteur, resté dans sa cabine, doit-il en descendre ?",
+      options:["Oui, immédiatement, pour s'éloigner du danger","Non, il doit rester dans l'engin jusqu'à confirmation de la mise hors tension par les services compétents (sauf départ de feu)","Oui, en sautant le plus loin possible","Cela dépend de la tension de la ligne"],
+      correct:[1], explain:"Tant que la coupure n'est pas confirmée, l'engin reste au même potentiel : en descendre créerait un risque d'électrisation par tension de pas. Il faut rester à bord et alerter." },
+    { cat:"documents", type:"single", prompt:"En dehors du recyclage périodique (environ tous les 3 ans), l'habilitation doit-elle faire l'objet d'un suivi plus rapproché ?",
+      options:["Non, seul le recyclage tous les 3 ans compte","Oui, elle doit être examinée par l'employeur au moins une fois par an, et à chaque changement notable de situation","Oui, mais seulement tous les 5 ans","Non, une fois délivrée elle n'est plus jamais réexaminée"],
+      correct:[1], explain:"L'employeur doit examiner l'habilitation au moins une fois par an, et chaque fois que la situation évolue (changement de poste, interruption de pratique, restriction médicale, etc.)." },
+
+    { cat:"risques", type:"single", prompt:"À partir de quelle intensité le courant électrique est-il considéré comme dangereux ?",
+      options:["10 mA en courant alternatif, 40 mA en courant continu","1 mA quel que soit le type de courant","100 mA uniquement en courant continu","Le courant continu n'est jamais considéré comme dangereux"],
+      correct:[0], explain:"Le seuil de dangerosité conventionnel est de 10 mA en courant alternatif et 40 mA en courant continu, la résistance du corps humain étant prise en compte." },
+    { cat:"risques", type:"single", prompt:"En courant alternatif, quelle tension de contact est déjà considérée comme dangereuse en milieu humide ou sur un chantier extérieur ?",
+      options:["50 V, comme en milieu sec","25 V","12 V, uniquement en milieu immergé","100 V"],
+      correct:[1], explain:"La tension de contact dangereuse est de 50 V en milieu sec, mais descend à 25 V en milieu humide ou extérieur, et à 12 V en milieu immergé — la résistance du corps chute avec l'humidité." },
+    { cat:"distances", type:"single", prompt:"Que désigne la DLI (Distance Limite d'Investigation) ?",
+      options:["La même chose que la DMA, sous un autre nom","La limite fixée à 50 m d'une pièce nue sous tension en champ libre, au-delà de laquelle aucune habilitation n'est nécessaire","Une distance de 0,30 m en basse tension","Une distance qui ne s'applique qu'aux électriciens"],
+      correct:[1], explain:"La DLI, fixée à 50 m d'une pièce nue sous tension en champ libre, délimite la zone 0 (zone d'investigation) : au-delà, aucune habilitation n'est requise ; en dessous, il faut analyser le risque." },
+    { cat:"distances", type:"single", prompt:"Comment appelle-t-on la zone la plus large autour d'une installation électrique, où il faut seulement analyser si l'opération prévue expose au risque électrique ?",
+      options:["Zone de voisinage renforcé","Zone 0, ou zone d'investigation","Zone de travaux sous tension","Zone interdite"],
+      correct:[1], explain:"La zone 0 (zone d'investigation) s'étend jusqu'à la DLI (distance limite d'investigation) : un personnel non habilité ou sous surveillance peut y accéder après analyse du risque." },
+    { cat:"general", type:"single", prompt:"Dans quels cas l'habilitation électrique est-elle obligatoire ?",
+      options:["Uniquement pour effectuer une opération électrique soi-même","Pour effectuer une opération, pour la surveiller, ou pour accéder sans surveillance à un local réservé aux électriciens","Uniquement pour les chargés de travaux","Uniquement si l'employeur le demande par écrit"],
+      correct:[1], explain:"La norme prévoit 3 cas où l'habilitation est obligatoire : effectuer une opération sur/à proximité d'un ouvrage électrique, la surveiller, ou accéder sans surveillance à un local réservé aux électriciens." },
+    { cat:"epi", type:"single", prompt:"Un appareil de classe II (double isolation) doit-il être relié à la terre ?",
+      options:["Oui, systématiquement","Non, jamais : sa double isolation ou son isolation renforcée le dispense de liaison à la terre","Oui, uniquement en extérieur","Non, sauf en local humide"],
+      correct:[1], explain:"Le matériel de classe II (norme NF EN 61140) assure la protection par double isolation ou isolation renforcée : il ne se relie jamais à la terre, contrairement au matériel de classe I." },
+    { cat:"risques", type:"single", prompt:"Que désigne la « tension limite conventionnelle » de 50 V en courant alternatif ?",
+      options:["La tension maximale que peut délivrer une prise domestique","La tension de contact maximale admissible pendant 5 secondes sans danger reconnu","La tension minimale pour risquer une électrocution","La tension utilisée uniquement en TBTS"],
+      correct:[1], explain:"La réglementation fixe une tension limite conventionnelle de sécurité (50 V en alternatif, 120 V en continu lisse) : c'est la tension de contact maximale admissible pendant 5 secondes." },
+    { cat:"general", type:"single", prompt:"Un agent de sécurité effectue une ronde dans un local électrique où toutes les armoires sont fermées et où aucun risque de contact direct n'est présent. A-t-il besoin d'une habilitation électrique ?",
+      options:["Oui, systématiquement, comme tout accès à un local électrique","Non : si le risque de contact direct est supprimé, l'habilitation n'est pas requise — mais l'employeur doit quand même informer des dangers","Oui, uniquement s'il reste plus de 10 minutes","Non, aucune information particulière n'est nécessaire"],
+      correct:[1], explain:"Quand le risque de contact direct est supprimé (locaux fermés, pas d'opération prévue), l'habilitation n'est pas exigée ; l'employeur reste toutefois tenu d'informer la personne des dangers et consignes du local." },
+    { cat:"general", type:"single", prompt:"Un travailleur indépendant qui réalise lui-même une opération sur une installation électrique doit-il détenir une habilitation ?",
+      options:["Oui, comme tout intervenant","Non, l'habilitation ne concerne que les salariés placés sous l'autorité d'un employeur — mais il doit prouver sa formation et sa connaissance du risque électrique","Non, aucune formation n'est nécessaire dans ce cas","Oui, mais seulement en basse tension"],
+      correct:[1], explain:"L'habilitation est délivrée par un employeur à un salarié placé sous son autorité. Un indépendant n'en a pas besoin, mais doit pouvoir prouver sa formation à la prévention du risque électrique." }
+  ];
+
+  var els = {
+    start: document.getElementById('screen-start'),
+    themes: document.getElementById('screen-themes'),
+    themeList: document.getElementById('theme-list'),
+    btnOpenThemes: document.getElementById('btn-open-themes'),
+    btnThemesBack: document.getElementById('btn-themes-back'),
+    quiz: document.getElementById('screen-quiz'),
+    result: document.getElementById('screen-result'),
+    btnStart: document.getElementById('btn-start'),
+    btnStartErrors: document.getElementById('btn-start-errors'),
+    btnStartExam: document.getElementById('btn-start-exam'),
+    examBestBox: document.getElementById('exam-best-box'),
+    examVerdictBox: document.getElementById('exam-verdict-box'),
+    bestBox: document.getElementById('best-score-box'),
+    progressLabel: document.getElementById('progress-label'),
+    progressScore: document.getElementById('progress-score'),
+    progressFill: document.getElementById('progress-fill'),
+    qCategory: document.getElementById('q-category'),
+    qPrompt: document.getElementById('q-prompt'),
+    qOptions: document.getElementById('q-options'),
+    qFeedback: document.getElementById('q-feedback'),
+    btnAction: document.getElementById('btn-action'),
+    scoreRing: document.getElementById('score-ring'),
+    resultPct: document.getElementById('result-pct'),
+    resultFrac: document.getElementById('result-frac'),
+    resultVerdict: document.getElementById('result-verdict'),
+    resultTime: document.getElementById('result-time'),
+    catBreakdown: document.getElementById('cat-breakdown'),
+    btnRestart: document.getElementById('btn-restart'),
+    btnHome: document.getElementById('btn-home'),
+    btnToggleReview: document.getElementById('btn-toggle-review'),
+    reviewSection: document.getElementById('review-section'),
+    reviewList: document.getElementById('review-list'),
+    attemptCounter: document.getElementById('attempt-counter'),
+    statReview: document.getElementById('stat-review'),
+    btnResetProgress: document.getElementById('btn-reset-progress'),
+    resultSub: document.getElementById('result-sub'),
+    resultWeak: document.getElementById('result-weak'),
+    btnReviewWeak: document.getElementById('btn-review-weak')
+  };
+
+  var state = { order:[], index:0, score:0, answered:false, selected:[], results:[], startTime:0, examMode:false, timerId:null, deadline:0 };
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function loadStorage(key){
+    try{ return JSON.parse(localStorage.getItem(key) || 'null'); }catch(e){ return null; }
+  }
+  function saveStorage(key, val){
+    try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+  }
+
+  function loadProgress(){
+    return loadStorage('b0quiz-progress') || {};
+  }
+  function saveProgress(p){
+    saveStorage('b0quiz-progress', p);
+  }
+  function getPersistedWrongKeys(){
+    var progress = loadProgress();
+    return Object.keys(progress).filter(function(k){ return progress[k] === true; });
+  }
+  function reviewCount(){
+    return getPersistedWrongKeys().length;
+  }
+
+  function showBestScore(){
+    var best = loadStorage('b0quiz-best');
+    var attempts = loadStorage('b0quiz-attempts') || 0;
+    els.attemptCounter.textContent = 'Tentative n°' + (attempts + 1);
+    if (best){
+      els.bestBox.hidden = false;
+      els.bestBox.textContent = 'Meilleur score : ' + best.pct + '% (' + best.frac + ') sur ' + attempts + ' tentative(s)';
+    }
+    var n = reviewCount();
+    els.statReview.textContent = n;
+    if (n > 0){
+      els.btnStartErrors.hidden = false;
+      els.btnStartErrors.textContent = 'Réviser uniquement mes ' + n + ' erreur' + (n > 1 ? 's' : '') + ' en cours';
+    } else {
+      els.btnStartErrors.hidden = true;
+    }
+
+    var examBest = loadStorage('b0quiz-exam-best');
+    var examAttempts = loadStorage('b0quiz-exam-attempts') || 0;
+    if (examBest){
+      els.examBestBox.hidden = false;
+      els.examBestBox.textContent = 'Mode Examen — meilleur résultat : ' + examBest.pct + '% (' + (examBest.passed ? 'réussi' : 'échoué') + '), ' + examAttempts + ' tentative(s)';
+    } else {
+      els.examBestBox.hidden = true;
+    }
+  }
+
+  function buildQuestionOrder(filterCats){
+    var progress = loadProgress();
+    var pool = BANK.filter(function(q){
+      return !filterCats || !filterCats.length || filterCats.indexOf(q.cat) !== -1;
+    });
+    var priority = pool.filter(function(q){ return progress[q.prompt] === true; });
+    var rest = pool.filter(function(q){ return progress[q.prompt] !== true; });
+    var ordered = shuffle(priority).concat(shuffle(rest));
+    return ordered.map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function buildOrderFromKeys(keys){
+    var pool = BANK.filter(function(q){ return keys.indexOf(q.prompt) !== -1; });
+    return shuffle(pool).map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function buildExamOrder(){
+    var pool = shuffle(BANK).slice(0, Math.min(EXAM_SIZE, BANK.length));
+    return pool.map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function stopExamTimer(){
+    if (state.timerId){ clearInterval(state.timerId); state.timerId = null; }
+    els.progressScore.style.color = '';
+    els.progressScore.style.fontWeight = '';
+  }
+
+  function updateExamTimer(){
+    var remaining = state.deadline - Date.now();
+    if (remaining <= 0){
+      stopExamTimer();
+      finishQuiz();
+      return;
+    }
+    var totalSec = Math.ceil(remaining / 1000);
+    var m = Math.floor(totalSec / 60);
+    var s = totalSec % 60;
+    els.progressScore.textContent = 'Temps : ' + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function startExamTimer(){
+    state.deadline = Date.now() + EXAM_TIME_MS;
+    els.progressScore.style.color = 'var(--danger)';
+    els.progressScore.style.fontWeight = '700';
+    updateExamTimer();
+    state.timerId = setInterval(updateExamTimer, 1000);
+  }
+
+  function startQuiz(opts){
+    opts = opts || {};
+    state.examMode = !!opts.exam;
+    if (state.examMode){
+      state.order = buildExamOrder();
+    } else if (opts.keys && opts.keys.length){
+      state.order = buildOrderFromKeys(opts.keys);
+    } else {
+      state.order = buildQuestionOrder(opts.cats || null);
+    }
+    state.filterCats = state.examMode ? null : (opts.cats || null);
+    state.index = 0;
+    state.score = 0;
+    state.results = [];
+    state.startTime = Date.now();
+    els.start.hidden = true;
+    els.themes.hidden = true;
+    els.result.hidden = true;
+    els.quiz.hidden = false;
+    stopExamTimer();
+    if (state.examMode) startExamTimer();
+    renderQuestion();
+  }
+
+  function categoryCounts(){
+    var counts = {};
+    Object.keys(CATS).forEach(function(k){ counts[k] = 0; });
+    BANK.forEach(function(q){ counts[q.cat]++; });
+    return counts;
+  }
+
+  function renderThemeList(){
+    var counts = categoryCounts();
+    els.themeList.innerHTML = Object.keys(CATS).map(function(k){
+      return '<li class="option" data-cat="' + k + '" style="justify-content:space-between; align-items:center;">' +
+        '<span class="txt">' + CATS[k] + '</span>' +
+        '<span class="mono" style="color:var(--ink-faint); font-size:0.8rem;">' + counts[k] + ' question' + (counts[k] > 1 ? 's' : '') + '</span></li>';
+    }).join('');
+    els.themeList.querySelectorAll('li').forEach(function(li){
+      li.addEventListener('click', function(){
+        startQuiz({ cats: [li.getAttribute('data-cat')] });
+      });
+    });
+  }
+
+  function currentQuestion(){
+    var entry = state.order[state.index];
+    var q = BANK.filter(function(b){ return b.prompt === entry.key; })[0];
+    return { q: q, key: entry.key, optOrder: entry.optOrder };
+  }
+
+  function renderQuestion(){
+    state.answered = false;
+    state.selected = [];
+    var cur = currentQuestion();
+    var q = cur.q;
+
+    els.progressLabel.textContent = 'Question ' + (state.index + 1) + ' / ' + state.order.length;
+    if (!state.examMode) els.progressScore.textContent = 'Score : ' + state.score;
+    els.progressFill.style.width = (state.index / state.order.length * 100) + '%';
+
+    els.qCategory.innerHTML = CATS[q.cat] + '<span class="q-type">· ' + (q.type === 'multi' ? 'plusieurs réponses possibles' : 'une seule réponse') + '</span>';
+    els.qPrompt.textContent = q.prompt;
+    els.qFeedback.innerHTML = '';
+    els.qOptions.innerHTML = '';
+
+    cur.optOrder.forEach(function(origIdx, pos){
+      var li = document.createElement('li');
+      li.className = 'option';
+      var letter = String.fromCharCode(65 + pos);
+      var inputType = q.type === 'multi' ? 'checkbox' : 'radio';
+      var inputId = 'opt-' + pos;
+      li.innerHTML = '<input type="' + inputType + '" name="answer" id="' + inputId + '" value="' + origIdx + '">' +
+                      '<span class="letter">' + letter + '</span>' +
+                      '<label class="txt" for="' + inputId + '">' + q.options[origIdx] + '</label>';
+      var input = li.querySelector('input');
+      li.addEventListener('click', function(e){
+        if (state.answered) return;
+        if (e.target === input || e.target.tagName === 'LABEL') return;
+        input.click();
+      });
+      input.addEventListener('change', onSelectionChange);
+      els.qOptions.appendChild(li);
+    });
+
+    els.btnAction.textContent = state.examMode ? 'Valider et continuer' : 'Valider ma réponse';
+    els.btnAction.disabled = true;
+    els.btnAction.onclick = validateAnswer;
+  }
+
+  function onSelectionChange(){
+    var inputs = els.qOptions.querySelectorAll('input');
+    var sel = [];
+    inputs.forEach(function(inp){
+      inp.closest('.option').classList.toggle('is-selected', inp.checked);
+      if (inp.checked) sel.push(parseInt(inp.value, 10));
+    });
+    state.selected = sel;
+    els.btnAction.disabled = sel.length === 0;
+  }
+
+  function arraysEqualAsSets(a, b){
+    if (a.length !== b.length) return false;
+    var as = a.slice().sort();
+    var bs = b.slice().sort();
+    return as.every(function(v, i){ return v === bs[i]; });
+  }
+
+  function validateAnswer(){
+    if (state.answered){ nextStep(); return; }
+    state.answered = true;
+    var cur = currentQuestion();
+    var q = cur.q;
+    var isCorrect = arraysEqualAsSets(state.selected, q.correct);
+    if (isCorrect) state.score++;
+
+    if (!state.examMode){
+      var progress = loadProgress();
+      progress[cur.key] = !isCorrect;
+      saveProgress(progress);
+    }
+
+    state.results.push({
+      prompt: q.prompt, cat: q.cat, isCorrect: isCorrect,
+      given: state.selected.map(function(i){ return q.options[i]; }),
+      correct: q.correct.map(function(i){ return q.options[i]; }),
+      explain: q.explain
+    });
+
+    if (state.examMode){
+      nextStep();
+      return;
+    }
+
+    var inputs = els.qOptions.querySelectorAll('input');
+    inputs.forEach(function(inp){
+      var idx = parseInt(inp.value, 10);
+      var opt = inp.closest('.option');
+      inp.disabled = true;
+      if (q.correct.indexOf(idx) !== -1) opt.classList.add('is-correct');
+      else if (inp.checked) opt.classList.add('is-wrong');
+    });
+
+    els.qFeedback.innerHTML =
+      '<div class="feedback ' + (isCorrect ? 'correct' : 'wrong') + '">' +
+      '<span class="head">' + (isCorrect ? 'Bonne réponse' : 'Réponse incorrecte') + '</span>' +
+      '<p>' + q.explain + '</p></div>';
+
+    els.progressScore.textContent = 'Score : ' + state.score;
+    els.btnAction.textContent = (state.index === state.order.length - 1) ? 'Voir mes résultats' : 'Question suivante';
+  }
+
+  function nextStep(){
+    state.index++;
+    if (state.index >= state.order.length){ finishQuiz(); return; }
+    renderQuestion();
+  }
+
+  function finishQuiz(){
+    stopExamTimer();
+    els.quiz.hidden = true;
+    els.result.hidden = false;
+    els.progressFill.style.width = '100%';
+
+    var total = state.order.length;
+    var pct = Math.round(state.score / total * 100);
+    els.scoreRing.style.setProperty('--pct', pct);
+    els.resultPct.textContent = pct + '%';
+    els.resultFrac.textContent = state.score + ' / ' + total;
+
+    if (state.examMode){
+      var passed = pct >= EXAM_PASS_PCT;
+      els.examVerdictBox.hidden = false;
+      els.examVerdictBox.textContent = passed ?
+        'RÉUSSI — seuil de réussite atteint (≥ ' + EXAM_PASS_PCT + '%)' :
+        'ÉCHOUÉ — seuil de réussite non atteint (< ' + EXAM_PASS_PCT + '%)';
+      els.examVerdictBox.style.background = passed ? 'var(--ok-soft)' : 'var(--danger-soft)';
+      els.examVerdictBox.style.color = passed ? 'var(--ok)' : 'var(--danger)';
+    } else {
+      els.examVerdictBox.hidden = true;
+    }
+
+    var verdict, sub;
+    if (pct === 100){ verdict = 'Score parfait !'; sub = "Toutes les notions sont acquises — direction l'examen."; }
+    else if (pct >= 85){ verdict = 'Excellent niveau.'; sub = 'Encore quelques détails à consolider.'; }
+    else if (pct >= 60){ verdict = 'Bonne base.'; sub = "Un peu d'entraînement ciblé et c'est bon."; }
+    else { verdict = 'À retravailler.'; sub = 'Relis la fiche de révision, puis reviens sur ces thèmes.'; }
+    els.resultVerdict.textContent = verdict;
+    els.resultSub.textContent = sub;
+    els.resultTime.textContent = 'Temps : ' + formatTime(Date.now() - state.startTime);
+
+    var byCat = {};
+    Object.keys(CATS).forEach(function(k){ byCat[k] = { correct:0, total:0 }; });
+    state.results.forEach(function(r){
+      byCat[r.cat].total++;
+      if (r.isCorrect) byCat[r.cat].correct++;
+    });
+    els.catBreakdown.innerHTML = Object.keys(CATS).filter(function(k){ return byCat[k].total > 0; }).map(function(k){
+      var c = byCat[k];
+      var p = c.total ? Math.round(c.correct / c.total * 100) : 0;
+      return '<div class="cat-row"><span class="name">' + CATS[k] + '</span>' +
+        '<span class="bar"><span style="width:' + p + '%; background:' + (p >= 70 ? 'var(--ok)' : p >= 40 ? 'var(--accent)' : 'var(--danger)') + '"></span></span>' +
+        '<span class="frac mono">' + c.correct + '/' + c.total + '</span></div>';
+    }).join('');
+
+    var weakCats = Object.keys(CATS).filter(function(k){ return byCat[k].total > 0 && byCat[k].correct < byCat[k].total; });
+    weakCats.sort(function(a, b){
+      return (byCat[a].correct / byCat[a].total) - (byCat[b].correct / byCat[b].total);
+    });
+    var weakNames = weakCats.map(function(k){ return CATS[k]; });
+    var persistedWrong = getPersistedWrongKeys();
+
+    els.resultWeak.textContent = weakNames.length ? ('À revoir en priorité : ' + weakNames.join(', ') + '.') : (state.filterCats ? 'Thème maîtrisé !' : 'Tous les thèmes sont maîtrisés !');
+    if (persistedWrong.length){
+      els.btnReviewWeak.hidden = false;
+      els.btnReviewWeak.textContent = 'Réviser mes ' + persistedWrong.length + ' erreur' + (persistedWrong.length > 1 ? 's' : '') + ' en cours';
+    } else {
+      els.btnReviewWeak.hidden = true;
+    }
+
+    var wrong = state.results.filter(function(r){ return !r.isCorrect; });
+    els.reviewList.innerHTML = wrong.length ? wrong.map(function(r){
+      return '<div class="review-item"><div class="q">' + r.prompt + '</div>' +
+        '<div class="a">Ta réponse : <strong>' + (r.given.join(', ') || '—') + '</strong></div>' +
+        '<div class="a">Bonne réponse : <strong>' + r.correct.join(', ') + '</strong></div>' +
+        '<div class="a">' + r.explain + '</div></div>';
+    }).join('') : '<p style="color:var(--ink-soft);">Aucune erreur — rien à revoir !</p>';
+
+    if (state.examMode){
+      var examAttempts = (loadStorage('b0quiz-exam-attempts') || 0) + 1;
+      saveStorage('b0quiz-exam-attempts', examAttempts);
+      var examBest = loadStorage('b0quiz-exam-best');
+      if (!examBest || pct > examBest.pct){
+        saveStorage('b0quiz-exam-best', { pct: pct, passed: pct >= EXAM_PASS_PCT });
+      }
+    } else {
+      var attempts = (loadStorage('b0quiz-attempts') || 0) + 1;
+      saveStorage('b0quiz-attempts', attempts);
+      var best = loadStorage('b0quiz-best');
+      if (!best || pct > best.pct){
+        saveStorage('b0quiz-best', { pct: pct, frac: state.score + '/' + total });
+      }
+    }
+  }
+
+  function formatTime(ms){
+    var s = Math.round(ms / 1000);
+    var m = Math.floor(s / 60);
+    var r = s % 60;
+    return m + ' min ' + (r < 10 ? '0' : '') + r + ' s';
+  }
+
+  els.btnStart.addEventListener('click', function(){ startQuiz(); });
+  els.btnStartExam.addEventListener('click', function(){ startQuiz({ exam:true }); });
+  els.btnStartErrors.addEventListener('click', function(){ startQuiz({ keys: getPersistedWrongKeys() }); });
+  els.btnReviewWeak.addEventListener('click', function(){ startQuiz({ keys: getPersistedWrongKeys() }); });
+  els.btnOpenThemes.addEventListener('click', function(){
+    renderThemeList();
+    els.start.hidden = true;
+    els.themes.hidden = false;
+  });
+  els.btnThemesBack.addEventListener('click', function(){
+    els.themes.hidden = true;
+    els.start.hidden = false;
+  });
+  function goHome(){
+    els.reviewSection.hidden = true;
+    els.btnToggleReview.textContent = 'Revoir mes erreurs';
+    showBestScore();
+    els.quiz.hidden = true;
+    els.themes.hidden = true;
+    els.result.hidden = true;
+    els.start.hidden = false;
+  }
+  els.btnRestart.addEventListener('click', goHome);
+  els.btnHome.addEventListener('click', goHome);
+  els.btnToggleReview.addEventListener('click', function(){
+    els.reviewSection.hidden = !els.reviewSection.hidden;
+    els.btnToggleReview.textContent = els.reviewSection.hidden ? 'Revoir mes erreurs' : 'Masquer mes erreurs';
+  });
+  els.btnResetProgress.addEventListener('click', function(){
+    try{ localStorage.removeItem('b0quiz-progress'); }catch(e){}
+    showBestScore();
+  });
+
+  showBestScore();
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>

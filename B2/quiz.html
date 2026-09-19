@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#14161a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/icons/favicon-16.png" type="image/png" sizes="16x16">
+<title>Mega Quiz B2</title>
+<style>
+  :root{
+    --bg:#f7f6f1; --surface:#ffffff; --surface-2:#f0eee6;
+    --ink:#15181d; --ink-soft:#565c66; --ink-faint:#8a8f99;
+    --accent:#b7790a; --accent-soft:#fbe9c6;
+    --danger:#a3271e; --danger-soft:#f7e1de;
+    --ok:#1f6d4c; --ok-soft:#dcece3;
+    --line:#e2ded2;
+    --shadow: 0 1px 2px rgba(20,17,10,0.06), 0 12px 30px -14px rgba(20,17,10,0.16);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+      --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+      --accent:#f0b42d; --accent-soft:#3a2c0c;
+      --danger:#e5726a; --danger-soft:#3a1c19;
+      --ok:#5fc298; --ok-soft:#153327;
+      --line:#2b2f37;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 30px -14px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+    --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+    --accent:#f0b42d; --accent-soft:#3a2c0c;
+    --danger:#e5726a; --danger-soft:#3a1c19;
+    --ok:#5fc298; --ok-soft:#153327;
+    --line:#2b2f37;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 30px -14px rgba(0,0,0,0.6);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  *{ box-sizing:border-box; }
+  html, body{ margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--ink); font-family:'Source Serif 4', Georgia, serif; line-height:1.55; padding-inline:18px; padding-block:28px 60px; }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, Consolas, monospace; }
+  .page{ max-width:640px; margin-inline:auto; }
+  .masthead{ margin-bottom:22px; }
+  .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1.title{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:clamp(2.2rem, 8vw, 3.2rem); line-height:0.92; margin:4px 0 6px; text-wrap:balance; }
+  .subtitle{ color:var(--ink-soft); font-size:1rem; max-width:52ch; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:24px; box-shadow:var(--shadow); }
+  @media (max-width:480px){ .card{ padding:18px; } }
+  .stat-row{ display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 20px; }
+  .stat{ flex:1; min-width:120px; background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .stat .num{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:1.8rem; color:var(--accent); line-height:1; }
+  .stat .lab{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); }
+  .best-score{ font-family:'IBM Plex Mono', monospace; font-size:0.85rem; color:var(--ink-soft); background:var(--accent-soft); border-radius:8px; padding:10px 14px; margin-bottom:18px; }
+  button.primary{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:0.95rem; letter-spacing:0.02em; background:var(--ink); color:var(--bg); border:none; border-radius:9px; padding:14px 22px; cursor:pointer; width:100%; transition:transform .12s ease, opacity .12s ease; }
+  button.primary:hover{ opacity:0.88; }
+  button.primary:active{ transform:scale(0.98); }
+  button.primary:disabled{ opacity:0.4; cursor:not-allowed; }
+  button.primary:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  button.ghost{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; letter-spacing:0.02em; background:transparent; color:var(--ink-soft); border:1px solid var(--line); border-radius:9px; padding:10px 16px; cursor:pointer; }
+  button.ghost:hover{ border-color:var(--ink-soft); color:var(--ink); }
+  button.ghost:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  button.exam{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:0.95rem; letter-spacing:0.02em; background:var(--surface); color:var(--ink); border:2px solid var(--ink); border-radius:9px; padding:13px 22px; cursor:pointer; width:100%; }
+  button.exam:hover{ background:var(--accent-soft); border-color:var(--accent); }
+  button.exam:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  .progress-wrap{ margin-bottom:18px; }
+  .progress-meta{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--ink-faint); letter-spacing:0.04em; }
+  .progress-track{ height:6px; background:var(--surface-2); border-radius:999px; overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--accent); border-radius:999px; transition:width .3s ease; }
+  .cat-tag{ display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); background:var(--accent-soft); padding:3px 9px; border-radius:999px; margin-bottom:10px; font-weight:600; }
+  .q-type{ color:var(--ink-faint); font-weight:400; text-transform:none; letter-spacing:0; margin-left:6px; }
+  h2.question{ font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:1.5rem; line-height:1.15; margin:0 0 16px; text-wrap:balance; }
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; list-style:none; padding:0; }
+  .option{ display:flex; align-items:flex-start; gap:12px; border:1.5px solid var(--line); border-radius:10px; padding:12px 14px; cursor:pointer; background:var(--surface); transition:border-color .12s ease, background .12s ease; }
+  .option:hover{ border-color:var(--accent); }
+  .option input{ margin-top:3px; accent-color:var(--accent); width:17px; height:17px; flex:none; }
+  .option .letter{ font-family:'IBM Plex Mono', monospace; font-weight:600; color:var(--ink-faint); flex:none; width:1.1em; }
+  .option .txt{ flex:1; }
+  .option.is-selected{ border-color:var(--accent); background:var(--accent-soft); }
+  .option.is-selected .letter{ color:var(--accent); }
+  .option.is-correct{ border-color:var(--ok); background:var(--ok-soft); }
+  .option.is-wrong{ border-color:var(--danger); background:var(--danger-soft); }
+  .option:has(input:focus-visible){ outline:3px solid var(--accent); outline-offset:2px; }
+  .feedback{ border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:0.94rem; border-left:4px solid var(--line); }
+  .feedback.correct{ background:var(--ok-soft); border-left-color:var(--ok); }
+  .feedback.wrong{ background:var(--danger-soft); border-left-color:var(--danger); }
+  .feedback .head{ font-family:'IBM Plex Mono', monospace; font-size:0.78rem; letter-spacing:0.05em; text-transform:uppercase; font-weight:700; display:block; margin-bottom:6px; }
+  .feedback.correct .head{ color:var(--ok); }
+  .feedback.wrong .head{ color:var(--danger); }
+  .feedback p{ margin:0; }
+  .score-ring{ width:168px; height:168px; border-radius:50%; margin:6px auto 18px; position:relative; display:flex; align-items:center; justify-content:center; }
+  .score-ring::before{ content:""; position:absolute; inset:0; border-radius:50%; background: conic-gradient(var(--accent) calc(var(--pct,0) * 1%), var(--surface-2) 0); }
+  .score-ring::after{ content:""; position:absolute; inset:10px; border-radius:50%; background:var(--surface); }
+  .score-ring .val{ position:relative; z-index:1; text-align:center; font-family:'Big Shoulders Display', sans-serif; }
+  .score-ring .val .pct{ font-size:2.6rem; font-weight:800; line-height:1; }
+  .score-ring .val .frac{ font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--ink-soft); }
+  .verdict{ text-align:center; font-size:1.05rem; margin-bottom:6px; }
+  .verdict-sub{ text-align:center; color:var(--ink-soft); font-size:0.9rem; margin-bottom:20px; }
+  .cat-breakdown{ display:flex; flex-direction:column; gap:8px; margin-bottom:22px; }
+  .cat-row{ display:flex; align-items:center; gap:10px; }
+  .cat-row .name{ width:132px; flex:none; font-size:0.85rem; color:var(--ink-soft); }
+  .cat-row .bar{ flex:1; height:8px; background:var(--surface-2); border-radius:999px; overflow:hidden; }
+  .cat-row .bar > span{ display:block; height:100%; background:var(--ok); border-radius:999px; }
+  .cat-row .frac{ font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--ink-faint); width:38px; text-align:right; flex:none; }
+  .review{ margin-top:24px; }
+  .review h3{ font-family:'Big Shoulders Display', sans-serif; font-size:1.2rem; margin:0 0 12px; }
+  .review-item{ border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:10px; background:var(--surface-2); }
+  .review-item .q{ font-weight:600; margin-bottom:6px; }
+  .review-item .a{ font-size:0.9rem; color:var(--ink-soft); margin:2px 0; }
+  .review-item .a strong{ color:var(--ink); }
+  .action-row{ display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+  .action-row button{ flex:1; min-width:150px; }
+  footer.foot{ margin-top:32px; padding-top:16px; border-top:1px solid var(--line); color:var(--ink-faint); font-size:0.78rem; font-family:'IBM Plex Mono', monospace; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer.foot a{ color:inherit; }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <img src="../img/quiz-banner.png" alt="" width="900" height="380" style="display:block; width:100%; max-width:380px; margin:0 auto 10px; height:auto;">
+  <header class="masthead">
+    <span class="eyebrow">Entraînement — 68 questions</span>
+    <h1 class="title">Mega Quiz B2</h1>
+    <p class="subtitle">Toutes les notions du programme B2 passées au crible. Réponds seul(e), sans regarder la fiche.</p>
+  </header>
+
+  <section id="screen-start" class="card">
+    <div class="stat-row">
+      <div class="stat"><div class="num">68</div><div class="lab">Questions</div></div>
+      <div class="stat"><div class="num">10</div><div class="lab">Thèmes</div></div>
+      <div class="stat"><div class="num" id="stat-review">0</div><div class="lab">À revoir</div></div>
+    </div>
+    <div id="best-score-box" class="best-score" hidden></div>
+    <p style="color:var(--ink-soft); font-size:0.92rem; margin-bottom:18px;">Les questions ratées reviennent <strong>en priorité</strong> au prochain essai, les autres suivent dans un ordre aléatoire — jamais deux fois le même enchaînement.</p>
+    <button class="primary" id="btn-start">Test complet (68 questions)</button>
+    <button class="primary" id="btn-start-errors" hidden style="width:100%; margin-top:10px;">Réviser uniquement mes erreurs</button>
+    <button class="ghost" id="btn-open-themes" style="width:100%; margin-top:10px;">Réviser un thème précis</button>
+    <button class="exam" id="btn-start-exam" style="margin-top:16px;">Mode Examen — 20 questions, 20 min, sans correction</button>
+    <p class="mono" id="exam-best-box" hidden style="font-size:0.78rem; color:var(--ink-faint); margin-top:8px;"></p>
+    <button class="ghost" id="btn-reset-progress" style="width:100%; margin-top:10px;">Réinitialiser ma progression</button>
+  </section>
+
+  <section id="screen-themes" class="card" hidden>
+    <p class="subtitle" style="margin-bottom:16px;">Choisis un thème&nbsp;: les questions viendront uniquement de cette catégorie.</p>
+    <ul class="options" id="theme-list"></ul>
+    <button class="ghost" id="btn-themes-back" style="width:100%; margin-top:14px;">Retour</button>
+  </section>
+
+  <section id="screen-quiz" class="card" hidden>
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="progress-label" class="mono">Question 1 / 42</span>
+        <span id="progress-score" class="mono">Score : 0</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <span class="cat-tag" id="q-category">Thème</span>
+    <h2 class="question" id="q-prompt">…</h2>
+    <ul class="options" id="q-options"></ul>
+    <div id="q-feedback"></div>
+    <button class="primary" id="btn-action" disabled>Valider ma réponse</button>
+  </section>
+
+  <section id="screen-result" class="card" hidden>
+    <div class="mono" id="exam-verdict-box" hidden style="text-align:center; font-weight:700; font-size:1.05rem; padding:12px; border-radius:10px; margin-bottom:16px; letter-spacing:0.02em;"></div>
+    <div class="score-ring" id="score-ring">
+      <div class="val"><div class="pct" id="result-pct">0%</div><div class="frac" id="result-frac">0 / 42</div></div>
+    </div>
+    <p class="verdict" id="result-verdict">—</p>
+    <p class="verdict-sub" id="result-sub">—</p>
+    <p class="verdict-sub" id="result-weak" style="font-weight:600;"></p>
+    <p class="verdict-sub mono" id="result-time" style="font-size:0.78rem;">—</p>
+    <div class="cat-breakdown" id="cat-breakdown"></div>
+    <div class="action-row">
+      <button class="primary" id="btn-restart">Recommencer tout</button>
+      <button class="primary" id="btn-review-weak" hidden>Réviser ces thèmes</button>
+      <button class="ghost" id="btn-toggle-review">Revoir mes erreurs</button>
+      <button class="ghost" id="btn-home">Menu principal</button>
+    </div>
+    <div class="review" id="review-section" hidden>
+      <h3>À retravailler</h3>
+      <div id="review-list"></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span><a href="../index.html">Menu</a> · <a href="fiche.html">Fiche</a> · <a href="memo.html">Mémo</a></span>
+    <span id="attempt-counter">Tentative n°1</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var EXAM_SIZE = 20;
+  var EXAM_TIME_MS = 20 * 60 * 1000;
+  var EXAM_PASS_PCT = 70;
+
+  var CATS = {
+    role: "Rôle & périmètre",
+    procedure: "Organisation du chantier",
+    tension: "Domaines de tension",
+    distances: "Zones & distances",
+    risques: "Risques électriques",
+    epi: "EPI / Outillage",
+    documents: "Documents",
+    accident: "Conduite à tenir",
+    general: "Général",
+    situation: "Mises en situation"
+  };
+
+  var BANK = [
+    { cat:"role", type:"single", prompt:"Que signifie B2 ?",
+      options:["Chargé de travaux basse tension","Exécutant électricien basse tension","Non-électricien en environnement électrique","Chargé de consignation"],
+      correct:[0], explain:"B2 désigne le chargé de travaux en basse tension." },
+    { cat:"role", type:"single", prompt:"Le B2 peut-il diriger une équipe de B1 ?",
+      options:["Oui, c'est son rôle principal","Non, jamais","Oui, uniquement en HT","Non, réservé au BC"],
+      correct:[0], explain:"Diriger une équipe d'exécutants B1 est le rôle central du chargé de travaux." },
+    { cat:"role", type:"single", prompt:"Le B2 peut-il travailler seul, sans équipe ?",
+      options:["Non, il doit toujours avoir une équipe","Oui, il peut aussi exécuter lui-même les travaux","Non, ce n'est jamais autorisé","Oui, mais seulement en HT"],
+      correct:[1], explain:"Le B2 peut être seul sur un chantier et exécuter lui-même les travaux, en plus de la direction." },
+    { cat:"role", type:"single", prompt:"Qui est responsable de la sécurité de l'équipe pendant les travaux ?",
+      options:["Chaque B1 individuellement","Le chargé de travaux (B2)","Le chargé d'exploitation uniquement","L'inspection du travail"],
+      correct:[1], explain:"Le B2 répond de la sécurité de l'ensemble de son équipe pendant le chantier." },
+    { cat:"role", type:"single", prompt:"Que permet en plus le B2V par rapport au B2 ?",
+      options:["Travailler sous tension","Évoluer (et autoriser son équipe à évoluer) dans la zone de voisinage renforcé","Consigner en HT","Dépanner n'importe quelle installation"],
+      correct:[1], explain:"Le B2 seul est déjà limité à la zone de voisinage simple ; le B2V ajoute l'accès à la zone de voisinage renforcé, au-delà de la DMA." },
+    { cat:"role", type:"single", prompt:"Qui délivre le titre d'habilitation B2 ?",
+      options:["L'organisme de formation","L'employeur","Le chargé d'exploitation","L'inspection du travail"],
+      correct:[1], explain:"C'est toujours l'employeur qui délivre le titre d'habilitation." },
+    { cat:"role", type:"single", prompt:"Le B2 doit-il connaître le niveau d'habilitation de chaque membre de son équipe avant de répartir les tâches ?",
+      options:["Non, ce n'est pas nécessaire","Oui, pour ne confier à chacun que des tâches correspondant à son habilitation","Seulement pour les nouveaux arrivants","Non, c'est à chaque B1 de refuser si besoin"],
+      correct:[1], explain:"Le B2 doit connaître les habilitations de son équipe pour ne jamais confier une tâche hors du périmètre de quelqu'un." },
+    { cat:"role", type:"single", prompt:"Un B2 peut-il confier à un B1 une tâche qui dépasse le périmètre de son habilitation ?",
+      options:["Oui, si la tâche semble simple","Non, jamais, quelle que soit la simplicité apparente de la tâche","Oui, en cas d'urgence","Oui, avec une supervision renforcée"],
+      correct:[1], explain:"Le périmètre d'habilitation de chacun est une limite stricte, que le B2 ne peut jamais faire dépasser." },
+
+    { cat:"procedure", type:"single", prompt:"Avant de débuter le chantier, que doit faire le B2 ?",
+      options:["Rien de particulier","S'assurer que l'installation est consignée et réaliser une analyse de risque","Attendre l'accord oral d'un collègue","Commencer directement les travaux"],
+      correct:[1], explain:"Le B2 doit vérifier la consignation et évaluer les risques avant tout début de chantier." },
+    { cat:"procedure", type:"single", prompt:"Qui délivre l'autorisation de travail aux B1 de son équipe ?",
+      options:["Le chargé de consignation uniquement","Le chargé de travaux (B2)","L'inspection du travail","Chaque B1 se l'autodélivre"],
+      correct:[1], explain:"Le B2 délivre l'autorisation de travail précisant la tâche confiée à chaque exécutant." },
+    { cat:"procedure", type:"single", prompt:"Le B2 doit-il vérifier lui-même l'absence de tension avant de laisser son équipe débuter ?",
+      options:["Non, il fait confiance à la consignation","Oui, comme tout intervenant, il vérifie personnellement","Oui, mais uniquement en HT","Non, ce n'est jamais nécessaire"],
+      correct:[1], explain:"La vérification personnelle d'absence de tension reste obligatoire même pour le chargé de travaux." },
+    { cat:"procedure", type:"single", prompt:"À la fin des travaux, que fait le B2 ?",
+      options:["Il part directement sans vérifier","Il rassemble son équipe, vérifie que tout le monde est sorti de la zone, puis rend compte","Il laisse chaque B1 partir individuellement sans contrôle","Il remet lui-même l'installation sous tension sans en informer personne"],
+      correct:[1], explain:"Le B2 s'assure que toute l'équipe a quitté la zone avant de rendre compte de la fin des travaux." },
+    { cat:"procedure", type:"single", prompt:"Le B2 peut-il modifier le périmètre des travaux en cours de chantier sans nouvelle évaluation ?",
+      options:["Oui, librement","Non, toute modification nécessite une nouvelle analyse de risque","Oui, s'il en informe oralement son équipe","Non, sauf en cas d'urgence"],
+      correct:[1], explain:"Tout changement de périmètre impose une réévaluation des risques avant de continuer." },
+    { cat:"procedure", type:"single", prompt:"Un B1 de son équipe signale une anomalie. Que doit faire le B2 ?",
+      options:["Continuer le chantier normalement","Arrêter les travaux concernés et réévaluer la situation","Ignorer si le délai est serré","Demander au B1 de gérer seul"],
+      correct:[1], explain:"Toute anomalie signalée impose un arrêt et une réévaluation par le chargé de travaux." },
+    { cat:"procedure", type:"single", prompt:"Le B2 doit-il réévaluer les risques si la météo change brutalement en cours de chantier (pluie soudaine, orage) ?",
+      options:["Non, l'analyse initiale suffit toute la journée","Oui, tout changement de conditions doit être pris en compte dans une nouvelle évaluation","Non, sauf si les travaux sont en extérieur","Oui, mais uniquement en fin de journée"],
+      correct:[1], explain:"Les conditions du chantier évoluent : toute dégradation (météo, environnement) impose de réévaluer les risques en continu." },
+    { cat:"procedure", type:"single", prompt:"Le B2 peut-il autoriser un B1 à travailler seul, hors de sa vue, sans consignes précises ni contrôle prévu ?",
+      options:["Oui, s'il fait confiance au B1", "Non, il doit organiser un contrôle et des consignes précises pour toute tâche déléguée", "Oui, tant que le B1 est expérimenté", "Non, un B1 ne peut jamais travailler hors de la vue du B2, même avec consignes"],
+      correct:[1], explain:"Le B2 peut déléguer une tâche hors de sa vue directe, mais seulement avec des consignes précises et un moyen de contrôle organisé." },
+
+    { cat:"tension", type:"single", prompt:"Le B2 travaille dans quel domaine de tension ?",
+      options:["Basse tension (BT/TBT)","Haute tension uniquement","Tous les domaines","Uniquement HTA"],
+      correct:[0], explain:"B2 est une habilitation strictement basse tension." },
+    { cat:"tension", type:"single", prompt:"La tension du secteur domestique (230 V) appartient à quel domaine ?",
+      options:["TBT","BT","HTA","HTB"],
+      correct:[1], explain:"Le domaine BT couvre 50 V < U ≤ 1000 V." },
+    { cat:"tension", type:"single", prompt:"Quelle est la limite supérieure du domaine BT (basse tension) ?",
+      options:["500 V","1000 V","1500 V","50 kV"],
+      correct:[1], explain:"Le domaine BT va de 50 V à 1000 V en courant alternatif. La norme actuelle ne le subdivise pas en BTA/BTB, contrairement à l'ancienne norme." },
+    { cat:"tension", type:"single", prompt:"Un B2 peut-il diriger des travaux sur une installation en HTA ?",
+      options:["Oui, sans restriction","Non, B2 est une habilitation strictement basse tension","Oui, avec un accompagnement","Oui, en HTA uniquement"],
+      correct:[1], explain:"Le domaine HT est réservé aux habilitations H (H1, H2...)." },
+    { cat:"tension", type:"single", prompt:"Un chantier B2 comporte à la fois du BT et du TBT. Les mêmes précautions s'appliquent-elles aux deux domaines ?",
+      options:["Non, le TBT ne présente jamais aucun risque, aucune précaution n'est nécessaire","Les précautions doivent être adaptées à chaque domaine : le risque n'est pas nul même en TBT selon le contexte","Oui, exactement les mêmes précautions partout, sans distinction","Non, seul le TBT nécessite des précautions"],
+      correct:[1], explain:"Le TBT réduit le risque mais ne l'annule pas totalement selon les conditions (courant, humidité, matériel) : les précautions doivent rester adaptées à chaque domaine." },
+
+    { cat:"distances", type:"single", prompt:"Quelle est la valeur de la DMA (distance minimale d'approche) en basse tension ?",
+      options:["0,30 m","2 m","5 m","1 m"],
+      correct:[0], explain:"La DMA en BT est fixée à 0,30 m : en dessous, seules les habilitations avec attribut voisinage renforcé (V) peuvent s'approcher." },
+    { cat:"distances", type:"single", prompt:"Qui met en place le balisage délimitant la zone de travail ?",
+      options:["N'importe quel B1","Le chargé de travaux (B2), ou sous sa responsabilité","Le chargé d'exploitation uniquement","Personne, ce n'est pas nécessaire"],
+      correct:[1], explain:"Le B2 organise et fait respecter le balisage de sa zone de chantier." },
+    { cat:"distances", type:"single", prompt:"Le B2V peut-il pénétrer dans la zone de voisinage renforcé ?",
+      options:["Non, jamais, réservée à d'autres habilitations","Oui, c'est précisément ce que lui permet en plus l'attribut « V » par rapport au B2 simple","Oui, avec un casque isolant","Oui, en TBT uniquement"],
+      correct:[1], explain:"Le B2V est justement l'habilitation qui permet d'évoluer (et de faire évoluer son équipe) dans la zone de voisinage renforcé." },
+    { cat:"distances", type:"single", prompt:"Le B2 peut-il autoriser son équipe à franchir le balisage posé sur le chantier ?",
+      options:["Oui, à tout moment","Non, sauf après nouvelle analyse de risque et instructions précises","Oui, sans condition particulière","Non, jamais en aucun cas"],
+      correct:[1], explain:"Toute modification des limites de sécurité doit être encadrée par une nouvelle évaluation." },
+    { cat:"distances", type:"single", prompt:"Le B2 peut-il réduire la distance de sécurité définie par l'analyse de risque initiale pour gagner du temps sur le chantier ?",
+      options:["Oui, si le délai presse", "Non, la distance de sécurité définie ne se réduit jamais pour des raisons de rapidité", "Oui, avec l'accord oral de l'équipe", "Oui, uniquement pour les tâches simples"],
+      correct:[1], explain:"Une distance de sécurité résulte d'une analyse de risque : elle ne se négocie jamais pour gagner du temps." },
+    { cat:"distances", type:"single", prompt:"Une pièce sous tension imprévue est découverte en cours de travaux, à moins de 30 cm d'un membre de l'équipe. Que fait le B2 ?",
+      options:["Il laisse continuer si personne ne la touche", "Il arrête les travaux concernés, réévalue la situation et fait sécuriser la zone avant de continuer", "Il déplace lui-même la pièce sous tension", "Il informe seulement à la fin du chantier"],
+      correct:[1], explain:"Une pièce sous tension non prévue en dessous de la DMA impose un arrêt immédiat et une nouvelle sécurisation avant toute reprise." },
+
+    { cat:"risques", type:"single", prompt:"Quelle est la différence entre électrisation et électrocution ?",
+      options:["Aucune, ce sont des synonymes","L'électrocution est une électrisation qui entraîne la mort","L'électrisation ne concerne que la haute tension","L'électrocution ne provoque jamais de brûlure"],
+      correct:[1], explain:"L'électrisation désigne le passage du courant ; l'électrocution est une électrisation mortelle." },
+    { cat:"risques", type:"single", prompt:"À partir de quelle intensité environ le courant peut-il provoquer une tétanisation (non-lâcher) ?",
+      options:["1 mA","10 mA","1000 mA","100 A"],
+      correct:[1], explain:"Autour de 10 mA, une contraction musculaire involontaire peut empêcher de lâcher le conducteur." },
+    { cat:"risques", type:"single", prompt:"Au-delà de quelle intensité le risque de fibrillation cardiaque augmente-t-il fortement ?",
+      options:["1 mA","10 mA","Environ 30 mA et plus","Il n'existe pas de seuil"],
+      correct:[2], explain:"Au-delà d'une trentaine de mA, le risque de fibrillation cardiaque devient significatif." },
+    { cat:"risques", type:"single", prompt:"Quel type d'extincteur utiliser sur un feu d'origine électrique ?",
+      options:["De l'eau","Un extincteur CO2 ou à poudre","De la mousse","N'importe lequel"],
+      correct:[1], explain:"L'eau et la mousse conduisent l'électricité, contrairement au CO2 ou à la poudre." },
+    { cat:"risques", type:"single", prompt:"Une installation consignée présente-t-elle toujours un risque nul ?",
+      options:["Oui, aucun risque une fois consignée","Non, certains éléments (condensateurs, batteries) peuvent rester chargés","Oui, sauf en très haute tension","Non, uniquement sur les installations anciennes"],
+      correct:[1], explain:"D'où l'importance de la vérification personnelle d'absence de tension par le B2." },
+    { cat:"risques", type:"single", prompt:"Pourquoi l'humidité augmente-t-elle le risque électrique ?",
+      options:["Elle isole le corps du courant","Elle est conductrice et diminue la résistance du corps","Elle n'a aucun effet","Elle ne concerne que la haute tension"],
+      correct:[1], explain:"L'humidité abaisse la résistance électrique du corps, augmentant l'intensité du courant en cas de contact." },
+    { cat:"risques", type:"single", prompt:"Le B2 doit-il informer son équipe des risques spécifiques identifiés avant de commencer les travaux (arc électrique, remise sous tension accidentelle) ?",
+      options:["Non, chacun doit déjà les connaître", "Oui, c'est une étape indispensable avant le début du chantier", "Seulement pour les nouveaux membres de l'équipe", "Non, ce n'est utile qu'en cas d'incident"],
+      correct:[1], explain:"Informer l'équipe des risques identifiés avant de commencer fait partie des responsabilités du B2 dans l'organisation du chantier." },
+    { cat:"risques", type:"single", prompt:"Un membre de l'équipe se plaint d'une sensation inhabituelle (picotement) en travaillant près d'un tableau électrique. Que fait le B2 ?",
+      options:["Il ignore, ce n'est probablement rien", "Il arrête immédiatement le travail concerné et fait vérifier la situation avant de continuer", "Il demande au B1 de changer de position et de continuer", "Il note l'incident pour en parler en fin de chantier"],
+      correct:[1], explain:"Une sensation inhabituelle près d'une installation électrique est un signal d'alerte à traiter immédiatement, jamais à ignorer." },
+
+    { cat:"epi", type:"single", prompt:"Le B2 doit-il s'assurer que son équipe porte les EPI adaptés ?",
+      options:["Non, chacun gère ses EPI librement","Oui, c'est une de ses responsabilités avant le début des travaux","Non, c'est le rôle du chargé d'exploitation","Oui, mais uniquement en HT"],
+      correct:[1], explain:"Le B2 s'assure que son équipe est correctement équipée avant de débuter le chantier." },
+    { cat:"epi", type:"single", prompt:"Pourquoi utiliser un outillage isolé sur un chantier BT ?",
+      options:["Pour le confort uniquement","Pour se protéger en cas de contact accidentel avec une pièce restée sous tension","Ce n'est jamais nécessaire","Uniquement en extérieur"],
+      correct:[1], explain:"L'outillage isolé reste une protection supplémentaire même après vérification." },
+    { cat:"epi", type:"single", prompt:"Les bijoux et objets métalliques doivent-ils être retirés par toute l'équipe ?",
+      options:["Non, ce n'est pas nécessaire","Oui, pour tous les intervenants présentant un risque électrique","Seulement pour le B2","Non, uniquement les non-électriciens"],
+      correct:[1], explain:"Les objets métalliques conduisent le courant, pour tout le monde sur le chantier." },
+    { cat:"epi", type:"single", prompt:"Le B2 peut-il déplacer un écran de protection sans raison valable ?",
+      options:["Oui, librement","Non, tout déplacement doit être justifié et sécurisé","Oui, uniquement lui-même","Non, jamais même justifié"],
+      correct:[1], explain:"Un écran de protection ne se déplace jamais sans une raison et des précautions justifiées." },
+    { cat:"epi", type:"single", prompt:"Le B2 doit-il vérifier l'état des EPI de son équipe (usure, dommages visibles) avant le début du chantier ?",
+      options:["Non, chaque B1 est responsable seul de son propre équipement", "Oui, cela fait partie de son organisation du chantier avant le début des travaux", "Non, seul le service sécurité de l'entreprise le fait", "Oui, mais uniquement une fois par an"],
+      correct:[1], explain:"Le B2 organise la sécurité de son chantier, ce qui inclut de s'assurer que les EPI de l'équipe sont en bon état avant de commencer." },
+
+    { cat:"documents", type:"single", prompt:"Le titre d'habilitation B2 est-il un diplôme ?",
+      options:["Oui, un diplôme d'État","Non, c'est une reconnaissance par l'employeur, nominative et non transférable","Oui, délivré par un organisme de formation","Non, une simple attestation de présence"],
+      correct:[1], explain:"Ce n'est pas un diplôme, c'est une reconnaissance de l'employeur." },
+    { cat:"documents", type:"single", prompt:"Quelle est la durée de validité de l'habilitation B2 ?",
+      options:["Illimitée","Recyclage recommandé environ tous les 3 ans","1 mois","10 ans"],
+      correct:[1], explain:"Un recyclage périodique (environ tous les 3 ans) est recommandé." },
+    { cat:"documents", type:"single", prompt:"Un B2 peut-il refuser une tâche qu'il juge dangereuse ?",
+      options:["Non","Oui, toujours, s'il juge sa sécurité ou celle de son équipe compromise","Seulement avec l'accord du responsable","Non, sauf en cas d'urgence"],
+      correct:[1], explain:"Tout titulaire d'une habilitation peut refuser une opération dangereuse, pour lui ou son équipe." },
+    { cat:"documents", type:"single", prompt:"L'employeur peut-il retirer l'habilitation B2 d'un salarié ?",
+      options:["Non, jamais","Oui, à tout moment, s'il estime que les conditions ne sont plus réunies","Oui, uniquement en fin d'année","Non, seule l'inspection du travail le peut"],
+      correct:[1], explain:"L'employeur peut retirer l'habilitation à tout moment." },
+    { cat:"documents", type:"single", prompt:"Le B2 doit-il conserver les autorisations de travail délivrées à son équipe pendant toute la durée du chantier ?",
+      options:["Non, une fois délivrées elles ne servent plus", "Oui, elles doivent rester disponibles en cas de besoin ou de contrôle pendant le chantier", "Non, seul le chargé d'exploitation les conserve", "Oui, mais seulement le premier jour"],
+      correct:[1], explain:"Les autorisations de travail encadrent les tâches confiées : elles doivent rester accessibles tout au long du chantier." },
+
+    { cat:"accident", type:"single", prompt:"Quelle est la bonne succession d'actions face à un accident d'origine électrique ?",
+      options:["Alerter → Protéger → Examiner → Secourir","Protéger → Examiner → Alerter → Secourir","Secourir → Protéger → Alerter → Examiner","Examiner → Secourir → Protéger → Alerter"],
+      correct:[1], explain:"On protège d'abord, on examine, on alerte, puis on secourt si on est formé." },
+    { cat:"accident", type:"single", prompt:"Une victime est encore en contact avec un conducteur sous tension. Que faites-vous en priorité ?",
+      options:["Vous la tirez à mains nues, rapidement","Vous coupez le courant si possible ; sinon, vous l'éloignez avec un objet isolant","Vous appelez les secours et attendez sans agir","Vous pratiquez immédiatement le bouche-à-bouche"],
+      correct:[1], explain:"Ne jamais toucher directement une victime encore sous tension." },
+    { cat:"accident", type:"single", prompt:"Quel numéro d'urgence fonctionne dans tous les pays de l'Union européenne ?",
+      options:["Le 15","Le 18","Le 112","Le 17"],
+      correct:[2], explain:"Le 112 est le numéro d'urgence unique européen." },
+    { cat:"accident", type:"single", prompt:"En cas d'accident sur le chantier, qui doit prendre la direction des opérations de secours ?",
+      options:["Le premier B1 disponible, au hasard","Le chargé de travaux (B2), qui organise la réaction de l'équipe","Personne, chacun agit seul","L'inspection du travail à distance"],
+      correct:[1], explain:"Le B2, responsable de la sécurité du chantier, coordonne la réaction de son équipe en cas d'accident." },
+    { cat:"accident", type:"single", prompt:"Un membre de l'équipe est victime d'un malaise sans lien apparent avec l'électricité sur le chantier. Le B2 doit-il quand même intervenir ?",
+      options:["Non, ce n'est pas lié au risque électrique donc pas de son ressort", "Oui, il reste responsable de la sécurité générale de son chantier, pas uniquement du risque électrique", "Non, uniquement les secours doivent intervenir", "Oui, mais seulement s'il est aussi secouriste"],
+      correct:[1], explain:"La responsabilité du B2 sur la sécurité de son chantier ne se limite pas au seul risque électrique : il doit réagir à tout incident concernant son équipe." },
+
+    { cat:"general", type:"single", prompt:"Quelle est la principale différence entre B2 et B1 ?",
+      options:["Aucune, ce sont les mêmes règles","B2 dirige et peut avoir une équipe ; B1 exécute selon les instructions","B2 travaille en HT, B1 en BT","B1 dirige, B2 exécute"],
+      correct:[1], explain:"B2 organise et dirige, B1 exécute selon les instructions du B2." },
+    { cat:"general", type:"single", prompt:"Quelle est la différence entre B2 et BC ?",
+      options:["Aucune différence","BC est spécifiquement chargé de la consignation, B2 dirige les travaux (les deux rôles peuvent être tenus par la même personne ou être distincts)","BC dirige les travaux, B2 consigne","BC travaille en HT, B2 en BT"],
+      correct:[1], explain:"Sur les chantiers importants, le rôle de chargé de consignation peut être distinct du chargé de travaux." },
+    { cat:"general", type:"single", prompt:"Un salarié peut-il être à la fois B1 et B2 ?",
+      options:["Non, incompatible","Oui, selon les missions confiées par l'employeur","Non, il faut choisir","Oui, mais après 10 ans d'ancienneté"],
+      correct:[1], explain:"Les habilitations se cumulent selon les besoins du poste." },
+    { cat:"general", type:"single", prompt:"Que signifie la lettre « B » dans B2 ?",
+      options:["Le domaine basse tension","Le domaine haute tension","Le bâtiment","La formation de base"],
+      correct:[0], explain:"La lettre B indique le domaine basse tension (et très basse tension)." },
+    { cat:"general", type:"single", prompt:"Le nombre de personnes qu'un B2 peut encadrer sur un chantier est-il illimité ?",
+      options:["Oui, aucune limite n'existe","Non, il est limité par sa capacité réelle à assurer la sécurité de tous les membres de l'équipe","Oui, tant que chacun est B1","Non, la limite est fixée à 2 personnes maximum"],
+      correct:[1], explain:"Le B2 doit pouvoir surveiller et garantir la sécurité de toute son équipe : la taille du groupe encadré doit rester compatible avec cette responsabilité." },
+    { cat:"general", type:"single", prompt:"Le B2V entraîne-t-il automatiquement d'autres habilitations pour le même domaine de tension ?",
+      options:["Non, aucune", "Oui, les indices 0 et 1 (B0 et B1) — mais jamais BC ni BR", "Oui, BC et BR également", "Oui, uniquement B1"],
+      correct:[1], explain:"Le B2V entraîne automatiquement les indices inférieurs B0 et B1 pour le même domaine de tension, mais jamais les habilitations BC ou BR, qui doivent être délivrées séparément si besoin." },
+
+    { cat:"situation", type:"single", prompt:"Vous dirigez une équipe de plusieurs B1 sur un chantier de rénovation électrique. En cours de travaux, vous constatez qu'un B1 utilise un outillage non isolé. Que faites-vous ?",
+      options:["Vous le laissez terminer sa tâche, il est presque fini", "Vous arrêtez immédiatement son geste et lui fournissez l'outillage adapté avant de continuer", "Vous notez l'incident pour en parler en fin de chantier", "Vous lui demandez d'être simplement plus prudent"],
+      correct:[1], explain:"Un outillage inadapté doit être corrigé immédiatement, jamais toléré même temporairement." },
+    { cat:"situation", type:"single", prompt:"Un client insiste pour que l'équipe termine plus vite en sautant l'étape de vérification d'absence de tension car « c'est sûrement déjà hors tension ». Que répondez-vous ?",
+      options:["Vous acceptez pour ne pas contrarier le client", "Vous refusez catégoriquement : la VAT reste obligatoire quelle que soit la pression du client", "Vous sautez l'étape uniquement pour les tâches rapides", "Vous laissez chaque B1 décider individuellement"],
+      correct:[1], explain:"Aucune pression commerciale ou de délai ne justifie de sauter une étape de sécurité obligatoire comme la VAT." },
+    { cat:"situation", type:"single", prompt:"En arrivant sur le chantier, l'attestation de consignation remise par le chargé de consignation mentionne un tableau différent de celui prévu dans vos plans. Que faites-vous ?",
+      options:["Vous commencez quand même, ce n'est probablement qu'une erreur de frappe", "Vous ne commencez pas et clarifiez l'incohérence avec le chargé de consignation avant toute chose", "Vous demandez à un B1 de vérifier discrètement", "Vous choisissez le tableau qui vous semble le plus logique"],
+      correct:[1], explain:"Toute incohérence entre les documents et la réalité du terrain doit être résolue avant de commencer, jamais supposée ou devinée." },
+    { cat:"situation", type:"single", prompt:"Un B1 termine sa tâche plus tôt que prévu et va aider un collègue sur une autre partie du chantier sans vous en parler. Que faites-vous quand vous le découvrez ?",
+      options:["Rien, l'initiative est une bonne chose", "Vous rappelez que toute réaffectation de tâche doit passer par vous, pour garder le contrôle de qui fait quoi", "Vous le félicitez pour son autonomie", "Vous l'ignorez tant que le travail avance"],
+      correct:[1], explain:"Le B2 doit savoir à tout moment qui fait quoi sur le chantier : une réaffectation informelle échappe à ce contrôle indispensable à la sécurité." },
+    { cat:"situation", type:"single", prompt:"En cours de chantier, un orage éclate alors qu'une partie de l'équipe travaille en extérieur près d'une ligne aérienne. Que décidez-vous ?",
+      options:["Vous continuez, l'orage ne concerne que l'intérieur", "Vous interrompez les travaux extérieurs et mettez l'équipe à l'abri jusqu'à la fin du risque", "Vous accélérez pour finir avant que l'orage n'arrive", "Vous demandez seulement de porter un casque"],
+      correct:[1], explain:"Un orage à proximité d'une ligne aérienne est un facteur de risque majeur qui impose l'arrêt immédiat des travaux extérieurs concernés." },
+    { cat:"situation", type:"single", prompt:"Un B1 de l'équipe vous signale qu'il ne se sent pas en confiance pour réaliser la tâche confiée, bien qu'elle soit dans son périmètre d'habilitation. Que faites-vous ?",
+      options:["Vous le forcez à continuer, la tâche est dans son périmètre", "Vous l'écoutez, réévaluez avec lui la situation et adaptez l'affectation si nécessaire", "Vous l'ignorez, ce sentiment n'est pas objectif", "Vous le remplacez immédiatement sans discussion"],
+      correct:[1], explain:"Le ressenti d'un exécutant fait partie des signaux à prendre au sérieux : un manque de confiance peut révéler un facteur de risque non identifié." },
+    { cat:"situation", type:"single", prompt:"À la fin du chantier, un B1 manque à l'appel au moment du comptage de l'équipe avant la remise sous tension. Que faites-vous ?",
+      options:["Vous remettez sous tension, il a sûrement fini et est reparti", "Vous ne remettez pas sous tension tant que la personne n'est pas localisée et confirmée hors de la zone", "Vous attendez 10 minutes puis remettez sous tension", "Vous demandez à un collègue de vérifier rapidement puis vous continuez"],
+      correct:[1], explain:"La remise sous tension ne doit jamais intervenir tant que la présence de chaque membre de l'équipe hors de la zone n'est pas formellement confirmée." },
+    { cat:"situation", type:"single", prompt:"Vous découvrez qu'un des écrans de protection posés en début de chantier a été déplacé sans votre autorisation, probablement par un B1. Que faites-vous ?",
+      options:["Vous le remettez en place sans rien dire de plus", "Vous arrêtez les travaux concernés, comprenez pourquoi, remettez l'écran et rappelez la règle à toute l'équipe", "Vous laissez faire, ce n'est probablement rien de grave", "Vous sanctionnez immédiatement le B1 responsable sans discussion"],
+      correct:[1], explain:"Un déplacement non autorisé d'un équipement de protection collective impose un arrêt, une remise en sécurité et un rappel clair des règles à toute l'équipe." },
+
+    { cat:"role", type:"single", prompt:"Un B2 peut-il décider seul de faire réaliser des travaux sous tension (attribut T) sur son chantier pour gagner du temps ?",
+      options:["Oui, s'il l'estime nécessaire pour le planning","Non : le travail sous tension est exceptionnel, réservé à un personnel spécifiquement formé et agréé, et seulement si le hors-tension est techniquement impossible","Oui, avec l'accord verbal du client","Oui, si le chantier est urgent"],
+      correct:[1], explain:"Le travail sous tension (attribut T) n'est jamais un choix d'opportunité : il exige une formation spécifique agréée par le Comité des Travaux Sous Tension et l'impossibilité technique du hors-tension." },
+    { cat:"documents", type:"single", prompt:"En complément du recyclage périodique, à quelle fréquence minimale l'habilitation B2 doit-elle être réexaminée par l'employeur ?",
+      options:["Jamais, une fois délivrée elle est acquise", "Au moins une fois par an, et à chaque changement notable de situation", "Tous les 5 ans", "Uniquement si un accident survient sur le chantier"],
+      correct:[1], explain:"L'employeur doit réexaminer l'habilitation au moins une fois par an, en plus du recyclage périodique recommandé tous les 3 ans." },
+    { cat:"risques", type:"single", prompt:"Sur son chantier, le B2 constate qu'une armoire électrique reste ouverte avec des pièces nues accessibles pendant une pause. Que doit-il faire ?",
+      options:["Rien, la pause est courte","La faire refermer ou baliser immédiatement : une enveloppe ouverte perd son degré de protection (IP2X/IPXXB) contre les contacts directs","Poser juste une pancarte d'avertissement, sans autre mesure","Laisser faire si le chantier est clôturé"],
+      correct:[1], explain:"Une armoire ouverte supprime la protection normalement assurée par l'enveloppe (IP2X/IPXXB) : le B2, responsable de la sécurité du chantier, doit la faire refermer ou mettre en place un balisage/obstacle équivalent." },
+    { cat:"distances", type:"single", prompt:"Sur un chantier de terrassement, comment repère-t-on généralement un câble électrique enterré avant de creuser ?",
+      options:["Il n'existe aucun moyen de repérage fiable, il faut creuser prudemment à la main","Un grillage avertisseur rouge posé au-dessus (à 20 cm minimum), avec une incertitude de localisation d'environ 1,5 m à respecter","Une peinture au sol uniquement, sans autre repère","Le câble enterré n'a jamais besoin d'être signalé"],
+      correct:[1], explain:"Une canalisation électrique souterraine se reconnaît par un grillage avertisseur rouge placé au-dessus (minimum 20 cm), et la localisation exacte doit tenir compte d'une limite d'incertitude d'environ 1,5 m." }
+  ];
+
+  var els = {
+    start: document.getElementById('screen-start'),
+    themes: document.getElementById('screen-themes'),
+    themeList: document.getElementById('theme-list'),
+    btnOpenThemes: document.getElementById('btn-open-themes'),
+    btnThemesBack: document.getElementById('btn-themes-back'),
+    quiz: document.getElementById('screen-quiz'),
+    result: document.getElementById('screen-result'),
+    btnStart: document.getElementById('btn-start'),
+    btnStartErrors: document.getElementById('btn-start-errors'),
+    btnStartExam: document.getElementById('btn-start-exam'),
+    examBestBox: document.getElementById('exam-best-box'),
+    examVerdictBox: document.getElementById('exam-verdict-box'),
+    bestBox: document.getElementById('best-score-box'),
+    progressLabel: document.getElementById('progress-label'),
+    progressScore: document.getElementById('progress-score'),
+    progressFill: document.getElementById('progress-fill'),
+    qCategory: document.getElementById('q-category'),
+    qPrompt: document.getElementById('q-prompt'),
+    qOptions: document.getElementById('q-options'),
+    qFeedback: document.getElementById('q-feedback'),
+    btnAction: document.getElementById('btn-action'),
+    scoreRing: document.getElementById('score-ring'),
+    resultPct: document.getElementById('result-pct'),
+    resultFrac: document.getElementById('result-frac'),
+    resultVerdict: document.getElementById('result-verdict'),
+    resultTime: document.getElementById('result-time'),
+    catBreakdown: document.getElementById('cat-breakdown'),
+    btnRestart: document.getElementById('btn-restart'),
+    btnHome: document.getElementById('btn-home'),
+    btnToggleReview: document.getElementById('btn-toggle-review'),
+    reviewSection: document.getElementById('review-section'),
+    reviewList: document.getElementById('review-list'),
+    attemptCounter: document.getElementById('attempt-counter'),
+    statReview: document.getElementById('stat-review'),
+    btnResetProgress: document.getElementById('btn-reset-progress'),
+    resultSub: document.getElementById('result-sub'),
+    resultWeak: document.getElementById('result-weak'),
+    btnReviewWeak: document.getElementById('btn-review-weak')
+  };
+
+  var state = { order:[], index:0, score:0, answered:false, selected:[], results:[], startTime:0, examMode:false, timerId:null, deadline:0 };
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function loadStorage(key){
+    try{ return JSON.parse(localStorage.getItem(key) || 'null'); }catch(e){ return null; }
+  }
+  function saveStorage(key, val){
+    try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+  }
+  function loadProgress(){ return loadStorage('b2quiz-progress') || {}; }
+  function saveProgress(p){ saveStorage('b2quiz-progress', p); }
+  function getPersistedWrongKeys(){
+    var progress = loadProgress();
+    return Object.keys(progress).filter(function(k){ return progress[k] === true; });
+  }
+  function reviewCount(){ return getPersistedWrongKeys().length; }
+
+  function showBestScore(){
+    var best = loadStorage('b2quiz-best');
+    var attempts = loadStorage('b2quiz-attempts') || 0;
+    els.attemptCounter.textContent = 'Tentative n°' + (attempts + 1);
+    if (best){
+      els.bestBox.hidden = false;
+      els.bestBox.textContent = 'Meilleur score : ' + best.pct + '% (' + best.frac + ') sur ' + attempts + ' tentative(s)';
+    }
+    var n = reviewCount();
+    els.statReview.textContent = n;
+    if (n > 0){
+      els.btnStartErrors.hidden = false;
+      els.btnStartErrors.textContent = 'Réviser uniquement mes ' + n + ' erreur' + (n > 1 ? 's' : '') + ' en cours';
+    } else {
+      els.btnStartErrors.hidden = true;
+    }
+
+    var examBest = loadStorage('b2quiz-exam-best');
+    var examAttempts = loadStorage('b2quiz-exam-attempts') || 0;
+    if (examBest){
+      els.examBestBox.hidden = false;
+      els.examBestBox.textContent = 'Mode Examen — meilleur résultat : ' + examBest.pct + '% (' + (examBest.passed ? 'réussi' : 'échoué') + '), ' + examAttempts + ' tentative(s)';
+    } else {
+      els.examBestBox.hidden = true;
+    }
+  }
+
+  function buildQuestionOrder(filterCats){
+    var progress = loadProgress();
+    var pool = BANK.filter(function(q){
+      return !filterCats || !filterCats.length || filterCats.indexOf(q.cat) !== -1;
+    });
+    var priority = pool.filter(function(q){ return progress[q.prompt] === true; });
+    var rest = pool.filter(function(q){ return progress[q.prompt] !== true; });
+    var ordered = shuffle(priority).concat(shuffle(rest));
+    return ordered.map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function buildOrderFromKeys(keys){
+    var pool = BANK.filter(function(q){ return keys.indexOf(q.prompt) !== -1; });
+    return shuffle(pool).map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function buildExamOrder(){
+    var pool = shuffle(BANK).slice(0, Math.min(EXAM_SIZE, BANK.length));
+    return pool.map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function stopExamTimer(){
+    if (state.timerId){ clearInterval(state.timerId); state.timerId = null; }
+    els.progressScore.style.color = '';
+    els.progressScore.style.fontWeight = '';
+  }
+
+  function updateExamTimer(){
+    var remaining = state.deadline - Date.now();
+    if (remaining <= 0){
+      stopExamTimer();
+      finishQuiz();
+      return;
+    }
+    var totalSec = Math.ceil(remaining / 1000);
+    var m = Math.floor(totalSec / 60);
+    var s = totalSec % 60;
+    els.progressScore.textContent = 'Temps : ' + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function startExamTimer(){
+    state.deadline = Date.now() + EXAM_TIME_MS;
+    els.progressScore.style.color = 'var(--danger)';
+    els.progressScore.style.fontWeight = '700';
+    updateExamTimer();
+    state.timerId = setInterval(updateExamTimer, 1000);
+  }
+
+  function startQuiz(opts){
+    opts = opts || {};
+    state.examMode = !!opts.exam;
+    if (state.examMode){
+      state.order = buildExamOrder();
+    } else if (opts.keys && opts.keys.length){
+      state.order = buildOrderFromKeys(opts.keys);
+    } else {
+      state.order = buildQuestionOrder(opts.cats || null);
+    }
+    state.filterCats = state.examMode ? null : (opts.cats || null);
+    state.index = 0;
+    state.score = 0;
+    state.results = [];
+    state.startTime = Date.now();
+    els.start.hidden = true;
+    els.themes.hidden = true;
+    els.result.hidden = true;
+    els.quiz.hidden = false;
+    stopExamTimer();
+    if (state.examMode) startExamTimer();
+    renderQuestion();
+  }
+
+  function categoryCounts(){
+    var counts = {};
+    Object.keys(CATS).forEach(function(k){ counts[k] = 0; });
+    BANK.forEach(function(q){ counts[q.cat]++; });
+    return counts;
+  }
+
+  function renderThemeList(){
+    var counts = categoryCounts();
+    els.themeList.innerHTML = Object.keys(CATS).map(function(k){
+      return '<li class="option" data-cat="' + k + '" style="justify-content:space-between; align-items:center;">' +
+        '<span class="txt">' + CATS[k] + '</span>' +
+        '<span class="mono" style="color:var(--ink-faint); font-size:0.8rem;">' + counts[k] + ' question' + (counts[k] > 1 ? 's' : '') + '</span></li>';
+    }).join('');
+    els.themeList.querySelectorAll('li').forEach(function(li){
+      li.addEventListener('click', function(){
+        startQuiz({ cats: [li.getAttribute('data-cat')] });
+      });
+    });
+  }
+
+  function currentQuestion(){
+    var entry = state.order[state.index];
+    var q = BANK.filter(function(b){ return b.prompt === entry.key; })[0];
+    return { q: q, key: entry.key, optOrder: entry.optOrder };
+  }
+
+  function renderQuestion(){
+    state.answered = false;
+    state.selected = [];
+    var cur = currentQuestion();
+    var q = cur.q;
+
+    els.progressLabel.textContent = 'Question ' + (state.index + 1) + ' / ' + state.order.length;
+    if (!state.examMode) els.progressScore.textContent = 'Score : ' + state.score;
+    els.progressFill.style.width = (state.index / state.order.length * 100) + '%';
+
+    els.qCategory.innerHTML = CATS[q.cat] + '<span class="q-type">· ' + (q.type === 'multi' ? 'plusieurs réponses possibles' : 'une seule réponse') + '</span>';
+    els.qPrompt.textContent = q.prompt;
+    els.qFeedback.innerHTML = '';
+    els.qOptions.innerHTML = '';
+
+    cur.optOrder.forEach(function(origIdx, pos){
+      var li = document.createElement('li');
+      li.className = 'option';
+      var letter = String.fromCharCode(65 + pos);
+      var inputType = q.type === 'multi' ? 'checkbox' : 'radio';
+      var inputId = 'opt-' + pos;
+      li.innerHTML = '<input type="' + inputType + '" name="answer" id="' + inputId + '" value="' + origIdx + '">' +
+                      '<span class="letter">' + letter + '</span>' +
+                      '<label class="txt" for="' + inputId + '">' + q.options[origIdx] + '</label>';
+      var input = li.querySelector('input');
+      li.addEventListener('click', function(e){
+        if (state.answered) return;
+        if (e.target === input || e.target.tagName === 'LABEL') return;
+        input.click();
+      });
+      input.addEventListener('change', onSelectionChange);
+      els.qOptions.appendChild(li);
+    });
+
+    els.btnAction.textContent = state.examMode ? 'Valider et continuer' : 'Valider ma réponse';
+    els.btnAction.disabled = true;
+    els.btnAction.onclick = validateAnswer;
+  }
+
+  function onSelectionChange(){
+    var inputs = els.qOptions.querySelectorAll('input');
+    var sel = [];
+    inputs.forEach(function(inp){
+      inp.closest('.option').classList.toggle('is-selected', inp.checked);
+      if (inp.checked) sel.push(parseInt(inp.value, 10));
+    });
+    state.selected = sel;
+    els.btnAction.disabled = sel.length === 0;
+  }
+
+  function arraysEqualAsSets(a, b){
+    if (a.length !== b.length) return false;
+    var as = a.slice().sort();
+    var bs = b.slice().sort();
+    return as.every(function(v, i){ return v === bs[i]; });
+  }
+
+  function validateAnswer(){
+    if (state.answered){ nextStep(); return; }
+    state.answered = true;
+    var cur = currentQuestion();
+    var q = cur.q;
+    var isCorrect = arraysEqualAsSets(state.selected, q.correct);
+    if (isCorrect) state.score++;
+
+    if (!state.examMode){
+      var progress = loadProgress();
+      progress[cur.key] = !isCorrect;
+      saveProgress(progress);
+    }
+
+    state.results.push({
+      prompt: q.prompt, cat: q.cat, isCorrect: isCorrect,
+      given: state.selected.map(function(i){ return q.options[i]; }),
+      correct: q.correct.map(function(i){ return q.options[i]; }),
+      explain: q.explain
+    });
+
+    if (state.examMode){
+      nextStep();
+      return;
+    }
+
+    var inputs = els.qOptions.querySelectorAll('input');
+    inputs.forEach(function(inp){
+      var idx = parseInt(inp.value, 10);
+      var opt = inp.closest('.option');
+      inp.disabled = true;
+      if (q.correct.indexOf(idx) !== -1) opt.classList.add('is-correct');
+      else if (inp.checked) opt.classList.add('is-wrong');
+    });
+
+    els.qFeedback.innerHTML =
+      '<div class="feedback ' + (isCorrect ? 'correct' : 'wrong') + '">' +
+      '<span class="head">' + (isCorrect ? 'Bonne réponse' : 'Réponse incorrecte') + '</span>' +
+      '<p>' + q.explain + '</p></div>';
+
+    els.progressScore.textContent = 'Score : ' + state.score;
+    els.btnAction.textContent = (state.index === state.order.length - 1) ? 'Voir mes résultats' : 'Question suivante';
+  }
+
+  function nextStep(){
+    state.index++;
+    if (state.index >= state.order.length){ finishQuiz(); return; }
+    renderQuestion();
+  }
+
+  function finishQuiz(){
+    stopExamTimer();
+    els.quiz.hidden = true;
+    els.result.hidden = false;
+    els.progressFill.style.width = '100%';
+
+    var total = state.order.length;
+    var pct = Math.round(state.score / total * 100);
+    els.scoreRing.style.setProperty('--pct', pct);
+    els.resultPct.textContent = pct + '%';
+    els.resultFrac.textContent = state.score + ' / ' + total;
+
+    if (state.examMode){
+      var passed = pct >= EXAM_PASS_PCT;
+      els.examVerdictBox.hidden = false;
+      els.examVerdictBox.textContent = passed ?
+        'RÉUSSI — seuil de réussite atteint (≥ ' + EXAM_PASS_PCT + '%)' :
+        'ÉCHOUÉ — seuil de réussite non atteint (< ' + EXAM_PASS_PCT + '%)';
+      els.examVerdictBox.style.background = passed ? 'var(--ok-soft)' : 'var(--danger-soft)';
+      els.examVerdictBox.style.color = passed ? 'var(--ok)' : 'var(--danger)';
+    } else {
+      els.examVerdictBox.hidden = true;
+    }
+
+    var verdict, sub;
+    if (pct === 100){ verdict = 'Score parfait !'; sub = "Toutes les notions sont acquises — direction l'examen."; }
+    else if (pct >= 85){ verdict = 'Excellent niveau.'; sub = 'Encore quelques détails à consolider.'; }
+    else if (pct >= 60){ verdict = 'Bonne base.'; sub = "Un peu d'entraînement ciblé et c'est bon."; }
+    else { verdict = 'À retravailler.'; sub = 'Relis la fiche de révision, puis reviens sur ces thèmes.'; }
+    els.resultVerdict.textContent = verdict;
+    els.resultSub.textContent = sub;
+    els.resultTime.textContent = 'Temps : ' + formatTime(Date.now() - state.startTime);
+
+    var byCat = {};
+    Object.keys(CATS).forEach(function(k){ byCat[k] = { correct:0, total:0 }; });
+    state.results.forEach(function(r){
+      byCat[r.cat].total++;
+      if (r.isCorrect) byCat[r.cat].correct++;
+    });
+    els.catBreakdown.innerHTML = Object.keys(CATS).filter(function(k){ return byCat[k].total > 0; }).map(function(k){
+      var c = byCat[k];
+      var p = c.total ? Math.round(c.correct / c.total * 100) : 0;
+      return '<div class="cat-row"><span class="name">' + CATS[k] + '</span>' +
+        '<span class="bar"><span style="width:' + p + '%; background:' + (p >= 70 ? 'var(--ok)' : p >= 40 ? 'var(--accent)' : 'var(--danger)') + '"></span></span>' +
+        '<span class="frac mono">' + c.correct + '/' + c.total + '</span></div>';
+    }).join('');
+
+    var weakCats = Object.keys(CATS).filter(function(k){ return byCat[k].total > 0 && byCat[k].correct < byCat[k].total; });
+    weakCats.sort(function(a, b){
+      return (byCat[a].correct / byCat[a].total) - (byCat[b].correct / byCat[b].total);
+    });
+    var weakNames = weakCats.map(function(k){ return CATS[k]; });
+    var persistedWrong = getPersistedWrongKeys();
+
+    els.resultWeak.textContent = weakNames.length ? ('À revoir en priorité : ' + weakNames.join(', ') + '.') : (state.filterCats ? 'Thème maîtrisé !' : 'Tous les thèmes sont maîtrisés !');
+    if (persistedWrong.length){
+      els.btnReviewWeak.hidden = false;
+      els.btnReviewWeak.textContent = 'Réviser mes ' + persistedWrong.length + ' erreur' + (persistedWrong.length > 1 ? 's' : '') + ' en cours';
+    } else {
+      els.btnReviewWeak.hidden = true;
+    }
+
+    var wrong = state.results.filter(function(r){ return !r.isCorrect; });
+    els.reviewList.innerHTML = wrong.length ? wrong.map(function(r){
+      return '<div class="review-item"><div class="q">' + r.prompt + '</div>' +
+        '<div class="a">Ta réponse : <strong>' + (r.given.join(', ') || '—') + '</strong></div>' +
+        '<div class="a">Bonne réponse : <strong>' + r.correct.join(', ') + '</strong></div>' +
+        '<div class="a">' + r.explain + '</div></div>';
+    }).join('') : '<p style="color:var(--ink-soft);">Aucune erreur — rien à revoir !</p>';
+
+    if (state.examMode){
+      var examAttempts = (loadStorage('b2quiz-exam-attempts') || 0) + 1;
+      saveStorage('b2quiz-exam-attempts', examAttempts);
+      var examBest = loadStorage('b2quiz-exam-best');
+      if (!examBest || pct > examBest.pct){
+        saveStorage('b2quiz-exam-best', { pct: pct, passed: pct >= EXAM_PASS_PCT });
+      }
+    } else {
+      var attempts = (loadStorage('b2quiz-attempts') || 0) + 1;
+      saveStorage('b2quiz-attempts', attempts);
+      var best = loadStorage('b2quiz-best');
+      if (!best || pct > best.pct){
+        saveStorage('b2quiz-best', { pct: pct, frac: state.score + '/' + total });
+      }
+    }
+  }
+
+  function formatTime(ms){
+    var s = Math.round(ms / 1000);
+    var m = Math.floor(s / 60);
+    var r = s % 60;
+    return m + ' min ' + (r < 10 ? '0' : '') + r + ' s';
+  }
+
+  els.btnStart.addEventListener('click', function(){ startQuiz(); });
+  els.btnStartExam.addEventListener('click', function(){ startQuiz({ exam:true }); });
+  els.btnStartErrors.addEventListener('click', function(){ startQuiz({ keys: getPersistedWrongKeys() }); });
+  els.btnReviewWeak.addEventListener('click', function(){ startQuiz({ keys: getPersistedWrongKeys() }); });
+  els.btnOpenThemes.addEventListener('click', function(){
+    renderThemeList();
+    els.start.hidden = true;
+    els.themes.hidden = false;
+  });
+  els.btnThemesBack.addEventListener('click', function(){
+    els.themes.hidden = true;
+    els.start.hidden = false;
+  });
+  function goHome(){
+    els.reviewSection.hidden = true;
+    els.btnToggleReview.textContent = 'Revoir mes erreurs';
+    showBestScore();
+    els.quiz.hidden = true;
+    els.themes.hidden = true;
+    els.result.hidden = true;
+    els.start.hidden = false;
+  }
+  els.btnRestart.addEventListener('click', goHome);
+  els.btnHome.addEventListener('click', goHome);
+  els.btnToggleReview.addEventListener('click', function(){
+    els.reviewSection.hidden = !els.reviewSection.hidden;
+    els.btnToggleReview.textContent = els.reviewSection.hidden ? 'Revoir mes erreurs' : 'Masquer mes erreurs';
+  });
+  els.btnResetProgress.addEventListener('click', function(){
+    try{ localStorage.removeItem('b2quiz-progress'); }catch(e){}
+    showBestScore();
+  });
+
+  showBestScore();
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>

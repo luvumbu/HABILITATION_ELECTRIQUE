@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#14161a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/icons/favicon-16.png" type="image/png" sizes="16x16">
+<title>Fiches Mémo B1</title>
+<style>
+  :root{
+    --bg:#f7f6f1; --surface:#ffffff; --surface-2:#f0eee6;
+    --ink:#15181d; --ink-soft:#565c66; --ink-faint:#8a8f99;
+    --accent:#b7790a; --accent-soft:#fbe9c6;
+    --ok:#1f6d4c; --ok-soft:#dcece3;
+    --line:#e2ded2;
+    --shadow: 0 1px 2px rgba(20,17,10,0.06), 0 16px 34px -16px rgba(20,17,10,0.22);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+      --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+      --accent:#f0b42d; --accent-soft:#3a2c0c;
+      --ok:#5fc298; --ok-soft:#153327;
+      --line:#2b2f37;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 16px 34px -16px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+    --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+    --accent:#f0b42d; --accent-soft:#3a2c0c;
+    --ok:#5fc298; --ok-soft:#153327;
+    --line:#2b2f37;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 16px 34px -16px rgba(0,0,0,0.6);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  *{ box-sizing:border-box; }
+  html, body{ margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--ink); font-family:'Source Serif 4', Georgia, serif; padding-inline:18px; padding-block:26px 50px; }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, Consolas, monospace; }
+  .page{ max-width:560px; margin-inline:auto; }
+  .masthead{ margin-bottom:18px; }
+  .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1.title{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:clamp(2rem, 8vw, 3rem); line-height:0.92; margin:4px 0 6px; text-wrap:balance; }
+  .subtitle{ color:var(--ink-soft); font-size:0.96rem; max-width:52ch; }
+  .filter-row{ display:flex; gap:8px; flex-wrap:wrap; margin:18px 0 16px; }
+  .chip{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.02em; padding:6px 12px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--ink-soft); cursor:pointer; transition:border-color .12s ease, background .12s ease, color .12s ease; }
+  .chip:hover{ border-color:var(--accent); color:var(--ink); }
+  .chip.active{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+  .deck-info{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--ink-faint); letter-spacing:0.03em; }
+  .deck-info .theme{ color:var(--accent); font-weight:600; }
+  .card-stage{ perspective:1400px; margin-bottom:16px; }
+  .flashcard{ position:relative; min-height:260px; cursor:pointer; outline:none; }
+  .flashcard-inner{ position:relative; width:100%; height:100%; min-height:260px; transition:transform .5s cubic-bezier(.4,.2,.2,1); transform-style:preserve-3d; }
+  .flashcard.is-flipped .flashcard-inner{ transform:rotateY(180deg); }
+  .flashcard-face{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:32px 28px; border-radius:16px; backface-visibility:hidden; box-shadow:var(--shadow); border:1px solid var(--line); }
+  .flashcard-face.front{ background:var(--surface); }
+  .flashcard-face.back{ background:var(--accent-soft); color:var(--ink); transform:rotateY(180deg); border-color:var(--accent); }
+  .flashcard-face p{ margin:0; font-size:1.25rem; line-height:1.35; font-weight:600; }
+  .flashcard-face.front p{ font-family:'Big Shoulders Display', sans-serif; font-size:1.7rem; font-weight:700; text-wrap:balance; }
+  .flashcard-face .tag{ position:absolute; top:14px; left:18px; font-family:'IBM Plex Mono', monospace; font-size:0.66rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); }
+  .flashcard:focus-visible .flashcard-face.front{ outline:3px solid var(--accent); outline-offset:2px; }
+  .flip-hint{ position:absolute; bottom:14px; right:18px; font-family:'IBM Plex Mono', monospace; font-size:0.66rem; color:var(--ink-faint); }
+  .hint{ text-align:center; color:var(--ink-faint); font-size:0.82rem; margin:0 0 18px; font-family:'IBM Plex Mono', monospace; }
+  .nav-row{ display:flex; gap:10px; }
+  button{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:0.88rem; letter-spacing:0.02em; border-radius:9px; padding:13px 16px; cursor:pointer; border:none; transition:opacity .12s ease, transform .12s ease; }
+  button.primary{ background:var(--ink); color:var(--bg); flex:1.3; }
+  button.primary:hover{ opacity:.88; }
+  button.ghost{ background:transparent; color:var(--ink-soft); border:1px solid var(--line); flex:1; }
+  button.ghost:hover{ border-color:var(--ink-soft); color:var(--ink); }
+  button:active{ transform:scale(0.98); }
+  button:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  footer.foot{ margin-top:30px; padding-top:16px; border-top:1px solid var(--line); color:var(--ink-faint); font-size:0.76rem; font-family:'IBM Plex Mono', monospace; text-align:center; }
+  footer.foot a{ color:inherit; }
+  @media (prefers-reduced-motion: reduce){ .flashcard-inner{ transition:none; } }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <header class="masthead">
+    <span class="eyebrow">Révision express — 26 cartes</span>
+    <h1 class="title">Fiches Mémo B1</h1>
+    <p class="subtitle">L'essentiel B1 condensé en cartes. Clique pour voir la réponse, avant de passer à la suivante.</p>
+  </header>
+
+  <div class="filter-row" id="filter-row"></div>
+
+  <div class="deck-info">
+    <span id="card-counter" class="mono">1 / 26</span>
+    <span id="card-theme" class="theme">Thème</span>
+  </div>
+
+  <div class="card-stage">
+    <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-label="Retourner la carte">
+      <div class="flashcard-inner" id="flashcard-inner">
+        <div class="flashcard-face front">
+          <span class="tag">Question</span>
+          <p id="card-front">…</p>
+          <span class="flip-hint">Cliquer pour retourner</span>
+        </div>
+        <div class="flashcard-face back">
+          <span class="tag">Réponse</span>
+          <p id="card-back">…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="hint">Espace ou clic = retourner · Flèches = naviguer</p>
+
+  <div class="nav-row">
+    <button class="ghost" id="btn-prev">← Précédente</button>
+    <button class="ghost" id="btn-shuffle">Mélanger</button>
+    <button class="primary" id="btn-next">Suivante →</button>
+  </div>
+
+  <footer class="foot">
+    <a href="../index.html">Menu</a> · <a href="fiche.html">Fiche</a> · <a href="quiz.html">Quiz</a>
+    <br>Fiches Mémo B1 — NF C18-510
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var CATS = {
+    role: "Rôle & périmètre",
+    procedure: "Avant les travaux",
+    tension: "Domaines de tension",
+    distances: "Zones & distances",
+    risques: "Risques électriques",
+    epi: "EPI / Outillage",
+    documents: "Documents",
+    accident: "Conduite à tenir",
+    general: "Général"
+  };
+
+  var CARDS = [
+    { cat:"role", front:"B1 = ?", back:"Exécutant électricien basse tension." },
+    { cat:"role", front:"B1 travaille sous la direction de qui ?", back:"Du chargé de travaux (B2)." },
+    { cat:"role", front:"B1 peut-il diriger une équipe ?", back:"Non — c'est le rôle du B2." },
+    { cat:"role", front:"B1V = ?", back:"B1 + accès à la zone de voisinage RENFORCÉ (le B1 seul a déjà accès à la zone simple)." },
+
+    { cat:"procedure", front:"Qui consigne l'installation avant travaux du B1 ?", back:"Le chargé de consignation ou le chargé de travaux — jamais le B1 lui-même." },
+    { cat:"procedure", front:"Avant de travailler sur une partie consignée", back:"Le B1 vérifie LUI-MÊME l'absence de tension (VAT)." },
+    { cat:"procedure", front:"En fin de travaux", back:"Le B1 rend compte au chargé de travaux." },
+    { cat:"procedure", front:"Anomalie pendant les travaux", back:"Arrêt immédiat + alerte au chargé de travaux." },
+
+    { cat:"tension", front:"Domaine du B1", back:"Basse tension (BT/TBT) uniquement" },
+    { cat:"tension", front:"BT", back:"50 V < U ≤ 1000 V — le 230/400 V domestique (pas de BTA/BTB dans la norme actuelle)" },
+
+    { cat:"distances", front:"DMA en BT", back:"0,30 m" },
+    { cat:"distances", front:"B1 (sans V) près d'une pièce non consignée sous tension", back:"Doit rester hors zone de voisinage" },
+    { cat:"distances", front:"Zone de voisinage renforcé", back:"Interdite au B1 seul — autorisée au B1V" },
+
+    { cat:"risques", front:"Seuil de non-lâcher", back:"Environ 10 mA" },
+    { cat:"risques", front:"Seuil de fibrillation cardiaque", back:"Autour de 30 mA et plus" },
+    { cat:"risques", front:"Installation consignée = risque nul ?", back:"Non — condensateurs/batteries peuvent rester chargés" },
+    { cat:"risques", front:"Extincteur sur feu électrique", back:"CO2 (ou poudre) — jamais eau ni mousse" },
+
+    { cat:"epi", front:"Gants isolants pour un B1", back:"Selon l'analyse de risque et le travail à réaliser" },
+    { cat:"epi", front:"Bijoux/métal avant intervention", back:"À retirer systématiquement" },
+
+    { cat:"documents", front:"Titre d'habilitation B1", back:"Nominatif, non transférable, recyclage ~3 ans" },
+    { cat:"documents", front:"Attestation de consignation", back:"Reçue avant travaux, remise par le chargé de consignation/travaux" },
+
+    { cat:"accident", front:"Ordre des actions face à un accident", back:"Protéger → Examiner → Alerter → Secourir" },
+    { cat:"accident", front:"Numéro d'urgence européen", back:"112" },
+
+    { cat:"general", front:"B1 vs B2", back:"B1 exécute, B2 dirige et peut avoir une équipe" },
+    { cat:"general", front:"B1 vs BS", back:"B1 = travaux complets. BS = opérations élémentaires précises seulement" },
+    { cat:"general", front:"Un salarié peut-il être B1 ET B2 ?", back:"Oui, selon les missions confiées" }
+  ];
+
+  var els = {
+    filterRow: document.getElementById('filter-row'),
+    counter: document.getElementById('card-counter'),
+    themeLabel: document.getElementById('card-theme'),
+    flashcard: document.getElementById('flashcard'),
+    front: document.getElementById('card-front'),
+    back: document.getElementById('card-back'),
+    btnPrev: document.getElementById('btn-prev'),
+    btnNext: document.getElementById('btn-next'),
+    btnShuffle: document.getElementById('btn-shuffle')
+  };
+
+  var state = { deck: [], index: 0, filter: null };
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function buildDeck(){
+    var pool = state.filter ? CARDS.filter(function(c){ return c.cat === state.filter; }) : CARDS;
+    state.deck = shuffle(pool);
+    state.index = 0;
+  }
+
+  function renderFilters(){
+    var html = '<span class="chip' + (state.filter === null ? ' active' : '') + '" data-cat="">Tous (' + CARDS.length + ')</span>';
+    html += Object.keys(CATS).map(function(k){
+      var count = CARDS.filter(function(c){ return c.cat === k; }).length;
+      return '<span class="chip' + (state.filter === k ? ' active' : '') + '" data-cat="' + k + '">' + CATS[k] + ' (' + count + ')</span>';
+    }).join('');
+    els.filterRow.innerHTML = html;
+    els.filterRow.querySelectorAll('.chip').forEach(function(chip){
+      chip.addEventListener('click', function(){
+        var cat = chip.getAttribute('data-cat');
+        state.filter = cat === '' ? null : cat;
+        buildDeck();
+        renderFilters();
+        renderCard();
+      });
+    });
+  }
+
+  function renderCard(){
+    if (!state.deck.length){
+      els.front.textContent = "Aucune carte dans ce thème.";
+      els.back.textContent = "";
+      els.counter.textContent = '0 / 0';
+      els.themeLabel.textContent = '';
+      return;
+    }
+    els.flashcard.classList.remove('is-flipped');
+    var card = state.deck[state.index];
+    els.front.textContent = card.front;
+    els.back.textContent = card.back;
+    els.counter.textContent = (state.index + 1) + ' / ' + state.deck.length;
+    els.themeLabel.textContent = CATS[card.cat];
+  }
+
+  function next(){
+    if (!state.deck.length) return;
+    state.index = (state.index + 1) % state.deck.length;
+    renderCard();
+  }
+  function prev(){
+    if (!state.deck.length) return;
+    state.index = (state.index - 1 + state.deck.length) % state.deck.length;
+    renderCard();
+  }
+  function flip(){
+    els.flashcard.classList.toggle('is-flipped');
+  }
+
+  els.flashcard.addEventListener('click', flip);
+  els.flashcard.addEventListener('keydown', function(e){
+    if (e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); flip(); }
+  });
+  els.btnNext.addEventListener('click', next);
+  els.btnPrev.addEventListener('click', prev);
+  els.btnShuffle.addEventListener('click', function(){
+    buildDeck();
+    renderCard();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight') next();
+    else if (e.key === 'ArrowLeft') prev();
+  });
+
+  buildDeck();
+  renderFilters();
+  renderCard();
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>

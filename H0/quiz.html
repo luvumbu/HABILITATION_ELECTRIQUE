@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#14161a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/icons/favicon-16.png" type="image/png" sizes="16x16">
+<title>Mega Quiz H0</title>
+<style>
+  :root{
+    --bg:#f7f6f1; --surface:#ffffff; --surface-2:#f0eee6;
+    --ink:#15181d; --ink-soft:#565c66; --ink-faint:#8a8f99;
+    --accent:#b7790a; --accent-soft:#fbe9c6;
+    --danger:#a3271e; --danger-soft:#f7e1de;
+    --ok:#1f6d4c; --ok-soft:#dcece3;
+    --line:#e2ded2;
+    --shadow: 0 1px 2px rgba(20,17,10,0.06), 0 12px 30px -14px rgba(20,17,10,0.16);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+      --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+      --accent:#f0b42d; --accent-soft:#3a2c0c;
+      --danger:#e5726a; --danger-soft:#3a1c19;
+      --ok:#5fc298; --ok-soft:#153327;
+      --line:#2b2f37;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 30px -14px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+    --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+    --accent:#f0b42d; --accent-soft:#3a2c0c;
+    --danger:#e5726a; --danger-soft:#3a1c19;
+    --ok:#5fc298; --ok-soft:#153327;
+    --line:#2b2f37;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 12px 30px -14px rgba(0,0,0,0.6);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  *{ box-sizing:border-box; }
+  html, body{ margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--ink); font-family:'Source Serif 4', Georgia, serif; line-height:1.55; padding-inline:18px; padding-block:28px 60px; }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, Consolas, monospace; }
+  .page{ max-width:640px; margin-inline:auto; }
+  .masthead{ margin-bottom:22px; }
+  .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1.title{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:clamp(2.2rem, 8vw, 3.2rem); line-height:0.92; margin:4px 0 6px; text-wrap:balance; }
+  .subtitle{ color:var(--ink-soft); font-size:1rem; max-width:52ch; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:24px; box-shadow:var(--shadow); }
+  @media (max-width:480px){ .card{ padding:18px; } }
+  .stat-row{ display:flex; gap:10px; flex-wrap:wrap; margin:16px 0 20px; }
+  .stat{ flex:1; min-width:120px; background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .stat .num{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:1.8rem; color:var(--accent); line-height:1; }
+  .stat .lab{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); }
+  .best-score{ font-family:'IBM Plex Mono', monospace; font-size:0.85rem; color:var(--ink-soft); background:var(--accent-soft); border-radius:8px; padding:10px 14px; margin-bottom:18px; }
+  button.primary{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:0.95rem; letter-spacing:0.02em; background:var(--ink); color:var(--bg); border:none; border-radius:9px; padding:14px 22px; cursor:pointer; width:100%; transition:transform .12s ease, opacity .12s ease; }
+  button.primary:hover{ opacity:0.88; }
+  button.primary:active{ transform:scale(0.98); }
+  button.primary:disabled{ opacity:0.4; cursor:not-allowed; }
+  button.primary:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  button.ghost{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; letter-spacing:0.02em; background:transparent; color:var(--ink-soft); border:1px solid var(--line); border-radius:9px; padding:10px 16px; cursor:pointer; }
+  button.ghost:hover{ border-color:var(--ink-soft); color:var(--ink); }
+  button.ghost:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  button.exam{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:0.95rem; letter-spacing:0.02em; background:var(--surface); color:var(--ink); border:2px solid var(--ink); border-radius:9px; padding:13px 22px; cursor:pointer; width:100%; }
+  button.exam:hover{ background:var(--accent-soft); border-color:var(--accent); }
+  button.exam:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+  .progress-wrap{ margin-bottom:18px; }
+  .progress-meta{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--ink-faint); letter-spacing:0.04em; }
+  .progress-track{ height:6px; background:var(--surface-2); border-radius:999px; overflow:hidden; }
+  .progress-fill{ height:100%; background:var(--accent); border-radius:999px; transition:width .3s ease; }
+  .cat-tag{ display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); background:var(--accent-soft); padding:3px 9px; border-radius:999px; margin-bottom:10px; font-weight:600; }
+  .q-type{ color:var(--ink-faint); font-weight:400; text-transform:none; letter-spacing:0; margin-left:6px; }
+  h2.question{ font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:1.5rem; line-height:1.15; margin:0 0 16px; text-wrap:balance; }
+  .options{ display:flex; flex-direction:column; gap:10px; margin-bottom:18px; list-style:none; padding:0; }
+  .option{ display:flex; align-items:flex-start; gap:12px; border:1.5px solid var(--line); border-radius:10px; padding:12px 14px; cursor:pointer; background:var(--surface); transition:border-color .12s ease, background .12s ease; }
+  .option:hover{ border-color:var(--accent); }
+  .option input{ margin-top:3px; accent-color:var(--accent); width:17px; height:17px; flex:none; }
+  .option .letter{ font-family:'IBM Plex Mono', monospace; font-weight:600; color:var(--ink-faint); flex:none; width:1.1em; }
+  .option .txt{ flex:1; }
+  .option.is-selected{ border-color:var(--accent); background:var(--accent-soft); }
+  .option.is-selected .letter{ color:var(--accent); }
+  .option.is-correct{ border-color:var(--ok); background:var(--ok-soft); }
+  .option.is-wrong{ border-color:var(--danger); background:var(--danger-soft); }
+  .option:has(input:focus-visible){ outline:3px solid var(--accent); outline-offset:2px; }
+  .feedback{ border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:0.94rem; border-left:4px solid var(--line); }
+  .feedback.correct{ background:var(--ok-soft); border-left-color:var(--ok); }
+  .feedback.wrong{ background:var(--danger-soft); border-left-color:var(--danger); }
+  .feedback .head{ font-family:'IBM Plex Mono', monospace; font-size:0.78rem; letter-spacing:0.05em; text-transform:uppercase; font-weight:700; display:block; margin-bottom:6px; }
+  .feedback.correct .head{ color:var(--ok); }
+  .feedback.wrong .head{ color:var(--danger); }
+  .feedback p{ margin:0; }
+  .score-ring{ width:168px; height:168px; border-radius:50%; margin:6px auto 18px; position:relative; display:flex; align-items:center; justify-content:center; }
+  .score-ring::before{ content:""; position:absolute; inset:0; border-radius:50%; background: conic-gradient(var(--accent) calc(var(--pct,0) * 1%), var(--surface-2) 0); }
+  .score-ring::after{ content:""; position:absolute; inset:10px; border-radius:50%; background:var(--surface); }
+  .score-ring .val{ position:relative; z-index:1; text-align:center; font-family:'Big Shoulders Display', sans-serif; }
+  .score-ring .val .pct{ font-size:2.6rem; font-weight:800; line-height:1; }
+  .score-ring .val .frac{ font-family:'IBM Plex Mono', monospace; font-size:0.8rem; color:var(--ink-soft); }
+  .verdict{ text-align:center; font-size:1.05rem; margin-bottom:6px; }
+  .verdict-sub{ text-align:center; color:var(--ink-soft); font-size:0.9rem; margin-bottom:20px; }
+  .cat-breakdown{ display:flex; flex-direction:column; gap:8px; margin-bottom:22px; }
+  .cat-row{ display:flex; align-items:center; gap:10px; }
+  .cat-row .name{ width:132px; flex:none; font-size:0.85rem; color:var(--ink-soft); }
+  .cat-row .bar{ flex:1; height:8px; background:var(--surface-2); border-radius:999px; overflow:hidden; }
+  .cat-row .bar > span{ display:block; height:100%; background:var(--ok); border-radius:999px; }
+  .cat-row .frac{ font-family:'IBM Plex Mono', monospace; font-size:0.75rem; color:var(--ink-faint); width:38px; text-align:right; flex:none; }
+  .review{ margin-top:24px; }
+  .review h3{ font-family:'Big Shoulders Display', sans-serif; font-size:1.2rem; margin:0 0 12px; }
+  .review-item{ border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin-bottom:10px; background:var(--surface-2); }
+  .review-item .q{ font-weight:600; margin-bottom:6px; }
+  .review-item .a{ font-size:0.9rem; color:var(--ink-soft); margin:2px 0; }
+  .review-item .a strong{ color:var(--ink); }
+  .action-row{ display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; }
+  .action-row button{ flex:1; min-width:150px; }
+  footer.foot{ margin-top:32px; padding-top:16px; border-top:1px solid var(--line); color:var(--ink-faint); font-size:0.78rem; font-family:'IBM Plex Mono', monospace; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer.foot a{ color:inherit; }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <img src="../img/quiz-banner.png" alt="" width="900" height="380" style="display:block; width:100%; max-width:380px; margin:0 auto 10px; height:auto;">
+  <header class="masthead">
+    <span class="eyebrow">Entraînement — 74 questions</span>
+    <h1 class="title">Mega Quiz H0</h1>
+    <p class="subtitle">Toutes les notions du programme H0 passées au crible. Réponds seul(e), sans regarder la fiche.</p>
+  </header>
+
+  <section id="screen-start" class="card">
+    <div class="stat-row">
+      <div class="stat"><div class="num">74</div><div class="lab">Questions</div></div>
+      <div class="stat"><div class="num">9</div><div class="lab">Thèmes</div></div>
+      <div class="stat"><div class="num" id="stat-review">0</div><div class="lab">À revoir</div></div>
+    </div>
+    <div id="best-score-box" class="best-score" hidden></div>
+    <p style="color:var(--ink-soft); font-size:0.92rem; margin-bottom:18px;">Les questions ratées reviennent <strong>en priorité</strong> au prochain essai, les autres suivent dans un ordre aléatoire — jamais deux fois le même enchaînement.</p>
+    <button class="primary" id="btn-start">Test complet (74 questions)</button>
+    <button class="primary" id="btn-start-errors" hidden style="width:100%; margin-top:10px;">Réviser uniquement mes erreurs</button>
+    <button class="ghost" id="btn-open-themes" style="width:100%; margin-top:10px;">Réviser un thème précis</button>
+    <button class="exam" id="btn-start-exam" style="margin-top:16px;">Mode Examen — 20 questions, 20 min, sans correction</button>
+    <p class="mono" id="exam-best-box" hidden style="font-size:0.78rem; color:var(--ink-faint); margin-top:8px;"></p>
+    <button class="ghost" id="btn-reset-progress" style="width:100%; margin-top:10px;">Réinitialiser ma progression</button>
+  </section>
+
+  <section id="screen-themes" class="card" hidden>
+    <p class="subtitle" style="margin-bottom:16px;">Choisis un thème&nbsp;: les questions viendront uniquement de cette catégorie.</p>
+    <ul class="options" id="theme-list"></ul>
+    <button class="ghost" id="btn-themes-back" style="width:100%; margin-top:14px;">Retour</button>
+  </section>
+
+  <section id="screen-quiz" class="card" hidden>
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="progress-label" class="mono">Question 1 / 40</span>
+        <span id="progress-score" class="mono">Score : 0</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <span class="cat-tag" id="q-category">Thème</span>
+    <h2 class="question" id="q-prompt">…</h2>
+    <ul class="options" id="q-options"></ul>
+    <div id="q-feedback"></div>
+    <button class="primary" id="btn-action" disabled>Valider ma réponse</button>
+  </section>
+
+  <section id="screen-result" class="card" hidden>
+    <div class="mono" id="exam-verdict-box" hidden style="text-align:center; font-weight:700; font-size:1.05rem; padding:12px; border-radius:10px; margin-bottom:16px; letter-spacing:0.02em;"></div>
+    <div class="score-ring" id="score-ring">
+      <div class="val"><div class="pct" id="result-pct">0%</div><div class="frac" id="result-frac">0 / 40</div></div>
+    </div>
+    <p class="verdict" id="result-verdict">—</p>
+    <p class="verdict-sub" id="result-sub">—</p>
+    <p class="verdict-sub" id="result-weak" style="font-weight:600;"></p>
+    <p class="verdict-sub mono" id="result-time" style="font-size:0.78rem;">—</p>
+    <div class="cat-breakdown" id="cat-breakdown"></div>
+    <div class="action-row">
+      <button class="primary" id="btn-restart">Recommencer tout</button>
+      <button class="primary" id="btn-review-weak" hidden>Réviser ces thèmes</button>
+      <button class="ghost" id="btn-toggle-review">Revoir mes erreurs</button>
+      <button class="ghost" id="btn-home">Menu principal</button>
+    </div>
+    <div class="review" id="review-section" hidden>
+      <h3>À retravailler</h3>
+      <div id="review-list"></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span><a href="../index.html">Menu</a> · <a href="fiche.html">Fiche</a> · <a href="memo.html">Mémo</a></span>
+    <span id="attempt-counter">Tentative n°1</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var EXAM_SIZE = 20;
+  var EXAM_TIME_MS = 20 * 60 * 1000;
+  var EXAM_PASS_PCT = 70;
+
+  var CATS = {
+    role: "Rôle & périmètre",
+    vocab: "Vocabulaire",
+    distances: "Zones & distances HT",
+    risques: "Risques électriques",
+    epi: "EPI",
+    documents: "Documents",
+    accident: "Conduite à tenir",
+    general: "Général",
+    situation: "Mises en situation"
+  };
+
+  var BANK = [
+    { cat:"role", type:"single", prompt:"Que signifie H0 ?",
+      options:["Non-électricien en environnement haute tension","Non-électricien en environnement basse tension","Électricien qualifié HT","Chargé de travaux HT"],
+      correct:[0], explain:"H0 désigne un non-électricien travaillant en environnement haute tension, tout comme B0 en basse tension." },
+    { cat:"role", type:"single", prompt:"Un H0 peut-il exécuter une opération électrique ?",
+      options:["Oui, en HT uniquement","Non, jamais, comme le B0 en BT","Oui, si formé au préalable","Oui, en cas d'urgence"],
+      correct:[1], explain:"Comme le B0, le H0 n'exécute jamais d'opération électrique — seule la lettre de domaine change (H = haute tension)." },
+    { cat:"role", type:"single", prompt:"Que permet en plus le H0V par rapport au H0 ?",
+      options:["Travailler sous tension HT","Entrer dans la zone de voisinage renforcé HT, sous conditions","Consigner un ouvrage HT","Réaliser des opérations d'ordre électrique"],
+      correct:[1], explain:"Le H0 seul est déjà limité à la zone de voisinage simple (zone 1) ; le H0V ajoute l'accès à la zone de voisinage renforcé (zone 2), réservée en HT au personnel formé et habilité pour ce niveau de risque." },
+    { cat:"role", type:"single", prompt:"Un H0 peut-il être chargé de chantier ?",
+      options:["Oui, comme le B0 pour un chantier en environnement HT","Non, jamais","Oui, uniquement en BT","Non, réservé aux électriciens H1/H2"],
+      correct:[0], explain:"Le H0 peut diriger un chantier de non-électriciens en environnement HT, exactement comme le B0 en BT." },
+    { cat:"role", type:"single", prompt:"Qui délivre le titre d'habilitation H0 ?",
+      options:["L'organisme de formation","L'employeur","Le gestionnaire du réseau électrique national","L'inspection du travail"],
+      correct:[1], explain:"C'est toujours l'employeur qui délivre le titre d'habilitation." },
+    { cat:"role", type:"single", prompt:"Un H0 constate une anomalie sur une installation HT. Que doit-il faire ?",
+      options:["Il répare lui-même si c'est simple","Il signale sans jamais y toucher","Il ignore, ce n'est pas son rôle","Il coupe lui-même l'alimentation générale"],
+      correct:[1], explain:"Comme le B0, le H0 signale toute anomalie sans jamais intervenir lui-même." },
+    { cat:"role", type:"single", prompt:"Un H0 peut-il utiliser lui-même un appareil de mesure électrique dans un poste HT ?",
+      options:["Oui, s'il est prudent","Non, l'utilisation d'appareils de mesure est réservée aux électriciens habilités (H1/H2/HC)","Oui, uniquement les multimètres","Oui, si un collègue le surveille"],
+      correct:[1], explain:"Comme pour toute opération électrique, la mesure est réservée aux habilités électriciens ; le H0 n'y touche jamais." },
+    { cat:"role", type:"single", prompt:"Le H0 doit-il connaître les pictogrammes de danger spécifiques affichés dans un poste HT ?",
+      options:["Non, ce n'est pas utile pour lui","Oui, cela fait partie de sa formation pour évoluer en sécurité dans cet environnement","Seulement s'il travaille de nuit","Non, uniquement les électriciens doivent les connaître"],
+      correct:[1], explain:"Connaître la signalétique de danger fait partie de la formation du H0, pour reconnaître les zones et équipements à risque." },
+
+    { cat:"vocab", type:"single", prompt:"Que signifie la lettre H dans un code d'habilitation ?",
+      options:["Le domaine haute tension","Le domaine basse tension","Les horaires de travail","La hauteur de travail"],
+      correct:[0], explain:"La lettre H désigne le domaine haute tension (HTA/HTB), par opposition à B pour le domaine BT/TBT." },
+    { cat:"vocab", type:"single", prompt:"HTA correspond à quelle plage de tension ?",
+      options:["50 V à 500 V","500 V à 1000 V","1 kV à 50 kV","Plus de 50 kV"],
+      correct:[2], explain:"Le domaine HTA couvre 1 kV < U ≤ 50 kV." },
+    { cat:"vocab", type:"single", prompt:"HTB correspond à quelle plage de tension ?",
+      options:["1 kV à 50 kV","Plus de 50 kV","500 V à 1000 V","50 V à 500 V"],
+      correct:[1], explain:"Le domaine HTB couvre les tensions supérieures à 50 kV." },
+    { cat:"vocab", type:"single", prompt:"Qu'est-ce qu'un poste de transformation HTA/BT ?",
+      options:["Une installation qui abaisse la tension de HTA vers BT pour l'usage courant","Un poste de contrôle des employés","Un local réservé au stockage d'outils","Un dispositif de mesure de la consommation"],
+      correct:[0], explain:"Un poste de transformation HTA/BT convertit la haute tension du réseau de distribution en basse tension utilisable (230/400 V)." },
+    { cat:"vocab", type:"single", prompt:"Que désigne un « poste source » ?",
+      options:["Une installation qui transforme la HTB en HTA pour la distribution","Un local de premiers secours","Un bureau administratif","Un compteur électrique individuel"],
+      correct:[0], explain:"Le poste source assure la transformation entre le réseau de transport (HTB) et le réseau de distribution (HTA)." },
+    { cat:"vocab", type:"single", prompt:"Que désigne un « disjoncteur HTA » dans un poste de livraison ?",
+      options:["Un appareil de coupure et de protection en haute tension","Un simple interrupteur d'éclairage","Un dispositif de mesure de la consommation","Une prise de terre"],
+      correct:[0], explain:"Le disjoncteur HTA assure la coupure et la protection du circuit haute tension, comme son équivalent en basse tension." },
+    { cat:"vocab", type:"single", prompt:"Qu'est-ce qu'un « tableau de comptage » dans un poste HTA/BT ?",
+      options:["Un panneau qui mesure et enregistre la consommation d'électricité","Un tableau de répartition des outils","Un plan d'évacuation du site","Un tableau des consignes de sécurité"],
+      correct:[0], explain:"Le tableau de comptage permet de mesurer l'énergie consommée, distinct des organes de coupure et de protection." },
+
+    { cat:"distances", type:"single", prompt:"Quelle est la valeur approximative de la DMA (distance minimale d'approche) en HTA ?",
+      options:["0,30 m comme en BT","Environ 2 m","Environ 5 m","Il n'y a pas de DMA en HT"],
+      correct:[1], explain:"En HTA, la DMA est de l'ordre de 2 m — bien plus grande qu'en BT (0,30 m), car le risque d'amorçage augmente avec la tension." },
+    { cat:"distances", type:"single", prompt:"Quelle est la valeur approximative de la DMA (distance minimale d'approche) en HTB ?",
+      options:["2 m comme en HTA","Environ 5 m","0,30 m","Il n'y a pas de DMA en HTB"],
+      correct:[1], explain:"En HTB, la DMA augmente encore, de l'ordre de 5 m selon le niveau exact de tension." },
+    { cat:"distances", type:"single", prompt:"Pourquoi les distances de sécurité sont-elles plus grandes en HT qu'en BT ?",
+      options:["Par habitude, sans raison technique","Le risque d'amorçage électrique (arc) augmente avec la tension, même sans contact direct","Pour des raisons esthétiques","Ce n'est pas le cas, elles sont identiques"],
+      correct:[1], explain:"En HT, un arc électrique peut s'amorcer à distance sans contact physique : plus la tension est élevée, plus la distance de sécurité nécessaire est grande." },
+    { cat:"distances", type:"single", prompt:"Le H0 (sans V) peut-il pénétrer dans la zone de voisinage HT ?",
+      options:["Oui, avec prudence","Non, jamais — comme B0 en BT","Oui, uniquement en HTA","Oui, s'il porte un casque"],
+      correct:[1], explain:"Le H0 seul reste toujours en dehors de la zone de voisinage, exactement comme le B0 en BT." },
+    { cat:"distances", type:"single", prompt:"Le H0V peut-il pénétrer dans la zone de voisinage renforcé HT ?",
+      options:["Non, jamais, cette zone reste réservée aux électriciens","Oui, c'est précisément ce que lui permet en plus l'attribut « V »","Oui, mais uniquement en HTA","Non, uniquement le H0 (sans V) le peut"],
+      correct:[1], explain:"Contrairement au B0 (BT) qui n'a aucune variante « V », le H0V existe bien en HT et permet justement d'évoluer dans la zone de voisinage renforcé — c'est la seule différence avec le simple H0." },
+    { cat:"distances", type:"single", prompt:"La distance de sécurité en HT dépend-elle du niveau exact de tension (HTA vs HTB) ?",
+      options:["Non, elle est identique pour toute la HT","Oui, elle augmente avec le niveau de tension","Non, seule la BT a des distances variables","Oui, mais uniquement en intérieur"],
+      correct:[1], explain:"Plus la tension est élevée, plus la distance de sécurité nécessaire est grande, d'où des valeurs différentes entre HTA et HTB." },
+    { cat:"distances", type:"single", prompt:"Les distances de sécurité HT sont-elles réduites par mauvais temps ou de nuit ?",
+      options:["Oui, elles sont réduites de moitié la nuit","Non, elles restent identiques quelles que soient les conditions","Oui, uniquement sous la pluie","Non, sauf en cas de brouillard"],
+      correct:[1], explain:"Les distances de sécurité ne varient jamais selon la météo ou l'heure : elles restent fixées par la norme." },
+
+    { cat:"risques", type:"single", prompt:"Un arc électrique en HT est-il plus dangereux qu'en BT ?",
+      options:["Non, l'intensité de l'arc ne dépend pas de la tension","Oui, l'énergie libérée et la portée de l'arc augmentent avec la tension","Non, c'est l'inverse","Cela dépend uniquement de la météo"],
+      correct:[1], explain:"Plus la tension est élevée, plus l'énergie d'un arc électrique et sa portée peuvent être importantes." },
+    { cat:"risques", type:"single", prompt:"Peut-on amorcer un arc électrique en HT sans contact direct avec un conducteur ?",
+      options:["Non, un contact est toujours nécessaire","Oui, l'approche seule peut suffire à amorcer un arc en HT","Non, jamais possible","Oui, uniquement sous la pluie"],
+      correct:[1], explain:"En haute tension, un simple rapprochement excessif peut amorcer un arc électrique, même sans contact physique." },
+    { cat:"risques", type:"single", prompt:"Que signale le pictogramme représentant un éclair noir sur fond triangulaire jaune ?",
+      options:["Un risque d'incendie","Un risque électrique","Un risque chimique","Une sortie de secours"],
+      correct:[1], explain:"C'est le pictogramme normalisé du danger électrique." },
+    { cat:"risques", type:"single", prompt:"À partir de quelle intensité environ le courant peut-il provoquer une tétanisation (non-lâcher) ?",
+      options:["1 mA","10 mA","1000 mA","100 A"],
+      correct:[1], explain:"Autour de 10 mA, une contraction musculaire involontaire peut empêcher de lâcher le conducteur." },
+    { cat:"risques", type:"single", prompt:"Au-delà de quelle intensité le risque de fibrillation cardiaque augmente-t-il fortement ?",
+      options:["1 mA","10 mA","Environ 30 mA et plus","Il n'existe pas de seuil"],
+      correct:[2], explain:"Au-delà d'une trentaine de mA, selon la durée de contact, le risque de fibrillation cardiaque devient significatif." },
+    { cat:"risques", type:"single", prompt:"Quel type d'extincteur utiliser sur un feu d'origine électrique ?",
+      options:["De l'eau","Un extincteur CO2 ou à poudre","De la mousse","N'importe lequel"],
+      correct:[1], explain:"L'eau et la mousse conduisent l'électricité. Le CO2 (ou la poudre) est adapté car il n'est pas conducteur." },
+    { cat:"risques", type:"single", prompt:"Une ligne haute tension tombée au sol : que faire ?",
+      options:["S'approcher pour vérifier","Ne jamais approcher, baliser à large distance et alerter","La déplacer avec un bâton en bois","La toucher avec le dos de la main"],
+      correct:[1], explain:"Une ligne HT au sol reste extrêmement dangereuse à distance : il faut rester largement à l'écart et alerter immédiatement." },
+    { cat:"risques", type:"single", prompt:"Le port de vêtements synthétiques est-il déconseillé en environnement HT comme en BT ?",
+      options:["Non, cela ne change rien en HT","Oui, pour les mêmes raisons (risque de fusion/inflammation en cas d'arc électrique)","Oui, mais uniquement pour des raisons de confort","Non, seuls les vêtements en coton posent problème"],
+      correct:[1], explain:"Les matières synthétiques peuvent fondre ou s'enflammer sous l'effet de la chaleur d'un arc électrique, en HT comme en BT." },
+    { cat:"risques", type:"single", prompt:"Un H0 peut-il ressentir les effets d'un champ électromagnétique en s'approchant d'une ligne HT sans la toucher ?",
+      options:["Non, c'est impossible sans contact","Oui, à proximité immédiate — un signal d'alerte qui ne remplace jamais le respect des distances","Oui, mais uniquement en HTB","Non, sauf en cas de pluie"],
+      correct:[1], explain:"Certains effets (picotements, bourdonnement) peuvent se manifester à très courte distance de lignes HT, mais cela ne dispense jamais de respecter les distances de sécurité prescrites." },
+    { cat:"risques", type:"single", prompt:"Que faut-il faire si l'on aperçoit un feu de forêt ou un incendie approchant d'un poste HT ?",
+      options:["S'approcher pour évaluer les dégâts","Alerter immédiatement les secours et ne jamais s'approcher soi-même","Tenter d'éteindre avec de l'eau","Couper soi-même l'alimentation du poste"],
+      correct:[1], explain:"Un poste HT proche d'un incendie présente des risques combinés (feu + électricité) : il faut alerter et rester à distance." },
+    { cat:"risques", type:"single", prompt:"Une odeur particulière (comme l'ozone) près d'un poste HT peut-elle signaler un danger ?",
+      options:["Non, c'est normal et sans danger","Oui, cela peut indiquer un arc électrique ou une décharge : il faut s'éloigner et alerter","Non, uniquement une odeur de brûlé compte","Oui, mais seulement en cas de fumée visible"],
+      correct:[1], explain:"Une odeur d'ozone peut résulter d'une décharge électrique ou d'un amorçage d'arc : c'est un signal à prendre au sérieux." },
+
+    { cat:"epi", type:"single", prompt:"Le H0 a-t-il besoin de gants isolants ?",
+      options:["Oui, systématiquement, comme un électricien HT","Non, comme le B0, il n'exécute aucune opération électrique","Oui, uniquement en HTB","Non, jamais, même pour un électricien"],
+      correct:[1], explain:"Le H0 n'exécute aucune opération électrique : les gants isolants ne font pas partie de ses EPI." },
+    { cat:"epi", type:"single", prompt:"Le H0 doit-il retirer bijoux et objets métalliques avant d'approcher une zone à risque ?",
+      options:["Non, ce n'est pas nécessaire","Oui, comme toute personne en environnement à risque électrique","Seulement en HTB","Non, uniquement les électriciens"],
+      correct:[1], explain:"Les objets métalliques conduisent le courant et doivent être retirés avant toute approche d'un risque électrique." },
+    { cat:"epi", type:"single", prompt:"Le H0 doit-il respecter le balisage posé par un électricien HT ?",
+      options:["Non","Oui, toujours, sans jamais le déplacer","Seulement s'il est pressé","Non, cela concerne uniquement les H1/H2"],
+      correct:[1], explain:"Le balisage délimite une zone de sécurité que le H0 doit toujours respecter." },
+    { cat:"epi", type:"single", prompt:"Que doit faire un H0 avant d'entrer dans un poste HT ?",
+      options:["Rien de particulier","Être autorisé selon les consignes du site et respecter les limites de son habilitation","Se former sur place","Vérifier lui-même l'absence de tension"],
+      correct:[1], explain:"L'accès à un poste HT est encadré par des consignes de site que le H0 doit toujours respecter." },
+    { cat:"epi", type:"single", prompt:"Le port de chaussures de sécurité est-il requis pour un H0 sur un chantier proche d'un poste HT ?",
+      options:["Non, ce n'est jamais nécessaire","Oui, comme sur tout chantier présentant des risques (chute d'objet, terrain irrégulier)","Oui, uniquement en HTB","Non, seuls les électriciens en ont besoin"],
+      correct:[1], explain:"Les chaussures de sécurité font partie des EPI de base sur tout chantier à risques, indépendamment du risque électrique." },
+
+    { cat:"documents", type:"single", prompt:"Le titre d'habilitation H0 est-il un diplôme ?",
+      options:["Oui, un diplôme d'État","Non, c'est une reconnaissance par l'employeur, nominative et non transférable","Oui, délivré par le gestionnaire du réseau","Non, une simple attestation de présence"],
+      correct:[1], explain:"Ce n'est pas un diplôme, c'est une reconnaissance de l'employeur." },
+    { cat:"documents", type:"single", prompt:"Quelle est la durée de validité de l'habilitation H0 ?",
+      options:["Illimitée","Recyclage recommandé environ tous les 3 ans","1 mois","10 ans"],
+      correct:[1], explain:"Un recyclage périodique (environ tous les 3 ans) est recommandé, ou avant en cas de changement de poste." },
+    { cat:"documents", type:"single", prompt:"Un H0 peut-il refuser une tâche qu'il juge dangereuse ?",
+      options:["Non","Oui, toujours, s'il juge sa sécurité compromise","Seulement avec l'accord du responsable","Non, sauf en cas d'urgence"],
+      correct:[1], explain:"Tout titulaire d'une habilitation peut refuser une opération qu'il juge dangereuse." },
+    { cat:"documents", type:"single", prompt:"L'employeur peut-il retirer l'habilitation H0 d'un salarié ?",
+      options:["Non, jamais","Oui, à tout moment, s'il estime que les conditions ne sont plus réunies","Oui, uniquement en fin d'année","Non, seule l'inspection du travail le peut"],
+      correct:[1], explain:"L'employeur peut retirer l'habilitation à tout moment." },
+    { cat:"documents", type:"single", prompt:"Le H0 doit-il parfois signer un registre d'accès en entrant dans un poste HT ?",
+      options:["Non, jamais requis","Oui, de nombreux sites l'exigent pour tracer les entrées/sorties","Non, seuls les électriciens doivent signer","Oui, mais uniquement une fois par an"],
+      correct:[1], explain:"Le registre d'accès permet de savoir qui se trouve sur le site en cas d'incident ; il est souvent exigé même pour un H0." },
+
+    { cat:"accident", type:"single", prompt:"Quelle est la bonne succession d'actions face à un accident d'origine électrique ?",
+      options:["Alerter → Protéger → Examiner → Secourir","Protéger → Examiner → Alerter → Secourir","Secourir → Protéger → Alerter → Examiner","Examiner → Secourir → Protéger → Alerter"],
+      correct:[1], explain:"On protège d'abord, on examine l'état de la victime, on alerte les secours, puis on secourt si on est formé." },
+    { cat:"accident", type:"single", prompt:"Une victime est encore en contact avec un conducteur sous tension. Que faites-vous en priorité ?",
+      options:["Vous la tirez à mains nues, rapidement","Vous coupez le courant si possible ; sinon, vous l'éloignez avec un objet isolant, sans jamais la toucher directement","Vous appelez les secours et attendez sans agir","Vous pratiquez immédiatement le bouche-à-bouche"],
+      correct:[1], explain:"Ne jamais toucher directement une victime encore sous tension." },
+    { cat:"accident", type:"single", prompt:"Quel numéro d'urgence fonctionne dans tous les pays de l'Union européenne ?",
+      options:["Le 15","Le 18","Le 112","Le 17"],
+      correct:[2], explain:"Le 112 est le numéro d'urgence unique européen." },
+    { cat:"accident", type:"single", prompt:"Vous sentez une odeur de brûlé ou voyez de la fumée provenant d'une installation électrique. Que faites-vous ?",
+      options:["Vous continuez votre travail, ce n'est probablement rien","Vous vous éloignez, alertez immédiatement et ne tentez pas d'intervenir vous-même","Vous ouvrez l'armoire électrique pour vérifier","Vous versez de l'eau dessus par précaution"],
+      correct:[1], explain:"Une odeur de brûlé ou de la fumée signale un risque grave : il faut s'éloigner, alerter, et ne jamais intervenir soi-même." },
+    { cat:"accident", type:"single", prompt:"Une personne est victime d'un accident près d'une ligne HT tombée au sol, encore sous tension. Peut-on s'approcher pour la secourir ?",
+      options:["Oui, rapidement, en évitant de la toucher directement","Non, il faut alerter et attendre la coupure par les services compétents avant toute approche","Oui, en portant des gants en cuir","Oui, en la tirant avec un vêtement"],
+      correct:[1], explain:"Une ligne HT au sol reste dangereuse à distance (tension de pas) : seule la coupure par les services compétents permet une approche en sécurité." },
+
+    { cat:"general", type:"single", prompt:"Quelle est la différence principale entre H0 et B0 ?",
+      options:["Aucune, ce sont les mêmes règles","H0 concerne l'environnement HT, B0 l'environnement BT — les deux interdisent toute opération électrique","H0 peut faire des opérations électriques, pas B0","B0 concerne la HT, H0 la BT"],
+      correct:[1], explain:"Les deux habilitations suivent la même logique, appliquée à des domaines de tension différents." },
+    { cat:"general", type:"single", prompt:"Un salarié peut-il cumuler B0 et H0 ?",
+      options:["Non, incompatible","Oui, selon les environnements auxquels il est exposé","Non, il faut choisir","Oui, mais après 5 ans"],
+      correct:[1], explain:"Les habilitations se cumulent selon les besoins du poste." },
+    { cat:"general", type:"single", prompt:"Quelle est la différence entre H1 et H2 ?",
+      options:["H1 exécutant, H2 chargé de travaux HT — même logique que B1/B2","Aucune différence","H1 en BT, H2 en HT","H1 consigne, H2 jamais"],
+      correct:[0], explain:"L'indice 1 correspond à un exécutant, l'indice 2 à un chargé de travaux, en HT comme en BT." },
+    { cat:"general", type:"single", prompt:"Que désigne l'habilitation HC ?",
+      options:["Chargé de consignation en haute tension","Chargé de chantier HT","Habilitation complémentaire","Haute Capacité"],
+      correct:[0], explain:"HC désigne le chargé de consignation en haute tension, comme BC en basse tension." },
+    { cat:"general", type:"single", prompt:"Pourquoi un H0 pourrait-il être amené à travailler à proximité d'un poste HT ?",
+      options:["Travaux de bâtiment, entretien d'espaces verts, nettoyage à proximité d'une installation HT","Uniquement pour réparer l'installation","Il n'y a jamais de raison","Uniquement en cas d'urgence"],
+      correct:[0], explain:"Comme le B0, le H0 intervient pour des tâches non électriques qui se déroulent près d'un environnement électrique — ici, HT." },
+    { cat:"general", type:"single", prompt:"Un chantier proche d'une ligne HT nécessite-t-il souvent une déclaration préalable au gestionnaire du réseau ?",
+      options:["Non, jamais nécessaire","Oui, une déclaration (type DT-DICT) est souvent obligatoire avant travaux à proximité de réseaux","Non, seule une autorisation orale suffit","Oui, mais uniquement pour des travaux souterrains"],
+      correct:[1], explain:"Les travaux à proximité de réseaux électriques nécessitent en général une déclaration préalable auprès du gestionnaire concerné." },
+    { cat:"general", type:"single", prompt:"H0 et H0V ont-ils la même durée de validité recommandée que B0 ?",
+      options:["Non, une durée plus courte","Oui, un recyclage est recommandé environ tous les 3 ans, comme pour B0","Non, elles n'expirent jamais","Oui, mais tous les 10 ans"],
+      correct:[1], explain:"La logique de recyclage périodique (environ tous les 3 ans) s'applique de la même façon à H0/H0V qu'à B0." },
+
+    { cat:"situation", type:"single", prompt:"Vous devez tondre l'herbe d'un espace vert situé sous une ligne HT aérienne. Que faites-vous ?",
+      options:["Vous tondez normalement, la ligne est haute","Vous respectez les distances de sécurité définies au préalable et n'approchez jamais l'outillage de la ligne","Vous tondez uniquement le matin par prudence","Vous demandez à un collègue de surveiller la ligne pendant que vous tondez"],
+      correct:[1], explain:"La hauteur apparente d'une ligne ne dispense jamais de respecter les distances de sécurité définies avant le début des travaux." },
+    { cat:"situation", type:"single", prompt:"En entretenant des espaces verts près d'un poste HT clôturé, vous constatez que le portail d'accès est resté ouvert et personne n'est visible à l'intérieur. Que faites-vous ?",
+      options:["Vous entrez pour vérifier ce qu'il se passe","Vous ne rentrez pas, refermez si possible sans toucher aux équipements, et signalez l'anomalie","Vous laissez la porte ouverte, ce n'est pas votre rôle","Vous prenez une photo avant de partir sans rien faire d'autre"],
+      correct:[1], explain:"Un H0 ne pénètre jamais dans un poste HT sans autorisation : il signale l'anomalie sans s'approcher des équipements." },
+    { cat:"situation", type:"single", prompt:"Sur un chantier de terrassement, le plan de récolement indique un câble HT enterré à proximité de la zone à creuser. Que faites-vous avant de commencer ?",
+      options:["Vous creusez normalement, le câble est enterré donc protégé","Vous faites réaliser un repérage/marquage précis avant tout terrassement et respectez la distance indiquée","Vous creusez uniquement à la main pour plus de sécurité","Vous ignorez le plan si le chantier est urgent"],
+      correct:[1], explain:"Un câble HT enterré reste dangereux : un repérage précis et le respect des distances sont indispensables avant tout terrassement." },
+    { cat:"situation", type:"single", prompt:"Vous travaillez à la peinture extérieure à proximité d'un poste de transformation HT et remarquez une odeur d'ozone inhabituelle. Que faites-vous ?",
+      options:["Vous continuez votre travail, ce n'est qu'une odeur", "Vous vous éloignez immédiatement et alertez : cette odeur peut signaler un arc ou une décharge électrique", "Vous ouvrez la porte du poste pour vérifier", "Vous ventilez la zone avant de continuer"],
+      correct:[1], explain:"Une odeur d'ozone près d'un poste HT est un signal d'alerte à prendre au sérieux : il faut s'éloigner et alerter, jamais investiguer soi-même." },
+    { cat:"situation", type:"single", prompt:"Une ligne haute tension survole un chantier où une grue doit être installée. Que doit prévoir l'entreprise avant le montage ?",
+      options:["Rien, tant que la grue ne touche pas la ligne", "Une étude préalable avec le gestionnaire du réseau pour définir les distances de sécurité, voire une mise hors tension ou un déplacement de ligne", "Un simple avertissement oral au grutier", "Une protection en plastique posée sur la ligne"],
+      correct:[1], explain:"La présence d'une ligne HT au-dessus d'un chantier de levage impose une étude préalable formelle avec le gestionnaire du réseau, pas une simple consigne orale." },
+    { cat:"situation", type:"single", prompt:"Vous êtes témoin d'un accident : une personne s'est approchée trop près d'une ligne HT sans la toucher et s'est effondrée à quelques mètres. Que faites-vous ?",
+      options:["Vous vous précipitez pour la tirer par les pieds", "Vous n'approchez pas de la zone dangereuse et alertez immédiatement les secours en précisant qu'il s'agit d'un accident HT", "Vous attendez qu'elle se relève seule", "Vous coupez vous-même l'alimentation du poste le plus proche"],
+      correct:[1], explain:"La zone reste dangereuse (tension de pas, arc) même sans contact direct visible : n'approchez jamais, alertez en précisant le contexte HT." },
+    { cat:"situation", type:"single", prompt:"On vous demande, en tant que H0, d'aider à débrancher rapidement un câble dans un poste HT car l'électricien habilité est absent. Que répondez-vous ?",
+      options:["Vous acceptez pour dépanner, c'est un geste simple", "Vous refusez : toute opération électrique en HT est strictement interdite à un H0, quelle que soit l'urgence", "Vous acceptez si on vous explique comment faire", "Vous le faites en demandant à quelqu'un de surveiller"],
+      correct:[1], explain:"Le périmètre du H0 ne varie jamais selon l'urgence ou la simplicité apparente de la tâche : aucune opération électrique en HT." },
+    { cat:"situation", type:"single", prompt:"Un visiteur non habilité vous suit sans badge pour entrer dans une zone HT où vous devez intervenir en tant que H0. Que faites-vous ?",
+      options:["Vous le laissez entrer, il est avec vous", "Vous l'empêchez d'entrer et rappelez que l'accès est réservé aux personnes autorisées et enregistrées", "Vous lui prêtez votre badge", "Vous ne dites rien, ce n'est pas votre rôle"],
+      correct:[1], explain:"Le contrôle d'accès à une zone HT protège tout le monde : un H0 doit toujours faire respecter cette règle, jamais la contourner." },
+
+    { cat:"distances", type:"single", prompt:"Vous devez vous éloigner d'un conducteur HT tombé au sol, potentiellement sous tension. Quelle est la technique correcte ?",
+      options:["Courir le plus vite possible en grandes enjambées","S'éloigner à petits pas ou par petits sauts, pieds serrés, sans les écarter","Marcher normalement, la distance suffit","Ramper au sol pour rester bas"],
+      correct:[1], explain:"De grandes enjambées créent une différence de potentiel entre les deux pieds (tension de pas) qui peut électriser. Il faut s'éloigner à petits pas ou petits sauts, pieds serrés." },
+    { cat:"accident", type:"single", prompt:"Une ligne HT est tombée au sol suite à un accident. La tension est inférieure à 50 000 V. Quel périmètre de sécurité minimal respecter ?",
+      options:["1 mètre","Au moins 3 mètres (5 m en cas de doute ou au-delà de 50 000 V)","Aucun périmètre n'est nécessaire si le câble ne bouge pas","50 centimètres suffisent"],
+      correct:[1], explain:"Le périmètre de sécurité autour d'un conducteur HT au sol est d'au moins 3 m sous 50 000 V, 5 m au-delà — et 5 m en cas de doute sur la tension." },
+    { cat:"accident", type:"single", prompt:"Un véhicule touche accidentellement une ligne HT aérienne. Les occupants doivent-ils sortir immédiatement ?",
+      options:["Oui, le plus vite possible","Non, ils doivent rester à l'intérieur tant que la ligne n'a pas été confirmée hors tension par le service compétent (sauf incendie du véhicule)","Oui, en touchant le sol et le véhicule en même temps pour se stabiliser","Cela dépend du modèle de véhicule"],
+      correct:[1], explain:"Le véhicule reste au même potentiel que la ligne : en sortir créerait une tension de pas dangereuse. Il faut rester à bord, ne pas toucher la carrosserie de l'extérieur, et attendre la confirmation de coupure." },
+    { cat:"risques", type:"single", prompt:"Quel degré de protection minimal une enveloppe (armoire, coffret) doit-elle offrir en haute tension pour empêcher les contacts directs ?",
+      options:["IP2X ou IPXXB, comme en basse tension","IP3X ou IPXXC","Aucun degré de protection n'est requis en HT","IP1X suffit"],
+      correct:[1], explain:"En haute tension, le degré de protection minimal contre les contacts directs est IP3X ou IPXXC (contre IP2X/IPXXB en basse tension)." },
+    { cat:"documents", type:"single", prompt:"En complément du recyclage périodique, à quelle fréquence minimale l'employeur doit-il examiner l'habilitation d'un H0 ?",
+      options:["Jamais, une fois délivrée elle est définitive","Au moins une fois par an, et à chaque évolution notable de sa situation","Tous les 5 ans seulement","Uniquement en cas d'accident"],
+      correct:[1], explain:"L'habilitation doit être examinée par l'employeur au moins une fois par an, et chaque fois qu'un changement de situation le justifie." },
+    { cat:"role", type:"single", prompt:"Un H0V peut-il réaliser une opération de nettoyage directement sur des pièces conductrices sous tension en HT ?",
+      options:["Oui, l'attribut V le permet","Non, le nettoyage sous tension (attribut « N ») est réservé aux électriciens, jamais à un H0 même H0V","Oui, à condition de porter des gants isolants HT","Oui, uniquement en zone 1"],
+      correct:[1], explain:"L'attribut V (voisinage) ne donne aucun droit d'opération électrique. Le nettoyage sous tension reste interdit à un non-électricien, quel que soit son niveau de voisinage." },
+
+    { cat:"distances", type:"single", prompt:"Quelle distance respecter dans la « zone d'approche prudente » autour d'un conducteur isolé (câble gainé, souterrain ou aérien) ?",
+      options:["Aucune distance particulière, un câble isolé ne présente aucun risque","0,50 m, que ce soit en souterrain ou en aérien","2 m comme pour un conducteur nu en HTA","5 m dans tous les cas"],
+      correct:[1], explain:"Autour d'un conducteur isolé, une zone d'approche prudente de 0,50 m s'applique, en souterrain comme en aérien, même si la notion classique de voisinage ne s'y applique pas de la même façon." },
+    { cat:"distances", type:"single", prompt:"Que désigne la « zone 3 » dans le découpage des zones d'environnement électrique ?",
+      options:["La zone de voisinage simple, en BT comme en HT","La zone des travaux sous tension, qui n'existe qu'en haute tension","La zone d'investigation accessible au personnel non habilité","La zone des opérations électriques en basse tension"],
+      correct:[1], explain:"La zone 3 (travaux sous tension) n'existe qu'en HT et est réservée aux électriciens habilités avec l'attribut T ; son équivalent en BT est la zone 4 (voisinage renforcé)." },
+    { cat:"distances", type:"single", prompt:"Quelle formule permet d'estimer la Distance Minimale d'Approche (DMA) à partir de la tension nominale Un (en kV) ?",
+      options:["DMA = 0,005 × Un + g (avec g, la distance de garde, de l'ordre de quelques dizaines de cm)","DMA = Un / 1000","DMA = 3 × Un","La DMA est fixe, quelle que soit la tension"],
+      correct:[0], explain:"La DMA s'estime par DMA = 0,005 × Un + g, où g est la distance de garde : plus la tension augmente, plus la distance de tension pure (0,005 × Un) s'accroît." },
+    { cat:"epi", type:"single", prompt:"Les gants isolants sont classés par catégories selon la tension d'emploi (norme IEC 60903). Quelle catégorie faut-il au minimum pour travailler sur une installation à 17 000 V ?",
+      options:["Catégorie 00 (500 V)","Catégorie 1 (7 500 V)","Catégorie 2 (17 000 V)","Catégorie 4 (36 000 V)"],
+      correct:[2], explain:"Chaque catégorie de gant isolant correspond à une tension d'emploi maximale (00=500V, 0=1000V, 1=7500V, 2=17000V, 3=26500V, 4=36000V) : il faut toujours choisir une catégorie adaptée ou supérieure à la tension rencontrée." },
+    { cat:"epi", type:"single", prompt:"Un appareil de classe II (double isolation) doit-il être relié à la terre ?",
+      options:["Oui, systématiquement","Non, jamais : sa double isolation ou son isolation renforcée le dispense de liaison à la terre","Oui, uniquement en extérieur","Non, sauf en local humide"],
+      correct:[1], explain:"Le matériel de classe II (norme NF EN 61140) assure la protection par double isolation ou isolation renforcée : il ne se relie jamais à la terre." }
+  ];
+
+  var els = {
+    start: document.getElementById('screen-start'),
+    themes: document.getElementById('screen-themes'),
+    themeList: document.getElementById('theme-list'),
+    btnOpenThemes: document.getElementById('btn-open-themes'),
+    btnThemesBack: document.getElementById('btn-themes-back'),
+    quiz: document.getElementById('screen-quiz'),
+    result: document.getElementById('screen-result'),
+    btnStart: document.getElementById('btn-start'),
+    btnStartErrors: document.getElementById('btn-start-errors'),
+    btnStartExam: document.getElementById('btn-start-exam'),
+    examBestBox: document.getElementById('exam-best-box'),
+    examVerdictBox: document.getElementById('exam-verdict-box'),
+    bestBox: document.getElementById('best-score-box'),
+    progressLabel: document.getElementById('progress-label'),
+    progressScore: document.getElementById('progress-score'),
+    progressFill: document.getElementById('progress-fill'),
+    qCategory: document.getElementById('q-category'),
+    qPrompt: document.getElementById('q-prompt'),
+    qOptions: document.getElementById('q-options'),
+    qFeedback: document.getElementById('q-feedback'),
+    btnAction: document.getElementById('btn-action'),
+    scoreRing: document.getElementById('score-ring'),
+    resultPct: document.getElementById('result-pct'),
+    resultFrac: document.getElementById('result-frac'),
+    resultVerdict: document.getElementById('result-verdict'),
+    resultTime: document.getElementById('result-time'),
+    catBreakdown: document.getElementById('cat-breakdown'),
+    btnRestart: document.getElementById('btn-restart'),
+    btnHome: document.getElementById('btn-home'),
+    btnToggleReview: document.getElementById('btn-toggle-review'),
+    reviewSection: document.getElementById('review-section'),
+    reviewList: document.getElementById('review-list'),
+    attemptCounter: document.getElementById('attempt-counter'),
+    statReview: document.getElementById('stat-review'),
+    btnResetProgress: document.getElementById('btn-reset-progress'),
+    resultSub: document.getElementById('result-sub'),
+    resultWeak: document.getElementById('result-weak'),
+    btnReviewWeak: document.getElementById('btn-review-weak')
+  };
+
+  var state = { order:[], index:0, score:0, answered:false, selected:[], results:[], startTime:0, examMode:false, timerId:null, deadline:0 };
+
+  function shuffle(arr){
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function loadStorage(key){
+    try{ return JSON.parse(localStorage.getItem(key) || 'null'); }catch(e){ return null; }
+  }
+  function saveStorage(key, val){
+    try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+  }
+  function loadProgress(){ return loadStorage('h0quiz-progress') || {}; }
+  function saveProgress(p){ saveStorage('h0quiz-progress', p); }
+  function getPersistedWrongKeys(){
+    var progress = loadProgress();
+    return Object.keys(progress).filter(function(k){ return progress[k] === true; });
+  }
+  function reviewCount(){ return getPersistedWrongKeys().length; }
+
+  function showBestScore(){
+    var best = loadStorage('h0quiz-best');
+    var attempts = loadStorage('h0quiz-attempts') || 0;
+    els.attemptCounter.textContent = 'Tentative n°' + (attempts + 1);
+    if (best){
+      els.bestBox.hidden = false;
+      els.bestBox.textContent = 'Meilleur score : ' + best.pct + '% (' + best.frac + ') sur ' + attempts + ' tentative(s)';
+    }
+    var n = reviewCount();
+    els.statReview.textContent = n;
+    if (n > 0){
+      els.btnStartErrors.hidden = false;
+      els.btnStartErrors.textContent = 'Réviser uniquement mes ' + n + ' erreur' + (n > 1 ? 's' : '') + ' en cours';
+    } else {
+      els.btnStartErrors.hidden = true;
+    }
+
+    var examBest = loadStorage('h0quiz-exam-best');
+    var examAttempts = loadStorage('h0quiz-exam-attempts') || 0;
+    if (examBest){
+      els.examBestBox.hidden = false;
+      els.examBestBox.textContent = 'Mode Examen — meilleur résultat : ' + examBest.pct + '% (' + (examBest.passed ? 'réussi' : 'échoué') + '), ' + examAttempts + ' tentative(s)';
+    } else {
+      els.examBestBox.hidden = true;
+    }
+  }
+
+  function buildQuestionOrder(filterCats){
+    var progress = loadProgress();
+    var pool = BANK.filter(function(q){
+      return !filterCats || !filterCats.length || filterCats.indexOf(q.cat) !== -1;
+    });
+    var priority = pool.filter(function(q){ return progress[q.prompt] === true; });
+    var rest = pool.filter(function(q){ return progress[q.prompt] !== true; });
+    var ordered = shuffle(priority).concat(shuffle(rest));
+    return ordered.map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function buildOrderFromKeys(keys){
+    var pool = BANK.filter(function(q){ return keys.indexOf(q.prompt) !== -1; });
+    return shuffle(pool).map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function buildExamOrder(){
+    var pool = shuffle(BANK).slice(0, Math.min(EXAM_SIZE, BANK.length));
+    return pool.map(function(q){
+      var optOrder = shuffle(q.options.map(function(_, i){ return i; }));
+      return { key:q.prompt, optOrder:optOrder };
+    });
+  }
+
+  function stopExamTimer(){
+    if (state.timerId){ clearInterval(state.timerId); state.timerId = null; }
+    els.progressScore.style.color = '';
+    els.progressScore.style.fontWeight = '';
+  }
+
+  function updateExamTimer(){
+    var remaining = state.deadline - Date.now();
+    if (remaining <= 0){
+      stopExamTimer();
+      finishQuiz();
+      return;
+    }
+    var totalSec = Math.ceil(remaining / 1000);
+    var m = Math.floor(totalSec / 60);
+    var s = totalSec % 60;
+    els.progressScore.textContent = 'Temps : ' + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  function startExamTimer(){
+    state.deadline = Date.now() + EXAM_TIME_MS;
+    els.progressScore.style.color = 'var(--danger)';
+    els.progressScore.style.fontWeight = '700';
+    updateExamTimer();
+    state.timerId = setInterval(updateExamTimer, 1000);
+  }
+
+  function startQuiz(opts){
+    opts = opts || {};
+    state.examMode = !!opts.exam;
+    if (state.examMode){
+      state.order = buildExamOrder();
+    } else if (opts.keys && opts.keys.length){
+      state.order = buildOrderFromKeys(opts.keys);
+    } else {
+      state.order = buildQuestionOrder(opts.cats || null);
+    }
+    state.filterCats = state.examMode ? null : (opts.cats || null);
+    state.index = 0;
+    state.score = 0;
+    state.results = [];
+    state.startTime = Date.now();
+    els.start.hidden = true;
+    els.themes.hidden = true;
+    els.result.hidden = true;
+    els.quiz.hidden = false;
+    stopExamTimer();
+    if (state.examMode) startExamTimer();
+    renderQuestion();
+  }
+
+  function categoryCounts(){
+    var counts = {};
+    Object.keys(CATS).forEach(function(k){ counts[k] = 0; });
+    BANK.forEach(function(q){ counts[q.cat]++; });
+    return counts;
+  }
+
+  function renderThemeList(){
+    var counts = categoryCounts();
+    els.themeList.innerHTML = Object.keys(CATS).map(function(k){
+      return '<li class="option" data-cat="' + k + '" style="justify-content:space-between; align-items:center;">' +
+        '<span class="txt">' + CATS[k] + '</span>' +
+        '<span class="mono" style="color:var(--ink-faint); font-size:0.8rem;">' + counts[k] + ' question' + (counts[k] > 1 ? 's' : '') + '</span></li>';
+    }).join('');
+    els.themeList.querySelectorAll('li').forEach(function(li){
+      li.addEventListener('click', function(){
+        startQuiz({ cats: [li.getAttribute('data-cat')] });
+      });
+    });
+  }
+
+  function currentQuestion(){
+    var entry = state.order[state.index];
+    var q = BANK.filter(function(b){ return b.prompt === entry.key; })[0];
+    return { q: q, key: entry.key, optOrder: entry.optOrder };
+  }
+
+  function renderQuestion(){
+    state.answered = false;
+    state.selected = [];
+    var cur = currentQuestion();
+    var q = cur.q;
+
+    els.progressLabel.textContent = 'Question ' + (state.index + 1) + ' / ' + state.order.length;
+    if (!state.examMode) els.progressScore.textContent = 'Score : ' + state.score;
+    els.progressFill.style.width = (state.index / state.order.length * 100) + '%';
+
+    els.qCategory.innerHTML = CATS[q.cat] + '<span class="q-type">· ' + (q.type === 'multi' ? 'plusieurs réponses possibles' : 'une seule réponse') + '</span>';
+    els.qPrompt.textContent = q.prompt;
+    els.qFeedback.innerHTML = '';
+    els.qOptions.innerHTML = '';
+
+    cur.optOrder.forEach(function(origIdx, pos){
+      var li = document.createElement('li');
+      li.className = 'option';
+      var letter = String.fromCharCode(65 + pos);
+      var inputType = q.type === 'multi' ? 'checkbox' : 'radio';
+      var inputId = 'opt-' + pos;
+      li.innerHTML = '<input type="' + inputType + '" name="answer" id="' + inputId + '" value="' + origIdx + '">' +
+                      '<span class="letter">' + letter + '</span>' +
+                      '<label class="txt" for="' + inputId + '">' + q.options[origIdx] + '</label>';
+      var input = li.querySelector('input');
+      li.addEventListener('click', function(e){
+        if (state.answered) return;
+        if (e.target === input || e.target.tagName === 'LABEL') return;
+        input.click();
+      });
+      input.addEventListener('change', onSelectionChange);
+      els.qOptions.appendChild(li);
+    });
+
+    els.btnAction.textContent = state.examMode ? 'Valider et continuer' : 'Valider ma réponse';
+    els.btnAction.disabled = true;
+    els.btnAction.onclick = validateAnswer;
+  }
+
+  function onSelectionChange(){
+    var inputs = els.qOptions.querySelectorAll('input');
+    var sel = [];
+    inputs.forEach(function(inp){
+      inp.closest('.option').classList.toggle('is-selected', inp.checked);
+      if (inp.checked) sel.push(parseInt(inp.value, 10));
+    });
+    state.selected = sel;
+    els.btnAction.disabled = sel.length === 0;
+  }
+
+  function arraysEqualAsSets(a, b){
+    if (a.length !== b.length) return false;
+    var as = a.slice().sort();
+    var bs = b.slice().sort();
+    return as.every(function(v, i){ return v === bs[i]; });
+  }
+
+  function validateAnswer(){
+    if (state.answered){ nextStep(); return; }
+    state.answered = true;
+    var cur = currentQuestion();
+    var q = cur.q;
+    var isCorrect = arraysEqualAsSets(state.selected, q.correct);
+    if (isCorrect) state.score++;
+
+    if (!state.examMode){
+      var progress = loadProgress();
+      progress[cur.key] = !isCorrect;
+      saveProgress(progress);
+    }
+
+    state.results.push({
+      prompt: q.prompt, cat: q.cat, isCorrect: isCorrect,
+      given: state.selected.map(function(i){ return q.options[i]; }),
+      correct: q.correct.map(function(i){ return q.options[i]; }),
+      explain: q.explain
+    });
+
+    if (state.examMode){
+      nextStep();
+      return;
+    }
+
+    var inputs = els.qOptions.querySelectorAll('input');
+    inputs.forEach(function(inp){
+      var idx = parseInt(inp.value, 10);
+      var opt = inp.closest('.option');
+      inp.disabled = true;
+      if (q.correct.indexOf(idx) !== -1) opt.classList.add('is-correct');
+      else if (inp.checked) opt.classList.add('is-wrong');
+    });
+
+    els.qFeedback.innerHTML =
+      '<div class="feedback ' + (isCorrect ? 'correct' : 'wrong') + '">' +
+      '<span class="head">' + (isCorrect ? 'Bonne réponse' : 'Réponse incorrecte') + '</span>' +
+      '<p>' + q.explain + '</p></div>';
+
+    els.progressScore.textContent = 'Score : ' + state.score;
+    els.btnAction.textContent = (state.index === state.order.length - 1) ? 'Voir mes résultats' : 'Question suivante';
+  }
+
+  function nextStep(){
+    state.index++;
+    if (state.index >= state.order.length){ finishQuiz(); return; }
+    renderQuestion();
+  }
+
+  function finishQuiz(){
+    stopExamTimer();
+    els.quiz.hidden = true;
+    els.result.hidden = false;
+    els.progressFill.style.width = '100%';
+
+    var total = state.order.length;
+    var pct = Math.round(state.score / total * 100);
+    els.scoreRing.style.setProperty('--pct', pct);
+    els.resultPct.textContent = pct + '%';
+    els.resultFrac.textContent = state.score + ' / ' + total;
+
+    if (state.examMode){
+      var passed = pct >= EXAM_PASS_PCT;
+      els.examVerdictBox.hidden = false;
+      els.examVerdictBox.textContent = passed ?
+        'RÉUSSI — seuil de réussite atteint (≥ ' + EXAM_PASS_PCT + '%)' :
+        'ÉCHOUÉ — seuil de réussite non atteint (< ' + EXAM_PASS_PCT + '%)';
+      els.examVerdictBox.style.background = passed ? 'var(--ok-soft)' : 'var(--danger-soft)';
+      els.examVerdictBox.style.color = passed ? 'var(--ok)' : 'var(--danger)';
+    } else {
+      els.examVerdictBox.hidden = true;
+    }
+
+    var verdict, sub;
+    if (pct === 100){ verdict = 'Score parfait !'; sub = "Toutes les notions sont acquises — direction l'examen."; }
+    else if (pct >= 85){ verdict = 'Excellent niveau.'; sub = 'Encore quelques détails à consolider.'; }
+    else if (pct >= 60){ verdict = 'Bonne base.'; sub = "Un peu d'entraînement ciblé et c'est bon."; }
+    else { verdict = 'À retravailler.'; sub = 'Relis la fiche de révision, puis reviens sur ces thèmes.'; }
+    els.resultVerdict.textContent = verdict;
+    els.resultSub.textContent = sub;
+    els.resultTime.textContent = 'Temps : ' + formatTime(Date.now() - state.startTime);
+
+    var byCat = {};
+    Object.keys(CATS).forEach(function(k){ byCat[k] = { correct:0, total:0 }; });
+    state.results.forEach(function(r){
+      byCat[r.cat].total++;
+      if (r.isCorrect) byCat[r.cat].correct++;
+    });
+    els.catBreakdown.innerHTML = Object.keys(CATS).filter(function(k){ return byCat[k].total > 0; }).map(function(k){
+      var c = byCat[k];
+      var p = c.total ? Math.round(c.correct / c.total * 100) : 0;
+      return '<div class="cat-row"><span class="name">' + CATS[k] + '</span>' +
+        '<span class="bar"><span style="width:' + p + '%; background:' + (p >= 70 ? 'var(--ok)' : p >= 40 ? 'var(--accent)' : 'var(--danger)') + '"></span></span>' +
+        '<span class="frac mono">' + c.correct + '/' + c.total + '</span></div>';
+    }).join('');
+
+    var weakCats = Object.keys(CATS).filter(function(k){ return byCat[k].total > 0 && byCat[k].correct < byCat[k].total; });
+    weakCats.sort(function(a, b){
+      return (byCat[a].correct / byCat[a].total) - (byCat[b].correct / byCat[b].total);
+    });
+    var weakNames = weakCats.map(function(k){ return CATS[k]; });
+    var persistedWrong = getPersistedWrongKeys();
+
+    els.resultWeak.textContent = weakNames.length ? ('À revoir en priorité : ' + weakNames.join(', ') + '.') : (state.filterCats ? 'Thème maîtrisé !' : 'Tous les thèmes sont maîtrisés !');
+    if (persistedWrong.length){
+      els.btnReviewWeak.hidden = false;
+      els.btnReviewWeak.textContent = 'Réviser mes ' + persistedWrong.length + ' erreur' + (persistedWrong.length > 1 ? 's' : '') + ' en cours';
+    } else {
+      els.btnReviewWeak.hidden = true;
+    }
+
+    var wrong = state.results.filter(function(r){ return !r.isCorrect; });
+    els.reviewList.innerHTML = wrong.length ? wrong.map(function(r){
+      return '<div class="review-item"><div class="q">' + r.prompt + '</div>' +
+        '<div class="a">Ta réponse : <strong>' + (r.given.join(', ') || '—') + '</strong></div>' +
+        '<div class="a">Bonne réponse : <strong>' + r.correct.join(', ') + '</strong></div>' +
+        '<div class="a">' + r.explain + '</div></div>';
+    }).join('') : '<p style="color:var(--ink-soft);">Aucune erreur — rien à revoir !</p>';
+
+    if (state.examMode){
+      var examAttempts = (loadStorage('h0quiz-exam-attempts') || 0) + 1;
+      saveStorage('h0quiz-exam-attempts', examAttempts);
+      var examBest = loadStorage('h0quiz-exam-best');
+      if (!examBest || pct > examBest.pct){
+        saveStorage('h0quiz-exam-best', { pct: pct, passed: pct >= EXAM_PASS_PCT });
+      }
+    } else {
+      var attempts = (loadStorage('h0quiz-attempts') || 0) + 1;
+      saveStorage('h0quiz-attempts', attempts);
+      var best = loadStorage('h0quiz-best');
+      if (!best || pct > best.pct){
+        saveStorage('h0quiz-best', { pct: pct, frac: state.score + '/' + total });
+      }
+    }
+  }
+
+  function formatTime(ms){
+    var s = Math.round(ms / 1000);
+    var m = Math.floor(s / 60);
+    var r = s % 60;
+    return m + ' min ' + (r < 10 ? '0' : '') + r + ' s';
+  }
+
+  els.btnStart.addEventListener('click', function(){ startQuiz(); });
+  els.btnStartExam.addEventListener('click', function(){ startQuiz({ exam:true }); });
+  els.btnStartErrors.addEventListener('click', function(){ startQuiz({ keys: getPersistedWrongKeys() }); });
+  els.btnReviewWeak.addEventListener('click', function(){ startQuiz({ keys: getPersistedWrongKeys() }); });
+  els.btnOpenThemes.addEventListener('click', function(){
+    renderThemeList();
+    els.start.hidden = true;
+    els.themes.hidden = false;
+  });
+  els.btnThemesBack.addEventListener('click', function(){
+    els.themes.hidden = true;
+    els.start.hidden = false;
+  });
+  function goHome(){
+    els.reviewSection.hidden = true;
+    els.btnToggleReview.textContent = 'Revoir mes erreurs';
+    showBestScore();
+    els.quiz.hidden = true;
+    els.themes.hidden = true;
+    els.result.hidden = true;
+    els.start.hidden = false;
+  }
+  els.btnRestart.addEventListener('click', goHome);
+  els.btnHome.addEventListener('click', goHome);
+  els.btnToggleReview.addEventListener('click', function(){
+    els.reviewSection.hidden = !els.reviewSection.hidden;
+    els.btnToggleReview.textContent = els.reviewSection.hidden ? 'Revoir mes erreurs' : 'Masquer mes erreurs';
+  });
+  els.btnResetProgress.addEventListener('click', function(){
+    try{ localStorage.removeItem('h0quiz-progress'); }catch(e){}
+    showBestScore();
+  });
+
+  showBestScore();
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>

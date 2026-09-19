@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#14161a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/icons/favicon-16.png" type="image/png" sizes="16x16">
+<title>Habilitation H0</title>
+<style>
+  :root{
+    --bg:#f7f6f1; --surface:#ffffff; --surface-2:#f0eee6;
+    --ink:#15181d; --ink-soft:#565c66; --ink-faint:#8a8f99;
+    --accent:#b7790a; --accent-soft:#fbe9c6;
+    --danger:#a3271e; --danger-soft:#f7e1de;
+    --ok:#1f6d4c; --ok-soft:#dcece3;
+    --line:#e2ded2;
+    --shadow: 0 1px 2px rgba(20,17,10,0.06), 0 8px 24px -12px rgba(20,17,10,0.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+      --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+      --accent:#f0b42d; --accent-soft:#3a2c0c;
+      --danger:#e5726a; --danger-soft:#3a1c19;
+      --ok:#5fc298; --ok-soft:#153327;
+      --line:#2b2f37;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+    --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+    --accent:#f0b42d; --accent-soft:#3a2c0c;
+    --danger:#e5726a; --danger-soft:#3a1c19;
+    --ok:#5fc298; --ok-soft:#153327;
+    --line:#2b2f37;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;}
+  html, body{ margin:0; padding:0; }
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'Source Serif 4', Georgia, 'Times New Roman', serif;
+    line-height:1.6; padding-inline:20px; padding-block:32px 80px;
+  }
+  ::selection{ background:var(--accent-soft); }
+  a{ color:var(--accent); }
+  .page{ max-width:760px; margin-inline:auto; }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, Consolas, monospace; }
+  .masthead{ display:flex; flex-direction:column; gap:10px; padding-block:0 28px; border-bottom:3px solid var(--ink); margin-bottom:28px; }
+  .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1.title{ font-family:'Big Shoulders Display', 'Arial Narrow', sans-serif; font-weight:800; font-size:clamp(2.6rem, 9vw, 4.2rem); line-height:0.92; margin:0; text-wrap:balance; }
+  .subtitle{ color:var(--ink-soft); font-size:1.05rem; max-width:48ch; }
+  .meta-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .tag{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.03em; padding:4px 10px; border-radius:999px; border:1px solid var(--line); color:var(--ink-soft); background:var(--surface); }
+  nav.toc{ background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:16px 20px; margin-bottom:40px; box-shadow:var(--shadow); }
+  nav.toc h2{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 10px; font-weight:600; }
+  nav.toc ol{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:6px 20px; }
+  @media (max-width:520px){ nav.toc ol{ grid-template-columns:1fr; } }
+  nav.toc a{ display:flex; gap:8px; align-items:baseline; color:var(--ink); text-decoration:none; font-size:0.92rem; padding-block:2px; border-bottom:1px solid transparent; }
+  nav.toc a:hover{ border-bottom-color:var(--accent); }
+  nav.toc a .n{ font-family:'IBM Plex Mono', monospace; color:var(--accent); font-size:0.8rem; flex:none; }
+  section.block{ padding-block:34px; border-bottom:1px solid var(--line); scroll-margin-top:20px; }
+  section.block:last-of-type{ border-bottom:none; }
+  .block-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:14px; }
+  .block-num{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:2.6rem; color:var(--accent); line-height:1; flex:none; }
+  h2.block-title{ font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:1.7rem; letter-spacing:0.01em; margin:0; text-wrap:balance; }
+  section.block p{ margin:0 0 12px; max-width:66ch; }
+  section.block ul{ margin:0 0 12px; padding-left:1.3em; }
+  section.block li{ margin-bottom:6px; max-width:64ch; }
+  section.block li::marker{ color:var(--accent); }
+  strong{ color:var(--ink); }
+  .callout{ border-radius:8px; padding:14px 16px; margin:14px 0; border-left:4px solid var(--line); background:var(--surface-2); font-size:0.96rem; }
+  .callout p{ margin:0; }
+  .callout p + p{ margin-top:8px; }
+  .callout .k{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; font-weight:600; display:block; margin-bottom:4px; }
+  .callout--ok{ border-left-color:var(--ok); background:var(--ok-soft); }
+  .callout--ok .k{ color:var(--ok); }
+  .callout--no{ border-left-color:var(--danger); background:var(--danger-soft); }
+  .callout--no .k{ color:var(--danger); }
+  .callout--info{ border-left-color:var(--accent); background:var(--accent-soft); }
+  .callout--info .k{ color:var(--accent); }
+  .table-wrap{ overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:8px; }
+  table{ width:100%; border-collapse:collapse; font-size:0.92rem; min-width:420px; }
+  thead th{ text-align:left; font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); background:var(--surface-2); padding:10px 14px; border-bottom:1px solid var(--line); }
+  tbody td{ padding:10px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td{ border-bottom:none; }
+  .code{ font-family:'IBM Plex Mono', monospace; font-weight:600; color:var(--accent); background:var(--accent-soft); padding:1px 6px; border-radius:4px; font-size:0.88em; }
+  ol.steps{ list-style:none; margin:14px 0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  ol.steps li{ display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:12px 16px; }
+  ol.steps .idx{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:1.6rem; color:var(--accent); line-height:1; flex:none; min-width:1.4rem; }
+  .resource-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+  @media (max-width:520px){ .resource-grid{ grid-template-columns:1fr; } }
+  .resource-card{ display:block; border:1px solid var(--line); border-radius:10px; padding:16px 18px; text-decoration:none; background:var(--surface); transition:border-color .12s ease; }
+  .resource-card:hover{ border-color:var(--accent); }
+  .resource-card .rk{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); font-weight:600; display:block; margin-bottom:6px; }
+  .resource-card .rt{ font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:1.2rem; color:var(--ink); }
+  footer.foot{ margin-top:40px; padding-top:20px; border-top:1px solid var(--line); color:var(--ink-faint); font-size:0.82rem; font-family:'IBM Plex Mono', monospace; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer.foot a{ color:var(--ink-faint); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <span class="eyebrow">Fiche de révision — Norme NF C18-510</span>
+    <h1 class="title">Habilitation H0</h1>
+    <p class="subtitle">Non-électricien travaillant en environnement haute tension. Aucune opération d'ordre électrique — l'équivalent du B0, mais côté HT.</p>
+    <div class="meta-row">
+      <span class="tag">Non-électricien</span>
+      <span class="tag">HTA / HTB</span>
+      <span class="tag">9 sections</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Sommaire">
+    <h2>Sommaire</h2>
+    <ol>
+      <li><a href="#s1"><span class="n">01</span> Rôle et périmètre</a></li>
+      <li><a href="#s2"><span class="n">02</span> Vocabulaire clé</a></li>
+      <li><a href="#s3"><span class="n">03</span> Domaines de tension HT</a></li>
+      <li><a href="#s4"><span class="n">04</span> Zones et distances HT</a></li>
+      <li><a href="#s5"><span class="n">05</span> Risques électriques</a></li>
+      <li><a href="#s6"><span class="n">06</span> EPI</a></li>
+      <li><a href="#s7"><span class="n">07</span> Documents</a></li>
+      <li><a href="#s8"><span class="n">08</span> Conduite en cas d'accident</a></li>
+      <li><a href="#s9"><span class="n">09</span> H0 face aux autres habilitations</a></li>
+    </ol>
+  </nav>
+
+  <section class="block" id="s1">
+    <div class="block-head"><span class="block-num">01</span><h2 class="block-title">Rôle et périmètre du H0</h2></div>
+    <p><strong>Qui est concerné&nbsp;:</strong> le personnel non-électricien devant accéder à des zones ou travailler à proximité d'installations en haute tension (postes sources, postes de transformation HTA/BT, lignes aériennes HT) pour des tâches non électriques.</p>
+    <div class="callout callout--ok">
+      <span class="k">Le H0 a le droit de</span>
+      <p>Exécuter des opérations d'ordre <strong>non électrique</strong> en environnement HT · accéder à certaines zones sous conditions · être <strong>chargé de chantier</strong> d'une équipe de non-électriciens · signaler toute anomalie constatée, sans jamais y toucher.</p>
+    </div>
+    <div class="callout callout--no">
+      <span class="k">Le H0 n'a jamais le droit de</span>
+      <p>Réaliser une opération d'ordre électrique · franchir la <span class="code">DMA</span> HT sans habilitation complémentaire V · s'approcher des pièces nues sous tension HT, où que ce soit.</p>
+    </div>
+    <div class="callout callout--info">
+      <span class="k">H0 vs B0</span>
+      <p>Même logique exactement que le B0, mais appliquée au domaine <strong>haute tension</strong> (HTA/HTB) au lieu de BT. La lettre <span class="code">H</span> remplace le <span class="code">B</span> — les règles de fond sont identiques, les distances de sécurité sont beaucoup plus grandes.</p>
+    </div>
+  </section>
+
+  <section class="block" id="s2">
+    <div class="block-head"><span class="block-num">02</span><h2 class="block-title">Vocabulaire clé</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Terme</th><th>Définition</th></tr></thead>
+        <tbody>
+          <tr><td>Poste de transformation HTA/BT</td><td>Installation qui abaisse la HTA vers la BT pour l'usage courant</td></tr>
+          <tr><td>Poste source</td><td>Transforme le réseau de transport HTB vers le réseau de distribution HTA</td></tr>
+          <tr><td>Lettre H</td><td>Désigne le domaine haute tension, par opposition à B (basse tension)</td></tr>
+          <tr><td>HC</td><td>Chargé de consignation en haute tension (équivalent du BC en BT)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block" id="s3">
+    <div class="block-head"><span class="block-num">03</span><h2 class="block-title">Domaines de tension</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Domaine</th><th>Plage (courant alternatif)</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">BT</td><td class="mono">50 V &lt; U ≤ 1000 V <span style="font-family:'Source Serif 4',serif; color:var(--ink-soft);">— rappel, hors HT</span></td></tr>
+          <tr><td class="mono">HTA</td><td class="mono">1 kV &lt; U ≤ 50 kV</td></tr>
+          <tr><td class="mono">HTB</td><td class="mono">U &gt; 50 kV</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block" id="s4">
+    <div class="block-head"><span class="block-num">04</span><h2 class="block-title">Zones et distances de sécurité HT</h2></div>
+    <ul>
+      <li><strong>DMA en HTA</strong>&nbsp;: environ <span class="code mono">2 m</span> — bien plus grande qu'en BT (0,30 m)</li>
+      <li><strong>DMA en HTB</strong>&nbsp;: environ <span class="code mono">5 m</span></li>
+      <li><strong>Zone de voisinage simple</strong>&nbsp;: déjà accessible au H0 seul, sous conditions</li>
+      <li><strong>Zone de voisinage renforcé</strong>&nbsp;: interdite au H0 seul — c'est justement ce que l'attribut <strong>V</strong> ajoute&nbsp;: le H0V y est autorisé, contrairement au B0 en BT qui n'a aucune variante « V » possible</li>
+    </ul>
+    <div class="callout callout--no">
+      <span class="k">Pourquoi des distances si grandes</span>
+      <p>En haute tension, un <strong>arc électrique peut s'amorcer sans contact physique</strong>, simplement en s'approchant trop près d'une pièce sous tension. Plus la tension est élevée, plus la distance de sécurité nécessaire est grande.</p>
+    </div>
+  </section>
+
+  <section class="block" id="s5">
+    <div class="block-head"><span class="block-num">05</span><h2 class="block-title">Risques électriques</h2></div>
+    <ul>
+      <li>L'<strong>arc électrique</strong> en HT libère beaucoup plus d'énergie qu'en BT&nbsp;: brûlures graves, projections, effet de souffle sur une plus grande portée</li>
+      <li>Seuil de <strong>non-lâcher</strong>&nbsp;: ~10 mA · seuil de <strong>fibrillation cardiaque</strong>&nbsp;: ~30 mA et plus</li>
+      <li>Une ligne HT tombée au sol reste dangereuse <strong>à distance</strong>, même sans contact</li>
+    </ul>
+    <div class="callout callout--no">
+      <span class="k">Ligne HT au sol</span>
+      <p>Ne jamais s'approcher, même sans contact&nbsp;: baliser largement et alerter immédiatement.</p>
+    </div>
+    <div class="callout callout--no">
+      <span class="k">Feu d'origine électrique</span>
+      <p>Jamais d'<strong>eau</strong> ni de <strong>mousse</strong> — extincteur <span class="code">CO2</span> ou à poudre uniquement.</p>
+    </div>
+  </section>
+
+  <section class="block" id="s6">
+    <div class="block-head"><span class="block-num">06</span><h2 class="block-title">Équipements de protection</h2></div>
+    <ul>
+      <li><strong>EPI</strong>&nbsp;: casque, lunettes, chaussures de sécurité, vêtements adaptés — les mêmes qu'en B0</li>
+      <li>Retrait des bijoux et objets métalliques avant toute approche d'un risque électrique</li>
+      <li>Respect systématique du balisage posé par les électriciens</li>
+    </ul>
+    <div class="callout callout--info">
+      <span class="k">Gants isolants</span>
+      <p>Comme pour le B0, ce ne sont <strong>pas</strong> un EPI du H0&nbsp;: il n'exécute aucune opération électrique, donc aucun contact prévu avec des pièces sous tension.</p>
+    </div>
+  </section>
+
+  <section class="block" id="s7">
+    <div class="block-head"><span class="block-num">07</span><h2 class="block-title">Documents à connaître</h2></div>
+    <ul>
+      <li><strong>Titre d'habilitation</strong>&nbsp;: nominatif, non transférable, signé par l'employeur, durée limitée (recyclage recommandé tous les 3 ans, ou avant si changement de poste)</li>
+      <li>L'employeur peut retirer l'habilitation à tout moment</li>
+      <li>Le titulaire peut refuser une tâche qu'il juge dangereuse</li>
+    </ul>
+  </section>
+
+  <section class="block" id="s8">
+    <div class="block-head"><span class="block-num">08</span><h2 class="block-title">Conduite à tenir en cas d'accident électrique</h2></div>
+    <ol class="steps">
+      <li><span class="idx">1</span><span><strong>Protéger</strong> — ne jamais s'approcher d'une zone HT dangereuse ; couper le courant seulement si possible sans se mettre en danger</span></li>
+      <li><span class="idx">2</span><span><strong>Examiner</strong> l'état de la victime (à distance de sécurité si la zone reste sous tension)</span></li>
+      <li><span class="idx">3</span><span><strong>Alerter</strong> les secours (15 / 18 / 112 ou numéro interne)</span></li>
+      <li><span class="idx">4</span><span><strong>Secourir</strong> si formé, une fois la zone sécurisée</span></li>
+    </ol>
+  </section>
+
+  <section class="block" id="s9">
+    <div class="block-head"><span class="block-num">09</span><h2 class="block-title">H0 face aux autres habilitations</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Habilitation</th><th>Différence clé avec H0</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">B0</td><td>Même logique, mais en environnement basse tension</td></tr>
+          <tr><td class="mono">H1 / H2</td><td>Électriciens habilités : exécutant (H1) ou chargé de travaux (H2) en HT</td></tr>
+          <tr><td class="mono">HC</td><td>Chargé de consignation en HT — jamais le rôle d'un H0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="color:var(--ink-soft); font-size:0.9rem;">Un salarié peut cumuler B0 et H0 selon les environnements auxquels il est exposé dans son poste.</p>
+  </section>
+
+  <section class="block" style="border-bottom:none;">
+    <div class="block-head"><h2 class="block-title" style="font-size:1.2rem; color:var(--ink-faint);">S'entraîner</h2></div>
+    <div class="resource-grid">
+      <a class="resource-card" href="quiz.html"><span class="rk">Quiz</span><span class="rt">Mega Quiz H0 →</span></a>
+      <a class="resource-card" href="memo.html"><span class="rk">Révision express</span><span class="rt">Fiches Mémo →</span></a>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Habilitation H0 — NF C18-510</span>
+    <span><a href="../index.html">← Retour au menu principal</a></span>
+  </footer>
+
+</div>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>

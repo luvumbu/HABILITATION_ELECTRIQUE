@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#14161a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/icons/favicon-16.png" type="image/png" sizes="16x16">
+<title>Habilitations BC et BR</title>
+<style>
+  :root{
+    --bg:#f7f6f1; --surface:#ffffff; --surface-2:#f0eee6;
+    --ink:#15181d; --ink-soft:#565c66; --ink-faint:#8a8f99;
+    --accent:#b7790a; --accent-soft:#fbe9c6;
+    --danger:#a3271e; --danger-soft:#f7e1de;
+    --ok:#1f6d4c; --ok-soft:#dcece3;
+    --line:#e2ded2;
+    --shadow: 0 1px 2px rgba(20,17,10,0.06), 0 8px 24px -12px rgba(20,17,10,0.12);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+      --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+      --accent:#f0b42d; --accent-soft:#3a2c0c;
+      --danger:#e5726a; --danger-soft:#3a1c19;
+      --ok:#5fc298; --ok-soft:#153327;
+      --line:#2b2f37;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a; --surface:#1b1e24; --surface-2:#20242b;
+    --ink:#ecebe6; --ink-soft:#a7adb8; --ink-faint:#6e7480;
+    --accent:#f0b42d; --accent-soft:#3a2c0c;
+    --danger:#e5726a; --danger-soft:#3a1c19;
+    --ok:#5fc298; --ok-soft:#153327;
+    --line:#2b2f37;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;}
+  html, body{ margin:0; padding:0; }
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'Source Serif 4', Georgia, 'Times New Roman', serif;
+    line-height:1.6; padding-inline:20px; padding-block:32px 80px;
+  }
+  ::selection{ background:var(--accent-soft); }
+  a{ color:var(--accent); }
+  .page{ max-width:760px; margin-inline:auto; }
+  .mono{ font-family:'IBM Plex Mono', ui-monospace, Consolas, monospace; }
+  .masthead{ display:flex; flex-direction:column; gap:10px; padding-block:0 28px; border-bottom:3px solid var(--ink); margin-bottom:28px; }
+  .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1.title{ font-family:'Big Shoulders Display', 'Arial Narrow', sans-serif; font-weight:800; font-size:clamp(2.4rem, 8vw, 3.8rem); line-height:0.92; margin:0; text-wrap:balance; }
+  .subtitle{ color:var(--ink-soft); font-size:1.05rem; max-width:48ch; }
+  .meta-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .tag{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.03em; padding:4px 10px; border-radius:999px; border:1px solid var(--line); color:var(--ink-soft); background:var(--surface); }
+  nav.toc{ background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:16px 20px; margin-bottom:40px; box-shadow:var(--shadow); }
+  nav.toc h2{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 10px; font-weight:600; }
+  nav.toc ol{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:6px 20px; }
+  @media (max-width:520px){ nav.toc ol{ grid-template-columns:1fr; } }
+  nav.toc a{ display:flex; gap:8px; align-items:baseline; color:var(--ink); text-decoration:none; font-size:0.92rem; padding-block:2px; border-bottom:1px solid transparent; }
+  nav.toc a:hover{ border-bottom-color:var(--accent); }
+  nav.toc a .n{ font-family:'IBM Plex Mono', monospace; color:var(--accent); font-size:0.8rem; flex:none; }
+  section.block{ padding-block:34px; border-bottom:1px solid var(--line); scroll-margin-top:20px; }
+  section.block:last-of-type{ border-bottom:none; }
+  .block-head{ display:flex; align-items:baseline; gap:16px; margin-bottom:14px; }
+  .block-num{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:2.6rem; color:var(--accent); line-height:1; flex:none; }
+  h2.block-title{ font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:1.7rem; letter-spacing:0.01em; margin:0; text-wrap:balance; }
+  section.block p{ margin:0 0 12px; max-width:66ch; }
+  section.block ul{ margin:0 0 12px; padding-left:1.3em; }
+  section.block li{ margin-bottom:6px; max-width:64ch; }
+  section.block li::marker{ color:var(--accent); }
+  strong{ color:var(--ink); }
+  .callout{ border-radius:8px; padding:14px 16px; margin:14px 0; border-left:4px solid var(--line); background:var(--surface-2); font-size:0.96rem; }
+  .callout p{ margin:0; }
+  .callout p + p{ margin-top:8px; }
+  .callout .k{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; font-weight:600; display:block; margin-bottom:4px; }
+  .callout--ok{ border-left-color:var(--ok); background:var(--ok-soft); }
+  .callout--ok .k{ color:var(--ok); }
+  .callout--no{ border-left-color:var(--danger); background:var(--danger-soft); }
+  .callout--no .k{ color:var(--danger); }
+  .callout--info{ border-left-color:var(--accent); background:var(--accent-soft); }
+  .callout--info .k{ color:var(--accent); }
+  .table-wrap{ overflow-x:auto; margin:14px 0; border:1px solid var(--line); border-radius:8px; }
+  table{ width:100%; border-collapse:collapse; font-size:0.92rem; min-width:420px; }
+  thead th{ text-align:left; font-family:'IBM Plex Mono', monospace; font-size:0.72rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); background:var(--surface-2); padding:10px 14px; border-bottom:1px solid var(--line); }
+  tbody td{ padding:10px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  tbody tr:last-child td{ border-bottom:none; }
+  .code{ font-family:'IBM Plex Mono', monospace; font-weight:600; color:var(--accent); background:var(--accent-soft); padding:1px 6px; border-radius:4px; font-size:0.88em; }
+  ol.steps{ list-style:none; margin:14px 0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  ol.steps li{ display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:12px 16px; }
+  ol.steps .idx{ font-family:'Big Shoulders Display', sans-serif; font-weight:800; font-size:1.6rem; color:var(--accent); line-height:1; flex:none; min-width:1.4rem; }
+  .resource-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+  @media (max-width:520px){ .resource-grid{ grid-template-columns:1fr; } }
+  .resource-card{ display:block; border:1px solid var(--line); border-radius:10px; padding:16px 18px; text-decoration:none; background:var(--surface); transition:border-color .12s ease; }
+  .resource-card:hover{ border-color:var(--accent); }
+  .resource-card .rk{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent); font-weight:600; display:block; margin-bottom:6px; }
+  .resource-card .rt{ font-family:'Big Shoulders Display', sans-serif; font-weight:700; font-size:1.2rem; color:var(--ink); }
+  footer.foot{ margin-top:40px; padding-top:20px; border-top:1px solid var(--line); color:var(--ink-faint); font-size:0.82rem; font-family:'IBM Plex Mono', monospace; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  footer.foot a{ color:var(--ink-faint); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <span class="eyebrow">Fiche de révision — Norme NF C18-510</span>
+    <h1 class="title">Habilitations BC &amp; BR</h1>
+    <p class="subtitle">BC&nbsp;: chargé de consignation basse tension. BR&nbsp;: chargé d'intervention générale basse tension (dépannage, mesurage, remplacement).</p>
+    <div class="meta-row">
+      <span class="tag">Consignation</span>
+      <span class="tag">Intervention générale</span>
+      <span class="tag">BT / TBT</span>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Sommaire">
+    <h2>Sommaire</h2>
+    <ol>
+      <li><a href="#s1"><span class="n">01</span> BC — Chargé de consignation</a></li>
+      <li><a href="#s2"><span class="n">02</span> Les 4 étapes de la consignation</a></li>
+      <li><a href="#s3"><span class="n">03</span> BR — Chargé d'intervention générale</a></li>
+      <li><a href="#s4"><span class="n">04</span> Domaines de tension</a></li>
+      <li><a href="#s5"><span class="n">05</span> Zones et distances</a></li>
+      <li><a href="#s6"><span class="n">06</span> Risques électriques</a></li>
+      <li><a href="#s7"><span class="n">07</span> EPI et outillage</a></li>
+      <li><a href="#s8"><span class="n">08</span> Documents</a></li>
+      <li><a href="#s9"><span class="n">09</span> Conduite en cas d'accident</a></li>
+      <li><a href="#s10"><span class="n">10</span> BC/BR face aux autres habilitations</a></li>
+    </ol>
+  </nav>
+
+  <section class="block" id="s1">
+    <div class="block-head"><span class="block-num">01</span><h2 class="block-title">BC — Chargé de consignation</h2></div>
+    <p><strong>Rôle&nbsp;:</strong> réaliser la <strong>consignation</strong> d'un ouvrage électrique avant que d'autres personnes (B1, B2...) n'y travaillent.</p>
+    <div class="callout callout--ok">
+      <span class="k">Le BC peut</span>
+      <p>Consigner un ouvrage selon la procédure complète · remettre une <strong>attestation de consignation</strong> au chargé de travaux · remettre l'installation sous tension une fois les travaux terminés et confirmés.</p>
+    </div>
+    <div class="callout callout--no">
+      <span class="k">Le BC ne peut jamais</span>
+      <p>Réaliser lui-même les travaux électriques (ce n'est pas son rôle) · remettre sous tension sans confirmation de fin de travaux du chargé de travaux.</p>
+    </div>
+  </section>
+
+  <section class="block" id="s2">
+    <div class="block-head"><span class="block-num">02</span><h2 class="block-title">Les 4 étapes de la consignation</h2></div>
+    <ol class="steps">
+      <li><span class="idx">1</span><span><strong>Séparation</strong> — couper l'installation de toute source de tension</span></li>
+      <li><span class="idx">2</span><span><strong>Condamnation</strong> — empêcher toute remise sous tension accidentelle (verrouillage, pancarte)</span></li>
+      <li><span class="idx">3</span><span><strong>Identification</strong> — vérifier que l'on intervient bien sur le bon ouvrage</span></li>
+      <li><span class="idx">4</span><span><strong>Vérification d'absence de tension (VAT)</strong> — confirmer qu'il n'y a plus de tension avant de remettre l'attestation</span></li>
+    </ol>
+    <p style="color:var(--ink-soft); font-size:0.9rem;">Cette procédure complète distingue la consignation (réalisée par le BC ou le B2) de la simple mise hors tension personnelle que chaque exécutant vérifie ensuite pour son propre compte.</p>
+  </section>
+
+  <section class="block" id="s3">
+    <div class="block-head"><span class="block-num">03</span><h2 class="block-title">BR — Chargé d'intervention générale</h2></div>
+    <p><strong>Rôle&nbsp;:</strong> un électricien autonome, habilité à réaliser des <strong>interventions BT générales</strong>&nbsp;: dépannage (recherche de panne), remplacement, réglage, raccordement, essais et mesurages.</p>
+    <div class="callout callout--ok">
+      <span class="k">Le BR peut</span>
+      <p>Réaliser du <strong>dépannage</strong> (contrairement au BS) · travailler seul, en autonomie · consigner pour son propre compte (mise hors tension simplifiée) · réaliser des mesurages et essais.</p>
+    </div>
+    <div class="callout callout--info">
+      <span class="k">BR vs BS</span>
+      <p>Le <span class="code">BS</span> se limite à des opérations élémentaires précises (remplacement de fusible, prise...). Le <span class="code">BR</span> a un périmètre plus large, incluant la <strong>recherche de panne</strong> et des interventions plus complexes.</p>
+    </div>
+    <p style="color:var(--ink-soft); font-size:0.9rem;">Le BR intervient le plus souvent sur des installations domestiques ou de petites installations tertiaires/industrielles BT.</p>
+  </section>
+
+  <section class="block" id="s4">
+    <div class="block-head"><span class="block-num">04</span><h2 class="block-title">Domaines de tension</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Domaine</th><th>Plage (courant alternatif)</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">TBT</td><td class="mono">U ≤ 50 V</td></tr>
+          <tr><td class="mono">BT</td><td class="mono">50 V &lt; U ≤ 1000 V <span style="font-family:'Source Serif 4',serif; color:var(--ink-soft);">— le 230/400 V domestique</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="color:var(--ink-soft); font-size:0.9rem;">BC et BR sont des habilitations strictement <strong>basse tension</strong> — jamais de HTA/HTB.</p>
+  </section>
+
+  <section class="block" id="s5">
+    <div class="block-head"><span class="block-num">05</span><h2 class="block-title">Zones et distances de sécurité</h2></div>
+    <ul>
+      <li><strong>DMA en BT</strong>&nbsp;: <span class="code mono">0,30 m</span></li>
+      <li>Le BC travaille toujours <strong>hors tension</strong>, en dehors de la zone de voisinage</li>
+      <li>Le BR peut, selon son habilitation complémentaire, évoluer dans la zone de voisinage <strong>simple</strong> (BRV n'existe pas formellement de la même façon que B1V — vérifier les conditions précises de son habilitation)</li>
+    </ul>
+  </section>
+
+  <section class="block" id="s6">
+    <div class="block-head"><span class="block-num">06</span><h2 class="block-title">Risques électriques</h2></div>
+    <ul>
+      <li><strong>Électrisation</strong>&nbsp;: passage du courant dans le corps · <strong>électrocution</strong>&nbsp;: électrisation mortelle</li>
+      <li>Seuil de <strong>non-lâcher</strong>&nbsp;: ~10 mA · seuil de <strong>fibrillation cardiaque</strong>&nbsp;: ~30 mA et plus</li>
+      <li>Une installation consignée n'est pas toujours à risque nul&nbsp;: condensateurs, batteries peuvent rester chargés</li>
+    </ul>
+    <div class="callout callout--no">
+      <span class="k">Feu d'origine électrique</span>
+      <p>Jamais d'<strong>eau</strong> ni de <strong>mousse</strong> — extincteur <span class="code">CO2</span> ou à poudre uniquement.</p>
+    </div>
+  </section>
+
+  <section class="block" id="s7">
+    <div class="block-head"><span class="block-num">07</span><h2 class="block-title">EPI et outillage</h2></div>
+    <ul>
+      <li><strong>Gants isolants, outillage isolé</strong>&nbsp;: le BR manipule des connexions électriques, souvent en dépannage — équipement adapté indispensable</li>
+      <li>Retrait des bijoux et objets métalliques avant toute intervention</li>
+      <li>Le BC respecte les mêmes principes lors de ses opérations de consignation</li>
+    </ul>
+  </section>
+
+  <section class="block" id="s8">
+    <div class="block-head"><span class="block-num">08</span><h2 class="block-title">Documents à connaître</h2></div>
+    <ul>
+      <li><strong>Titre d'habilitation</strong>&nbsp;: nominatif, non transférable, recyclage recommandé tous les 3 ans</li>
+      <li><strong>Attestation de consignation</strong>&nbsp;: établie par le BC, remise au chargé de travaux</li>
+      <li>Le BR rend compte de chaque intervention réalisée</li>
+      <li>Le BC/BR peut refuser une tâche qu'il juge dangereuse</li>
+    </ul>
+  </section>
+
+  <section class="block" id="s9">
+    <div class="block-head"><span class="block-num">09</span><h2 class="block-title">Conduite à tenir en cas d'accident électrique</h2></div>
+    <ol class="steps">
+      <li><span class="idx">1</span><span><strong>Protéger</strong> — couper le courant si possible sans se mettre en danger&nbsp;; sinon, dégager la victime avec un objet isolant</span></li>
+      <li><span class="idx">2</span><span><strong>Examiner</strong> l'état de la victime</span></li>
+      <li><span class="idx">3</span><span><strong>Alerter</strong> les secours (15 / 18 / 112 ou numéro interne)</span></li>
+      <li><span class="idx">4</span><span><strong>Secourir</strong> si formé (PLS, RCP…)</span></li>
+    </ol>
+  </section>
+
+  <section class="block" id="s10">
+    <div class="block-head"><span class="block-num">10</span><h2 class="block-title">BC/BR face aux autres habilitations</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Habilitation</th><th>Différence clé</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">B2</td><td>Peut aussi consigner sur certains chantiers ; le BC est un rôle dédié quand la fonction est séparée</td></tr>
+          <tr><td class="mono">BS</td><td>BS se limite à des opérations élémentaires précises, BR a un périmètre plus large (dépannage inclus)</td></tr>
+          <tr><td class="mono">B1</td><td>B1 exécute des travaux sous la direction d'un B2 ; le BR agit en autonomie sur des interventions</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="color:var(--ink-soft); font-size:0.9rem;">Un même salarié peut cumuler plusieurs habilitations (ex&nbsp;: B1, B2, BC, BR) selon les besoins de son poste.</p>
+  </section>
+
+  <section class="block" style="border-bottom:none;">
+    <div class="block-head"><h2 class="block-title" style="font-size:1.2rem; color:var(--ink-faint);">S'entraîner</h2></div>
+    <div class="resource-grid">
+      <a class="resource-card" href="quiz.html"><span class="rk">Quiz</span><span class="rt">Mega Quiz BC/BR →</span></a>
+      <a class="resource-card" href="memo.html"><span class="rk">Révision express</span><span class="rt">Fiches Mémo →</span></a>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Habilitations BC &amp; BR — NF C18-510</span>
+    <span><a href="../index.html">← Retour au menu principal</a></span>
+  </footer>
+
+</div>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
